@@ -6,9 +6,12 @@ import java.nio.ByteBuffer
 
 trait ClassInfo extends RType with AppliedRType: 
   lazy val fields:                Array[FieldInfo]
+  val paramSymbols:               Array[TypeSymbol]
   lazy val typeMembers:           Array[TypeMemberInfo]
   lazy val annotations:           Map[String, Map[String,String]]
   lazy val mixins:                Array[String]
+
+  inline def isParameterized: Boolean = paramSymbols.nonEmpty
 
   def select(i: Int): RType = 
     if i >= 0 && i <= fields.size-1 then
@@ -21,7 +24,6 @@ trait ClassInfo extends RType with AppliedRType:
 
 trait ScalaClassInfoBase extends ClassInfo:
   val name:                   String
-  val paramSymbols:           Array[TypeSymbol]
   val _typeMembers:           Array[TypeMemberInfo]
   val _fields:                Array[FieldInfo]
   val _annotations:           Map[String, Map[String,String]]
@@ -216,6 +218,7 @@ object JavaClassInfo:
     JavaClassInfo(
       StringByteEngine.read(bbuf),
       StringByteEngine.read(bbuf),
+      ArrayStringByteEngine.read(bbuf).asInstanceOf[Array[TypeSymbol]],
       ArrayRTypeByteEngine.read(bbuf),
       OptionRTypeByteEngine.read(bbuf).map(_.asInstanceOf[JavaClassInfoProxy])
       )
@@ -223,6 +226,7 @@ object JavaClassInfo:
 case class JavaClassInfo protected[scala_reflection] ( 
     name:          String, 
     fullName:      String,
+    paramSymbols:  Array[TypeSymbol],
     paramTypes:    Array[RType], 
     _proxy:        Option[JavaClassInfoProxy] = None 
   ) extends ClassInfo:
@@ -264,6 +268,7 @@ case class JavaClassInfo protected[scala_reflection] (
     bbuf.put( JAVA_CLASS_INFO )
     StringByteEngine.write(bbuf, name)
     StringByteEngine.write(bbuf, fullName)
+    ArrayStringByteEngine.write(bbuf, paramSymbols.asInstanceOf[Array[String]])
     ArrayRTypeByteEngine.write(bbuf, paramTypes)
     OptionRTypeByteEngine.write(bbuf, _proxy)
 

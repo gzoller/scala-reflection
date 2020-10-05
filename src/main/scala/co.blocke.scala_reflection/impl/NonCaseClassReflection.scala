@@ -125,7 +125,10 @@ trait NonCaseClassReflection:
       (fGet.name -> allMap)
     }.toMap
 
-    val typeSymbols = symbol.primaryConstructor.paramSymss.head.map(_.name)
+    val typeSymbols = symbol.primaryConstructor.paramSymss match {
+      case List(paramSyms: List[Symbol], _) => paramSyms.map(_.name)
+      case _ => Nil
+    }
     val nonConstructorFields = getterSetter.map { (fGet, fSet) =>
       val fieldName = fGet.name
 

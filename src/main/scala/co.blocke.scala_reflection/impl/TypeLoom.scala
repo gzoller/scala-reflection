@@ -53,17 +53,20 @@ object TypeLoom:
     import reflect._
     val classDef = subject.classSymbol.get.tree.asInstanceOf[ClassDef]
     val lookFor = {
-      val params = subject.classSymbol.get.primaryConstructor.paramSymss
-      if params == Nil then
-        Nil
-      else
-        params.head.map( s => subject.classSymbol.get.fullName + "." + s.name )
+      subject.classSymbol.get.primaryConstructor.paramSymss match {
+        case List(paramSyms: List[Symbol], _) => paramSyms.map( s => subject.classSymbol.get.fullName + "." + s.name )
+        case _ => Nil
+      }
     }
     classDef.parents.collect{
       case t:reflect.TypeTree => t.tpe
     }.collect{
       case a: AppliedType => 
-        val dadsSyms = a.classSymbol.get.primaryConstructor.paramSymss.head.map(n => a.classSymbol.get.fullName+"."+n.name)
+        val dadsSyms = 
+          a.classSymbol.get.primaryConstructor.paramSymss match {
+            case List(paramSyms: List[Symbol], _) => paramSyms.map(n => a.classSymbol.get.fullName+"."+n.name)
+            case _ => Nil
+          }
         val dads = descendParents(reflect)(a)
         val mine = Map(a.typeSymbol.fullName -> descendAppliedType(reflect)(a, Nil, Map.empty[String,List[Int]], lookFor.toSet))
 

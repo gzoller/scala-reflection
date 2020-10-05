@@ -79,14 +79,30 @@ object RType:
 
   inline def inTermsOf(clazz: Class[_], ito: TraitInfo): RType = 
     cache.get(clazz.getName) match {
-      case Some(scib: ScalaClassInfoBase) => scib.resolveTypeParams( TypeLoom.Recipe.navigate( scib.paths(ito.name), ito ))
+      case Some(scib: ScalaClassInfoBase) => 
+        scib.paths.get(ito.name) match {
+          case Some(paths) => scib.resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
+          case None        => scib
+        }
       case None => 
         unpackAnno(clazz) match {
-          case Some(scib: ScalaClassInfoBase) => scib.resolveTypeParams( TypeLoom.Recipe.navigate( scib.paths(ito.name), ito ))
+          case Some(scib: ScalaClassInfoBase) => 
+            scib.paths.get(ito.name) match {
+              case Some(paths) => scib.resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
+              case None        => scib
+            }
+            
           case None =>
             val (clazzRType, reflection, clazzType) = ofWithReflection(clazz)
-            val symPaths = TypeLoom.descendParents(reflection)( clazzType.asInstanceOf[reflection.Type] ) 
-            clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( symPaths(ito.name), ito ))
+            if !clazzRType.asInstanceOf[ClassInfo].isParameterized then
+              clazzRType 
+            else
+              val symPaths = TypeLoom.descendParents(reflection)( clazzType.asInstanceOf[reflection.Type] ) 
+              symPaths.get(ito.name) match {
+                case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
+                case None        => clazzRType
+              }
+              
           case _ => 
             throw new ReflectException(s"ClassInfo in annotation for ${clazz.getName} is not a Scala 3 class")
         }

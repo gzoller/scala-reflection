@@ -144,7 +144,10 @@ object TastyReflection extends NonCaseClassReflection:
     }
 
     val symbol = typeRef.classSymbol.get
-    val typeSymbols = symbol.primaryConstructor.paramSymss.head.map(_.name.asInstanceOf[TypeSymbol])
+    val typeSymbols = symbol.primaryConstructor.paramSymss match {
+      case List(paramSyms: List[Symbol], _) => paramSyms.map(_.name.asInstanceOf[TypeSymbol])
+      case _ => Nil
+    }
 
     if symbol.flags.is(reflect.Flags.Scala2x) then
       symbol.fullName match {
@@ -242,7 +245,7 @@ object TastyReflection extends NonCaseClassReflection:
     else if symbol.pos.sourceFile.toString.endsWith(".java") || symbol.pos.sourceFile.toString == "<no file>" then
       // Reflecting Java classes requires the materialized Class, which may be available (e.g. Java collections) or not (e.g. user-written class).
       // So for now just burp forth a proxy and we'll resovle the details at runtime.
-      JavaClassInfo(symbol.fullName, symbol.fullName, appliedTob.map( at => RType.unwindType(reflect)(at.asInstanceOf[TypeRef])).toArray )
+      JavaClassInfo(symbol.fullName, symbol.fullName, typeSymbols.toArray, appliedTob.map( at => RType.unwindType(reflect)(at.asInstanceOf[TypeRef])).toArray )
 
     // === Scala Classes ===
     else if symbol.isClassDef then
