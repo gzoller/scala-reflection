@@ -23,7 +23,6 @@ lazy val dependencies =
   new {
     val dottyCompiler = "ch.epfl.lamp" %% "dotty-compiler" % dottyVersion
     val dottyInspection = "ch.epfl.lamp" %% "dotty-tasty-inspector" % dottyVersion
-    // val munit = "org.scalameta" %% "munit" % "0.7.12" % Test
     val munit = "org.scalameta" %% "munit" % "0.7.12+51-8feb6e8b-SNAPSHOT" % Test
   }
 
@@ -38,6 +37,7 @@ lazy val commonDependencies = Seq(
 //==========================
 lazy val settings = 
   commonSettings ++
+  jacocoSettings ++
   publishSettings
 
 lazy val compilerOptions = Seq(
@@ -63,4 +63,7 @@ lazy val publishSettings = Seq(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   bintrayRepository := "releases",
   bintrayPackageLabels := Seq("scala", "dotty", "reflection")
+)
+
+lazy val jacocoSettings = Seq(
 )
