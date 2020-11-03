@@ -1,6 +1,6 @@
 name := "scala-reflection"
 organization in ThisBuild := "co.blocke"
-val dottyVersion =  "0.28.0-bin-SNAPSHOT" //"0.27.0-RC1"
+val dottyVersion =  "0.28.0-bin-20201014-ca67e4d-NIGHTLY"
 
 lazy val root = project
   .in(file("."))
