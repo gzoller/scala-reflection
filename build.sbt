@@ -16,6 +16,8 @@ lazy val root = project
     libraryDependencies ++= commonDependencies
   )
 
+enablePlugins(JacocoCoverallsPlugin)
+
 //==========================
 // Dependencies
 //==========================
@@ -66,4 +68,6 @@ lazy val publishSettings = Seq(
 )
 
 lazy val jacocoSettings = Seq(
+  // jacocoCoverallsServiceName := "github-ci",
+  // jacocoCoverallsJobId := "nada"
 )
