@@ -11,7 +11,7 @@ trait NonCaseClassReflection:
 
   def inspectNonCaseClass(reflect: Reflection)(
     symbol:                reflect.Symbol,
-    tob:                   List[reflect.Type],
+    tob:                   List[reflect.TypeRepr],
     paramSymbols:          Array[TypeSymbol],
     classDef:              reflect.ClassDef,
     superClass:            Option[ClassInfo],
@@ -26,7 +26,7 @@ trait NonCaseClassReflection:
     mixins:                Array[String],
     isValueClass:          Boolean
   ): ScalaClassInfo = 
-    import reflect.{_, given _}
+    import reflect.{_, given}
 
     var index: Int = fields.length - 1
 
@@ -134,7 +134,7 @@ trait NonCaseClassReflection:
 
       // Figure out the original type symbols, i.e. T, (if any)
       val originalTypeSymbol = { 
-        val tpe: Type = fGet.tree match {
+        val tpe: TypeRepr = fGet.tree match {
           case vd: ValDef => vd.tpt.tpe
           case dd: DefDef => dd.returnTpt.tpe
         }
@@ -142,7 +142,7 @@ trait NonCaseClassReflection:
       }
 
       val rtype = 
-        originalTypeSymbol.map( ots => RType.unwindType(reflect)(tob(typeSymbols.indexOf(ots)).asInstanceOf[Type]) ).getOrElse{
+        originalTypeSymbol.map( ots => RType.unwindType(reflect)(tob(typeSymbols.indexOf(ots)).asInstanceOf[TypeRepr]) ).getOrElse{
           if varDefDeclarations.contains(fieldName) then
             RType.unwindType(reflect)(varDefDeclarations(fieldName))
           else

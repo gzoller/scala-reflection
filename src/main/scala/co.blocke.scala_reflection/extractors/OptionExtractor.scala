@@ -12,8 +12,8 @@ case class OptionExtractor() extends TypeInfoExtractor[ScalaOptionInfo]:
 
   
   def extractInfo(reflect: Reflection)(
-    t: reflect.Type, 
-    tob: List[reflect.Type], 
+    t: reflect.TypeRepr, 
+    tob: List[reflect.TypeRepr], 
     symbol: reflect.Symbol): RType =
 
     val optionOfType = tob.head

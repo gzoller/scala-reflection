@@ -13,8 +13,8 @@ case class JavaStackExtractor() extends TypeInfoExtractor[JavaStackInfo]:
     Try( Class.forName(symbol.fullName) <:< JStackClazz ).toOption.getOrElse(false)
 
   def extractInfo(reflect: Reflection)(
-    t: reflect.Type, 
-    tob: List[reflect.Type], 
+    t: reflect.TypeRepr, 
+    tob: List[reflect.TypeRepr], 
     symbol: reflect.Symbol): RType = 
       val clazz = Class.forName(symbol.fullName)
       val elementType = tob.head

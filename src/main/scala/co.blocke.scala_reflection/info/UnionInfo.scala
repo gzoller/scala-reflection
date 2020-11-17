@@ -30,8 +30,8 @@ case class UnionInfo protected[scala_reflection] (
     case e => e
   }
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
+  override def toType(reflect: Reflection): reflect.TypeRepr = 
+    import reflect.{_, given}
     OrType(leftType.toType(reflect), rightType.toType(reflect))
   
   def _copy( left: RType, right: RType ) = this.copy(_leftType = left, _rightType = right)

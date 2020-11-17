@@ -35,9 +35,9 @@ class ReflectionWorkerPhase extends PluginPhase {
   override def transformTypeDef(tree: TypeDef)(implicit ctx: Context): Tree = 
     if tree.isClassDef && !tree.rhs.symbol.isStatic then  // only look at classes & traits, not objects
       // Reflect on the type (generate an RType), then serialize to string and add the S3Reflection annotation to the class.
-      val reflect = QuoteContextImpl.apply().asInstanceOf[QuoteContextImpl].tasty
+      val reflect = QuoteContextImpl.apply().asInstanceOf[QuoteContextImpl].reflect
 
-      val unpackedType = tree.tpe.classSymbol.appliedRef.asInstanceOf[reflect.Type]
+      val unpackedType = tree.tpe.classSymbol.appliedRef.asInstanceOf[reflect.TypeRepr]
       val reflected = RType.unwindType(reflect)(unpackedType,false)
       val s3ReflectionClassSymbol = getClassIfDefined("co.blocke.scala_reflection.S3Reflection")
       val annoArg = NamedArg("rtype".toTermName, Literal(reflect.Constant.String( reflected.serialize )))

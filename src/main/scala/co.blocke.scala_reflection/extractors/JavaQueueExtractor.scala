@@ -13,8 +13,8 @@ case class JavaQueueExtractor() extends TypeInfoExtractor[JavaQueueInfo]:
     Try( Class.forName(symbol.fullName) <:< JQueueClazz ).toOption.getOrElse(false)
 
   def extractInfo(reflect: Reflection)(
-    t: reflect.Type, 
-    tob: List[reflect.Type], 
+    t: reflect.TypeRepr, 
+    tob: List[reflect.TypeRepr], 
     symbol: reflect.Symbol): RType = 
       val clazz = Class.forName(symbol.fullName)
       val elementType = tob.head

@@ -77,7 +77,7 @@ object JavaClassInspector:
             JavaQueueInfo(c.getName, inspectType(mainTypeParams, p.getActualTypeArguments.head))
           case c if c <:< JSetClazz =>
             JavaSetInfo(c.getName, inspectType(mainTypeParams, p.getActualTypeArguments.head))
-          case c =>
+          case c => // some other (user-written) parameterized Java class
             val params = p.getActualTypeArguments.toList.map(t => RType.of(t.asInstanceOf[Class[_]]))
             val raw = RType.of(c).asInstanceOf[AppliedRType]
             val paramMap = typeParamSymbols(c).zip(params).toMap

@@ -49,7 +49,7 @@ case class Command[X,Y,Z](
 
 object TypeLoom:
 
-  def descendParents(reflect: Reflection)( subject: reflect.Type ): Map[String, Map[String, List[Int]]] =
+  def descendParents(reflect: Reflection)( subject: reflect.TypeRepr ): Map[String, Map[String, List[Int]]] =
     import reflect._
     val classDef = subject.classSymbol.get.tree.asInstanceOf[ClassDef]
     val lookFor = {

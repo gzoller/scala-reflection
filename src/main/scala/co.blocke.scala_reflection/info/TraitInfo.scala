@@ -43,17 +43,17 @@ case class TraitInfo protected[scala_reflection](
       paramSymbols
       )
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
+  override def toType(reflect: Reflection): reflect.TypeRepr = 
+    import reflect.{_, given}
     if actualParameterTypes.nonEmpty then
       val args = actualParameterTypes.map(_.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type]).toList
       implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
       dotty.tools.dotc.core.Types.AppliedType(
-        Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+        TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
         args
         ).asInstanceOf[reflect.AppliedType]
     else
-      reflect.Type.typeConstructorOf(infoClass)
+      reflect.TypeRepr.typeConstructorOf(infoClass)
       
   def select(i: Int): RType = 
     if i >= 0 && i <= actualParameterTypes.size-1 then

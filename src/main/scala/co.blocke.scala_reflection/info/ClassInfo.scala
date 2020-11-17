@@ -44,20 +44,20 @@ trait ScalaClassInfoBase extends ClassInfo:
   lazy val infoClass: Class[_] = Class.forName(name)
   lazy val typeParams = infoClass.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
-  override def toType(reflect: scala.tasty.Reflection): reflect.Type = 
-    import reflect.{_, given _}
+  override def toType(reflect: scala.tasty.Reflection): reflect.TypeRepr = 
+    import reflect.{_, given}
     val actualParameterTypes = fields.collect{
-      case f if f.originalSymbol.isDefined => f.originalSymbol.get -> f.fieldType.toType(reflect).asInstanceOf[Type]
+      case f if f.originalSymbol.isDefined => f.originalSymbol.get -> f.fieldType.toType(reflect).asInstanceOf[TypeRepr]
     }.toMap
     if typeParams.nonEmpty then
-      val args = typeParams.map(sym => actualParameterTypes.getOrElse(sym,PrimitiveType.Scala_Any.toType(reflect).asInstanceOf[Type])).toList
+      val args = typeParams.map(sym => actualParameterTypes.getOrElse(sym,PrimitiveType.Scala_Any.toType(reflect).asInstanceOf[TypeRepr])).toList
       implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
       dotty.tools.dotc.core.Types.AppliedType(
-        Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+        TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
         args.map(_.asInstanceOf[dotty.tools.dotc.core.Types.Type])
         ).asInstanceOf[reflect.AppliedType]
     else
-      reflect.Type.typeConstructorOf(infoClass)
+      reflect.TypeRepr.typeConstructorOf(infoClass)
  
   // Fields may be self-referencing, so we need to unwind this...
   lazy val fields = _fields.map( f => f.fieldType match {

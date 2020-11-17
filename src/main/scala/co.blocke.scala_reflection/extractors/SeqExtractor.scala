@@ -16,8 +16,8 @@ case class SeqExtractor() extends TypeInfoExtractor[SeqLikeInfo]:
 
 
   def extractInfo(reflect: Reflection)(
-    t: reflect.Type, 
-    tob: List[reflect.Type], 
+    t: reflect.TypeRepr, 
+    tob: List[reflect.TypeRepr], 
     symbol: reflect.Symbol): RType =
 
     val listOfType = tob.head

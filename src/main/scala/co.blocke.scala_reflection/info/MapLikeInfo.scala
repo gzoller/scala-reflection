@@ -24,11 +24,11 @@ case class MapLikeInfo protected[scala_reflection](
   val fullName = name + "[" + _elementType.fullName + "," + _elementType2.fullName + "]"
   lazy val infoClass: Class[_] = Class.forName(name)
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
+  override def toType(reflect: Reflection): reflect.TypeRepr = 
+    import reflect.{_, given}
     implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
       List(elementType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type], elementType2.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
       ).asInstanceOf[reflect.AppliedType]
 

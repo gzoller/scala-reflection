@@ -14,8 +14,8 @@ case class ScalaArrayExtractor() extends TypeInfoExtractor[ArrayInfo]:
 
 
   def extractInfo(reflect: Reflection)(
-    t: reflect.Type, 
-    tob: List[reflect.Type], 
+    t: reflect.TypeRepr, 
+    tob: List[reflect.TypeRepr], 
     symbol: reflect.Symbol): RType =
 
     val arrayOfType = tob.head

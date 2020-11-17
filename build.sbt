@@ -1,6 +1,6 @@
 name := "scala-reflection"
 organization in ThisBuild := "co.blocke"
-val dottyVersion =  "0.28.0-bin-20201014-ca67e4d-NIGHTLY"
+scalaVersion := "3.0.0-M1"
 
 lazy val root = project
   .in(file("."))
@@ -12,34 +12,19 @@ lazy val root = project
     },
     doc := null,  // disable dottydoc for now
     sources in (Compile, doc) := Seq(),
-    Test / parallelExecution := false,
-    libraryDependencies ++= commonDependencies
+    // Test / parallelExecution := false,
+    libraryDependencies ++= Seq(
+      "org.scala-lang" %% "scala3-compiler" % scalaVersion.value,
+      "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
+      "org.scalameta" %% "munit" % "0.7.17" % Test
+    )
   )
-
-enablePlugins(JacocoCoverallsPlugin)
-
-//==========================
-// Dependencies
-//==========================
-lazy val dependencies =
-  new {
-    val dottyCompiler = "ch.epfl.lamp" %% "dotty-compiler" % dottyVersion
-    val dottyInspection = "ch.epfl.lamp" %% "dotty-tasty-inspector" % dottyVersion
-    val munit = "org.scalameta" %% "munit" % "0.7.12+51-8feb6e8b-SNAPSHOT" % Test
-  }
-
-lazy val commonDependencies = Seq(
-  dependencies.dottyCompiler,
-  dependencies.dottyInspection,
-  dependencies.munit
-)
 
 //==========================
 // Settings
 //==========================
 lazy val settings = 
   commonSettings ++
-  jacocoSettings ++
   publishSettings
 
 lazy val compilerOptions = Seq(
@@ -54,7 +39,6 @@ lazy val compilerOptions = Seq(
 lazy val commonSettings = Seq(
   scalacOptions ++= compilerOptions,
   resolvers += Resolver.jcenterRepo,
-  scalaVersion := dottyVersion,
   testFrameworks += new TestFramework("munit.Framework")
 )
 
@@ -65,9 +49,4 @@ lazy val publishSettings = Seq(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   bintrayRepository := "releases",
   bintrayPackageLabels := Seq("scala", "dotty", "reflection")
-)
-
-lazy val jacocoSettings = Seq(
-  // jacocoCoverallsServiceName := "github-ci",
-  // jacocoCoverallsJobId := "nada"
 )

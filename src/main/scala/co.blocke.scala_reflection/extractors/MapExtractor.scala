@@ -14,8 +14,8 @@ case class MapExtractor() extends TypeInfoExtractor[MapLikeInfo]:
 
 
   def extractInfo(reflect: Reflection)(
-    t: reflect.Type, 
-    tob: List[reflect.Type], 
+    t: reflect.TypeRepr, 
+    tob: List[reflect.TypeRepr], 
     symbol: reflect.Symbol): RType =
 
     val leftType = tob(0)

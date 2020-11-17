@@ -26,8 +26,8 @@ inline def annoSymToString(reflect: scala.tasty.Reflection)( terms: List[reflect
 
 object TastyReflection extends NonCaseClassReflection:
 
-  def reflectOnType(reflect: Reflection)(aType: reflect.Type, fullName: String, resolveTypeSyms: Boolean): RType = 
-    import reflect.{_, given _}
+  def reflectOnType(reflect: Reflection)(aType: reflect.TypeRepr, fullName: String, resolveTypeSyms: Boolean): RType = 
+    import reflect.{_, given}
 
     scala.util.Try {
       val typeRef = aType.asInstanceOf[TypeRef]
@@ -130,8 +130,8 @@ object TastyReflection extends NonCaseClassReflection:
     }
 
 
-  def reflectOnClass(reflect: Reflection)(typeRef: reflect.TypeRef, fullName: String, resolveTypeSyms: Boolean, appliedTob: List[reflect.Type] =  Nil): RType = 
-    import reflect.{_, given _}
+  def reflectOnClass(reflect: Reflection)(typeRef: reflect.TypeRef, fullName: String, resolveTypeSyms: Boolean, appliedTob: List[reflect.TypeRepr] =  Nil): RType = 
+    import reflect.{_, given}
 
     val className = typeRef.classSymbol.get.fullName
 
@@ -164,7 +164,7 @@ object TastyReflection extends NonCaseClassReflection:
             case b: Bind => ObjectInfo(b.pattern.symbol.fullName)  // sealed object implementation
             case _ =>   // sealed case class implementation
               val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
-              RType.unwindType(reflect)(typeDef.typeOpt.asInstanceOf[reflect.Type])
+              RType.unwindType(reflect)(typeDef.typeOpt.asInstanceOf[reflect.TypeRepr])
           }
         }
         SealedTraitInfo(
@@ -292,7 +292,7 @@ object TastyReflection extends NonCaseClassReflection:
           TypeMemberInfo(
             typeName,
             typeSymbols(pos),
-            RType.unwindType(reflect)(tob(pos).asInstanceOf[Type])
+            RType.unwindType(reflect)(tob(pos).asInstanceOf[TypeRepr])
           )
       }
 
@@ -389,7 +389,7 @@ object TastyReflection extends NonCaseClassReflection:
     dad: Option[ClassInfo],
     fieldDefaultMethods: Map[Int, (String,String)]
   ): FieldInfo = 
-    import reflect.{_, given _}
+    import reflect.{_, given}
     val fieldAnnos = {
       val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
       baseAnnos ++ valDef.symbol.annots.map{ a => 

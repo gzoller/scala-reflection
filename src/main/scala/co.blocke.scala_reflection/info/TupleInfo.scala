@@ -51,11 +51,11 @@ case class TupleInfo protected[scala_reflection](
     else
       this
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
+  override def toType(reflect: Reflection): reflect.TypeRepr = 
+    import reflect.{_, given}
     implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
       tupleTypes.map(_.asInstanceOf[dotty.tools.dotc.core.Types.Type]).toList
       ).asInstanceOf[reflect.AppliedType]
     

@@ -13,11 +13,11 @@ trait LeftRightRType extends AppliedRType:
 
   def _copy( left: RType, right: RType ): RType
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
+  override def toType(reflect: Reflection): reflect.TypeRepr = 
+    import reflect.{_, given}
     implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(self.infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      TypeRepr.typeConstructorOf(self.infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
       List(leftType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type], rightType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
       ).asInstanceOf[reflect.AppliedType]
 
