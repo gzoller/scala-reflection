@@ -39,7 +39,6 @@ lazy val commonDependencies = Seq(
 //==========================
 lazy val settings = 
   commonSettings ++
-  jacocoSettings ++
   publishSettings
 
 lazy val compilerOptions = Seq(
@@ -65,9 +64,4 @@ lazy val publishSettings = Seq(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   bintrayRepository := "releases",
   bintrayPackageLabels := Seq("scala", "dotty", "reflection")
-)
-
-lazy val jacocoSettings = Seq(
-  // jacocoCoverallsServiceName := "github-ci",
-  // jacocoCoverallsJobId := "nada"
 )
