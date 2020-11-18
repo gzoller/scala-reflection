@@ -69,7 +69,14 @@ object RType:
           tc.inspectTastyFiles(List(tastyPath))
           tc.inspected
         else
-          JavaClassInspector.inspectClass(clazz, clazz.getName, Array[RType]())
+          // Non-Tasty top-level class (Java, basically)
+          val syms = clazz.getTypeParameters.map(p => p.getName.asInstanceOf[TypeSymbol])
+          val rtypes = clazz.getTypeParameters.map(p => TypeSymbolInfo(p.getName).asInstanceOf[RType])
+          this.synchronized {
+            val reflectedRType = JavaClassInfo( clazz.getName, clazz.getName, syms, rtypes )
+            cache.put(clazz.getName, reflectedRType)
+            reflectedRType
+          }
       }
     )
 
