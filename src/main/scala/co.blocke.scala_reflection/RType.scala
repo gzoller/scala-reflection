@@ -69,8 +69,7 @@ object RType:
           tc.inspectTastyFiles(List(tastyPath))
           tc.inspected
         else
-          println("FOOOOOOM! "+clazz.getName)
-          UnknownInfo(clazz.getName)
+          JavaClassInspector.inspectClass(clazz, clazz.getName, Array[RType]())
       }
     )
 
