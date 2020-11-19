@@ -6,6 +6,7 @@ import impl._
 import info._
 import java.io._
 import java.nio.ByteBuffer
+import scala.quoted.staging._ 
 
 /** A materializable type */
 trait RType extends Serializable:
@@ -60,6 +61,8 @@ object RType:
     import qctx.reflect.{_, given}
     Expr( unwindType(qctx.reflect)( TypeRepr.of[T]) )
 
+  given Toolbox = Toolbox.make(getClass.getClassLoader)
+
   inline def of(clazz: Class[_]): RType = 
     cache.getOrElse(clazz.getName,
       unpackAnno(clazz).getOrElse{
@@ -69,21 +72,16 @@ object RType:
           tc.inspectTastyFiles(List(tastyPath))
           tc.inspected
         else
-          // Non-Tasty top-level class (Java, basically)
-          val syms = clazz.getTypeParameters.map(p => p.getName.asInstanceOf[TypeSymbol])
-          val rtypes = clazz.getTypeParameters.map(p => TypeSymbolInfo(p.getName).asInstanceOf[RType])
+          // Non-Tasty top-level class (Java, or String-marshalled Class)
+          def fn = (using qctx: QuoteContext) => 
+            RType.unwindType(qctx.reflect)( qctx.reflect.TypeRepr.typeConstructorOf(clazz), false )
           this.synchronized {
-            val reflectedRType = JavaClassInfo( clazz.getName, clazz.getName, syms, rtypes )
+            val reflectedRType = withQuoteContext(fn)
             cache.put(clazz.getName, reflectedRType)
             reflectedRType
           }
       }
     )
-
-  private inline def ofWithReflection(clazz: Class[_]): (RType, Reflection, dotty.tools.dotc.core.Types.CachedType) = 
-    val tc = new TastyInspection(clazz)
-    tc.inspectTastyFiles(List(clazz.getName))
-    (tc.inspected, tc.tasty, tc.clazzType)
   
   inline def inTermsOf[T](clazz: Class[_]): RType = 
     inTermsOf(clazz, of[T].asInstanceOf[TraitInfo])
@@ -104,15 +102,18 @@ object RType:
             }
             
           case None =>
-            val (clazzRType, reflection, clazzType) = ofWithReflection(clazz)
+            val clazzRType = of(clazz)
             if !clazzRType.asInstanceOf[ClassInfo].isParameterized then
               clazzRType 
             else
-              val symPaths = TypeLoom.descendParents(reflection)( clazzType.asInstanceOf[reflection.TypeRepr] ) 
-              symPaths.get(ito.name) match {
-                case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
-                case None        => clazzRType
+              def fn = (using qctx: QuoteContext) => {
+                val symPaths = TypeLoom.descendParents(qctx.reflect)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+                symPaths.get(ito.name) match {
+                  case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
+                  case None        => clazzRType
+                }
               }
+              withQuoteContext(fn)
               
           case _ => 
             throw new ReflectException(s"ClassInfo in annotation for ${clazz.getName} is not a Scala 3 class")

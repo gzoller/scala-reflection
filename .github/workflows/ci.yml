@@ -22,8 +22,4 @@ jobs:
         id: sbt
         uses: lokkju/github-action-sbt@master
         with:
-          commands: test; jacoco
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          commands: test

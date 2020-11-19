@@ -12,11 +12,12 @@ lazy val root = project
     },
     doc := null,  // disable dottydoc for now
     sources in (Compile, doc) := Seq(),
-    // Test / parallelExecution := false,
+    Test / parallelExecution := false,
     libraryDependencies ++= Seq(
-      "org.scala-lang" %% "scala3-compiler" % scalaVersion.value,
+      "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
       "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
-      "org.scalameta" %% "munit" % "0.7.17" % Test
+      "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
+      "org.scalameta"  %% "munit"                  % "0.7.17" % Test
     )
   )
 
