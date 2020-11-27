@@ -1,12 +1,11 @@
 package co.blocke.scala_reflection
 
 import scala.quoted._
-import scala.tasty.Reflection
+import quoted.Quotes
 import impl._
 import info._
 import java.io._
 import java.nio.ByteBuffer
-import scala.quoted.staging._ 
 
 /** A materializable type */
 trait RType extends Serializable:
@@ -50,22 +49,20 @@ trait AppliedRType:
 final inline def tabs(t:Int) = "   "*t
 
 
-object RType:
+//-------------------------------------------------------------------------------------------------------------------
 
-  //------------------------
-  //  <<  MACRO ENTRY >>
-  //------------------------
-  inline def of[T]: RType = ${ ofImpl[T]() }
-  
-  def ofImpl[T]()(implicit qctx: QuoteContext, ttype: scala.quoted.Type[T]): Expr[RType] = 
-    import qctx.reflect.{_, given}
-    Expr( unwindType(qctx.reflect)( TypeRepr.of[T]) )
+trait RTypeOf:
+  def of(clazz: Class[_]): RType
+  def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]]
 
+
+class RTypeOfNoPlugin() extends RTypeOf:
+  import scala.quoted.staging._ 
   given Toolbox = Toolbox.make(getClass.getClassLoader)
 
-  inline def of(clazz: Class[_]): RType = 
-    cache.getOrElse(clazz.getName,
-      unpackAnno(clazz).getOrElse{
+  def of(clazz: Class[_]): RType = 
+    RType.cache.getOrElse(clazz.getName,
+      RType.unpackAnno(clazz).getOrElse{
         val tc = new TastyInspection(clazz)
         val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty"
         if ( new java.io.File(tastyPath) ).exists then
@@ -73,15 +70,66 @@ object RType:
           tc.inspected
         else
           // Non-Tasty top-level class (Java, or String-marshalled Class)
-          def fn = (using qctx: QuoteContext) => 
+          val fn = (using qctx: Quotes) => 
             RType.unwindType(qctx.reflect)( qctx.reflect.TypeRepr.typeConstructorOf(clazz), false )
-          this.synchronized {
-            val reflectedRType = withQuoteContext(fn)
-            cache.put(clazz.getName, reflectedRType)
-            reflectedRType
+          val reflectedRType = withQuotes(fn)
+          RType.cache.synchronized {
+            RType.cache.put(clazz.getName, reflectedRType)
           }
+          reflectedRType
       }
     )
+
+  def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
+    val fn = (using qctx: Quotes) => TypeLoom.descendParents(qctx.reflect)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+    withQuotes(fn)
+
+
+class RTypeOfWithPlugin(reflect: Reflection) extends RTypeOf:
+  def of(clazz: Class[_]): RType = 
+    RType.cache.getOrElse(clazz.getName,
+      RType.unpackAnno(clazz).getOrElse{
+        val tc = new TastyInspection(clazz)
+        val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty"
+        if ( new java.io.File(tastyPath) ).exists then
+          tc.inspectTastyFiles(List(tastyPath))
+          tc.inspected
+        else
+          // Non-Tasty top-level class (Java, or String-marshalled Class)
+          val reflectedRType = RType.unwindType(reflect)( reflect.TypeRepr.typeConstructorOf(clazz), false )
+          RType.cache.synchronized {
+            RType.cache.put(clazz.getName, reflectedRType)
+          }
+          reflectedRType
+      }
+    )
+
+  def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
+    TypeLoom.descendParents(reflect)( reflect.TypeRepr.typeConstructorOf(clazz) ) 
+
+//-------------------------------------------------------------------------------------------------------------------
+
+
+object RType:
+
+  //------------------------
+  //  <<  MACRO ENTRY >>
+  //------------------------
+  inline def of[T]: RType = ${ ofImpl[T]() }
+  
+  def ofImpl[T]()(implicit qctx: Quotes, ttype: scala.quoted.Type[T]): Expr[RType] = 
+    import qctx.reflect.{_, given}
+    Expr( unwindType(qctx.reflect)( TypeRepr.of[T]) )
+
+  // This is preset if used as a compiler plugin
+  var ofMethod: Option[RTypeOf] = None 
+
+  def of(clazz: Class[_]): RType = (ofMethod match {
+    case Some(om) => om
+    case None => 
+      ofMethod = Some(new RTypeOfNoPlugin())
+      ofMethod.get
+  }).of(clazz)
   
   inline def inTermsOf[T](clazz: Class[_]): RType = 
     inTermsOf(clazz, of[T].asInstanceOf[TraitInfo])
@@ -106,14 +154,16 @@ object RType:
             if !clazzRType.asInstanceOf[ClassInfo].isParameterized then
               clazzRType 
             else
-              def fn = (using qctx: QuoteContext) => {
-                val symPaths = TypeLoom.descendParents(qctx.reflect)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
-                symPaths.get(ito.name) match {
-                  case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
-                  case None        => clazzRType
-                }
+              val symPaths = (ofMethod match {
+                case Some(om) => om
+                case None => 
+                  ofMethod = Some(new RTypeOfNoPlugin())
+                  ofMethod.get
+              }).descendParents(clazz)
+              symPaths.get(ito.name) match {
+                case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
+                case None        => clazzRType
               }
-              withQuoteContext(fn)
               
           case _ => 
             throw new ReflectException(s"ClassInfo in annotation for ${clazz.getName} is not a Scala 3 class")
@@ -128,7 +178,7 @@ object RType:
     }
 
   // pre-loaded with known language primitive types
-  private val cache = scala.collection.mutable.Map.empty[String,RType] ++ PrimitiveType.loadCache
+  val cache = scala.collection.mutable.Map.empty[String,RType] ++ PrimitiveType.loadCache
   def cacheSize = cache.size
 
   protected[scala_reflection] def unwindType(reflect: Reflection)(aType: reflect.TypeRepr, resolveTypeSyms: Boolean = true): RType =

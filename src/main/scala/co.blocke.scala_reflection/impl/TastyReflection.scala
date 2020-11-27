@@ -238,7 +238,7 @@ object TastyReflection extends NonCaseClassReflection:
 
     // === Java Class ===
     // User-written Java classes will have the source file.  Java library files will have <no file> for source
-    else if symbol.pos.sourceFile.toString.endsWith(".java") || symbol.pos.sourceFile.toString == "<no file>" then
+    else if symbol.flags.is(Flags.JavaDefined) then
       // Reflecting Java classes requires the materialized Class, which may be available (e.g. Java collections) or not (e.g. user-written class).
       // So for now just burp forth a proxy and we'll resovle the details at runtime.
       JavaClassInfo(symbol.fullName, symbol.fullName, typeSymbols.toArray, appliedTob.map( at => RType.unwindType(reflect)(at.asInstanceOf[TypeRef])).toArray )

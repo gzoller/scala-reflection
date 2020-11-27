@@ -1,6 +1,6 @@
 name := "scala-reflection"
 organization in ThisBuild := "co.blocke"
-scalaVersion := "3.0.0-M1"
+scalaVersion := "3.0.0-M2"
 
 lazy val root = project
   .in(file("."))
@@ -17,7 +17,7 @@ lazy val root = project
       "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
       "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
       "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
-      "org.scalameta"  %% "munit"                  % "0.7.17" % Test
+      "org.scalameta"  %% "munit"                  % "0.7.19" % Test
     )
   )
 
