@@ -5,7 +5,7 @@ import info._
 import extractors._
 import scala.quoted._
 import scala.reflect._
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import scala.tasty.inspector.TastyInspector
 import dotty.tools.dotc.ast.Trees.AppliedTypeTree
   
@@ -14,11 +14,7 @@ import dotty.tools.dotc.ast.Trees.AppliedTypeTree
 class TastyInspection(clazz: Class[_]) extends TastyInspector:
 
   var inspected: RType = UnknownInfo(clazz.getName)
-  var tasty: scala.tasty.Reflection = null
-  var clazzType: dotty.tools.dotc.core.Types.CachedType = null
 
-  protected def processCompilationUnit(using qctx: QuoteContext)(root: qctx.tasty.Tree): Unit =
-    val tastyType = qctx.tasty.Type.typeConstructorOf(clazz)
-    inspected = RType.unwindType(qctx.tasty)( tastyType, false )
-    tasty = qctx.tasty
-    clazzType = tastyType.asInstanceOf[dotty.tools.dotc.core.Types.CachedType]
+  protected def processCompilationUnit(using quotes: Quotes)(root: quotes.reflect.Tree): Unit =
+    val tastyType = quotes.reflect.TypeRepr.typeConstructorOf(clazz)
+    inspected = RType.unwindType(quotes)( tastyType, false )

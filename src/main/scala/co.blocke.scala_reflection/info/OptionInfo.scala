@@ -4,7 +4,7 @@ package info
 import java.lang.reflect._
 import java.util.Optional
 import impl._
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import java.nio.ByteBuffer
 
 
@@ -47,13 +47,13 @@ case class ScalaOptionInfo protected[scala_reflection](
       case _ => this
     }
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
-    implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
+    implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-      List(optionParamType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
-      ).asInstanceOf[reflect.AppliedType]
+      TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      List(optionParamType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
+      ).asInstanceOf[quotes.reflect.AppliedType]
     
   def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
     val newTab = {if supressIndent then tab else tab+1}
@@ -86,13 +86,13 @@ case class JavaOptionalInfo protected[scala_reflection](
     case e => e
   }
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
-    implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
+    implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-      List(optionParamType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
-      ).asInstanceOf[reflect.AppliedType]
+      TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      List(optionParamType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
+      ).asInstanceOf[quotes.reflect.AppliedType]
    
   def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
     val newTab = {if supressIndent then tab else tab+1}

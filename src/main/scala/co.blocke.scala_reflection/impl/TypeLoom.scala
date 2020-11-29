@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package impl
 
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 
 /**
 
@@ -49,8 +49,8 @@ case class Command[X,Y,Z](
 
 object TypeLoom:
 
-  def descendParents(reflect: Reflection)( subject: reflect.Type ): Map[String, Map[String, List[Int]]] =
-    import reflect._
+  def descendParents(quotes: Quotes)( subject: quotes.reflect.TypeRepr ): Map[String, Map[String, List[Int]]] =
+    import quotes.reflect._
     val classDef = subject.classSymbol.get.tree.asInstanceOf[ClassDef]
     val lookFor = {
       subject.classSymbol.get.primaryConstructor.paramSymss match {
@@ -59,7 +59,7 @@ object TypeLoom:
       }
     }
     classDef.parents.collect{
-      case t:reflect.TypeTree => t.tpe
+      case t: quotes.reflect.TypeTree => t.tpe
     }.collect{
       case a: AppliedType => 
         val dadsSyms = 
@@ -67,8 +67,8 @@ object TypeLoom:
             case List(paramSyms: List[Symbol], _) => paramSyms.map(n => a.classSymbol.get.fullName+"."+n.name)
             case _ => Nil
           }
-        val dads = descendParents(reflect)(a)
-        val mine = Map(a.typeSymbol.fullName -> descendAppliedType(reflect)(a, Nil, Map.empty[String,List[Int]], lookFor.toSet))
+        val dads = descendParents(quotes)(a)
+        val mine = Map(a.typeSymbol.fullName -> descendAppliedType(quotes)(a, Nil, Map.empty[String,List[Int]], lookFor.toSet))
 
         // Ok here we have our mappings and our parents' mappings... In terms of themselves.
         // We now have to resolve the parents' in terms of mine and add to result
@@ -86,8 +86,8 @@ object TypeLoom:
     }.foldLeft(Map.empty[String,Map[String,List[Int]]])(_ ++ _)
 
 
-  def descendAppliedType(reflect: Reflection)( applied: reflect.AppliedType, pathSoFar: List[Int], foundSoFar: Map[String, List[Int]], lookFor: Set[String] ): Map[String, List[Int]] =
-    import reflect._
+  def descendAppliedType(quotes: Quotes)( applied: quotes.reflect.AppliedType, pathSoFar: List[Int], foundSoFar: Map[String, List[Int]], lookFor: Set[String] ): Map[String, List[Int]] =
+    import quotes.reflect._
     val AppliedType(t,tob) = applied
     tob.zipWithIndex.foldLeft( (lookFor,foundSoFar) ){ case( (look,fsf), (oneT,i) ) =>
       oneT match {
@@ -95,7 +95,7 @@ object TypeLoom:
           (look - one.typeSymbol.fullName, fsf + (one.typeSymbol.fullName -> (pathSoFar :+ i)))
         case a: AppliedType => 
           val psf = pathSoFar :+ i
-          val found = descendAppliedType(reflect)(a, psf, fsf, look)
+          val found = descendAppliedType(quotes)(a, psf, fsf, look)
           (look -- found.keySet, found)
         case _ =>
           (look, foundSoFar) // do nothing

@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 
 import scala.quoted._
+import quoted.Quotes
 import impl._
 import info._
-import scala.tasty.Reflection
 import java.io._
 import java.nio.ByteBuffer
 
@@ -16,7 +16,7 @@ trait RType extends Serializable:
   lazy val infoClass: Class[_]  /** the JVM class of this type */
 
   def toBytes( bbuf: ByteBuffer ): Unit
-  def toType(reflect: Reflection): reflect.Type = reflect.Type.typeConstructorOf(infoClass)
+  def toType(quotes: Quotes): quotes.reflect.TypeRepr  = quotes.reflect.TypeRepr.typeConstructorOf(infoClass)
 
   def show(
     tab: Int = 0,
@@ -49,6 +49,69 @@ trait AppliedRType:
 final inline def tabs(t:Int) = "   "*t
 
 
+//-------------------------------------------------------------------------------------------------------------------
+
+trait RTypeOf:
+  def of(clazz: Class[_]): RType
+  def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]]
+
+
+class RTypeOfNoPlugin() extends RTypeOf:
+  import scala.quoted.staging._ 
+  given Toolbox = Toolbox.make(getClass.getClassLoader)
+
+  def of(clazz: Class[_]): RType = 
+    RType.cache.getOrElse(clazz.getName,
+      RType.unpackAnno(clazz).getOrElse{
+        val tc = new TastyInspection(clazz)
+        val tastyPath = Option(clazz.getProtectionDomain.getCodeSource).map(src => src.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty")
+        tastyPath match {
+          case Some(path) if ( new java.io.File(path) ).exists =>
+            tc.inspectTastyFiles(List(path))
+            tc.inspected
+          case _ =>
+            // Non-Tasty top-level class (Java, or String-marshalled Class)
+            val fn = (using qctx: Quotes) => 
+              RType.unwindType(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz), false )
+            val reflectedRType = withQuotes(fn)
+            RType.cache.synchronized {
+              RType.cache.put(clazz.getName, reflectedRType)
+            }
+            reflectedRType
+        }
+      }
+    )
+
+  def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
+    val fn = (using qctx: Quotes) => TypeLoom.descendParents(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+    withQuotes(fn)
+
+
+class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
+  def of(clazz: Class[_]): RType = 
+    RType.cache.getOrElse(clazz.getName,
+      RType.unpackAnno(clazz).getOrElse{
+        val tc = new TastyInspection(clazz)
+        val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty"
+        if ( new java.io.File(tastyPath) ).exists then
+          tc.inspectTastyFiles(List(tastyPath))
+          tc.inspected
+        else
+          // Non-Tasty top-level class (Java, or String-marshalled Class)
+          val reflectedRType = RType.unwindType(quotes)( quotes.reflect.TypeRepr.typeConstructorOf(clazz), false )
+          RType.cache.synchronized {
+            RType.cache.put(clazz.getName, reflectedRType)
+          }
+          reflectedRType
+      }
+    )
+
+  def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
+    TypeLoom.descendParents(quotes)( quotes.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+
+//-------------------------------------------------------------------------------------------------------------------
+
+
 object RType:
 
   //------------------------
@@ -56,23 +119,19 @@ object RType:
   //------------------------
   inline def of[T]: RType = ${ ofImpl[T]() }
   
-  def ofImpl[T]()(implicit qctx: QuoteContext, ttype: scala.quoted.Type[T]): Expr[RType] = 
-    import qctx.tasty.{_, given _}
-    Expr( unwindType(qctx.tasty)( Type.of[T]) )
+  def ofImpl[T]()(implicit qctx: Quotes, ttype: scala.quoted.Type[T]): Expr[RType] = 
+    import qctx.reflect.{_, given}
+    Expr( unwindType(qctx)( TypeRepr.of[T]) )
 
-  inline def of(clazz: Class[_]): RType = 
-    cache.getOrElse(clazz.getName,
-      unpackAnno(clazz).getOrElse{
-        val tc = new TastyInspection(clazz)
-        tc.inspect("", List(clazz.getName))
-        tc.inspected
-      }
-    )
+  // This is preset if used as a compiler plugin
+  var ofMethod: Option[RTypeOf] = None 
 
-  private inline def ofWithReflection(clazz: Class[_]): (RType, Reflection, dotty.tools.dotc.core.Types.CachedType) = 
-    val tc = new TastyInspection(clazz)
-    tc.inspect("", List(clazz.getName))
-    (tc.inspected, tc.tasty, tc.clazzType)
+  def of(clazz: Class[_]): RType = (ofMethod match {
+    case Some(om) => om
+    case None => 
+      ofMethod = Some(new RTypeOfNoPlugin())
+      ofMethod.get
+  }).of(clazz)
   
   inline def inTermsOf[T](clazz: Class[_]): RType = 
     inTermsOf(clazz, of[T].asInstanceOf[TraitInfo])
@@ -93,11 +152,16 @@ object RType:
             }
             
           case None =>
-            val (clazzRType, reflection, clazzType) = ofWithReflection(clazz)
+            val clazzRType = of(clazz)
             if !clazzRType.asInstanceOf[ClassInfo].isParameterized then
               clazzRType 
             else
-              val symPaths = TypeLoom.descendParents(reflection)( clazzType.asInstanceOf[reflection.Type] ) 
+              val symPaths = (ofMethod match {
+                case Some(om) => om
+                case None => 
+                  ofMethod = Some(new RTypeOfNoPlugin())
+                  ofMethod.get
+              }).descendParents(clazz)
               symPaths.get(ito.name) match {
                 case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
                 case None        => clazzRType
@@ -116,11 +180,11 @@ object RType:
     }
 
   // pre-loaded with known language primitive types
-  private val cache = scala.collection.mutable.Map.empty[String,RType] ++ PrimitiveType.loadCache
+  val cache = scala.collection.mutable.Map.empty[String,RType] ++ PrimitiveType.loadCache
   def cacheSize = cache.size
 
-  protected[scala_reflection] def unwindType(reflect: Reflection)(aType: reflect.Type, resolveTypeSyms: Boolean = true): RType =
-    import reflect.{_, given _}
+  protected[scala_reflection] def unwindType(quotes: Quotes)(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true): RType =
+    import quotes.reflect.{_, given}
 
     val className = aType.asInstanceOf[TypeRef] match {
       case AndType(_,_) => INTERSECTION_CLASS
@@ -130,13 +194,13 @@ object RType:
     }
 
     this.synchronized {
-      val tName = typeName(reflect)(aType)
+      val tName = typeName(quotes)(aType)
       cache.getOrElse(tName, { 
         if className == "scala.Any" then
-          TastyReflection.reflectOnType(reflect)(aType, tName, resolveTypeSyms)
+          TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
         else
           cache.put(tName, SelfRefRType(className))
-          val reflectedRType = TastyReflection.reflectOnType(reflect)(aType, tName, resolveTypeSyms)
+          val reflectedRType = TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
           cache.put(tName, reflectedRType)
           reflectedRType
       })
@@ -144,19 +208,19 @@ object RType:
 
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.
   // This name is used for RType.equals so caching works.
-  def typeName(reflect: Reflection)(aType: reflect.Type): String =
-    import reflect.{_, given _}
+  def typeName(quotes: Quotes)(aType: quotes.reflect.TypeRepr): String =
+    import quotes.reflect.{_, given}
     val name = aType.asInstanceOf[TypeRef] match {
       case sym if aType.typeSymbol.flags.is(Flags.Param) => sym.name
       case AppliedType(t,tob) => 
-        typeName(reflect)(t) + tob.map( oneTob => typeName(reflect)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
-      case AndType(left, right) => INTERSECTION_CLASS + "[" + typeName(reflect)(left.asInstanceOf[TypeRef]) + "," + typeName(reflect)(right.asInstanceOf[TypeRef]) + "]"
-      case OrType(left, right) => UNION_CLASS + "[" + typeName(reflect)(left.asInstanceOf[TypeRef]) + "," + typeName(reflect)(right.asInstanceOf[TypeRef]) + "]"
+        typeName(quotes)(t) + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
+      case AndType(left, right) => INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
+      case OrType(left, right) => UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case _: dotty.tools.dotc.core.Types.WildcardType => "unmapped"
       case _ => aType.classSymbol.get.fullName
     }
     name match {
-      case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[reflect.TermRef].termSymbol.moduleClass.fullName
+      case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
       case tn => tn
     }
 

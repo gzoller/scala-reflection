@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package info
 
 import impl._
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import java.nio.ByteBuffer
 
 
@@ -33,13 +33,13 @@ case class JavaMapInfo protected[scala_reflection](
     case e => e
   }
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
-    implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
+    implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-      List(elementType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type], elementType2.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
-      ).asInstanceOf[reflect.AppliedType]
+      TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      List(elementType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type], elementType2.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
+      ).asInstanceOf[quotes.reflect.AppliedType]
 
   override def select(i: Int): RType = 
     i match {

@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package info
 
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import java.nio.ByteBuffer
 import impl._
 
@@ -51,13 +51,13 @@ case class TupleInfo protected[scala_reflection](
     else
       this
 
-  override def toType(reflect: Reflection): reflect.Type = 
-    import reflect.{_, given _}
-    implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
+    implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx
     dotty.tools.dotc.core.Types.AppliedType(
-      Type.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
+      TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
       tupleTypes.map(_.asInstanceOf[dotty.tools.dotc.core.Types.Type]).toList
-      ).asInstanceOf[reflect.AppliedType]
+      ).asInstanceOf[quotes.reflect.AppliedType]
     
   def select(i: Int): RType = 
     if i >= 0 && i <= _tupleTypes.size-1 then
