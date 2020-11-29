@@ -181,5 +181,4 @@ Nicolas Stucki (@nicolasstucki)
 
 ## Release Notes:
 
-* 0.1 - Initial release for Scala 3
-
+* 1.0.0-M2 - Initial release for Scala 3.0.0-M2
