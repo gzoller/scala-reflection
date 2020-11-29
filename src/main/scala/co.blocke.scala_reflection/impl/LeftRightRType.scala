@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package impl
 
 import info._
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 
 /** Marker trait for all Scala/Java left/right types (either, intersection, union) */
 trait LeftRightRType extends AppliedRType:
@@ -13,13 +13,13 @@ trait LeftRightRType extends AppliedRType:
 
   def _copy( left: RType, right: RType ): RType
 
-  override def toType(reflect: Reflection): reflect.TypeRepr = 
-    import reflect.{_, given}
-    implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
+    implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
     dotty.tools.dotc.core.Types.AppliedType(
       TypeRepr.typeConstructorOf(self.infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-      List(leftType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type], rightType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
-      ).asInstanceOf[reflect.AppliedType]
+      List(leftType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type], rightType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
+      ).asInstanceOf[quotes.reflect.AppliedType]
 
   override def isAppliedType: Boolean = 
     (leftType match {

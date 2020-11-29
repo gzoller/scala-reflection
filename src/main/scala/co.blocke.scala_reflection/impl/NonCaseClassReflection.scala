@@ -2,18 +2,17 @@ package co.blocke.scala_reflection
 package impl
 
 import info._
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import scala.util.control.Breaks._
 
 
 trait NonCaseClassReflection:
-  // self: TastyReflection =>
 
-  def inspectNonCaseClass(reflect: Reflection)(
-    symbol:                reflect.Symbol,
-    tob:                   List[reflect.TypeRepr],
+  def inspectNonCaseClass(quotes: Quotes)(
+    symbol:                quotes.reflect.Symbol,
+    tob:                   List[quotes.reflect.TypeRepr],
     paramSymbols:          Array[TypeSymbol],
-    classDef:              reflect.ClassDef,
+    classDef:              quotes.reflect.ClassDef,
     superClass:            Option[ClassInfo],
     name:                  String,
     fullName:              String,
@@ -26,7 +25,7 @@ trait NonCaseClassReflection:
     mixins:                Array[String],
     isValueClass:          Boolean
   ): ScalaClassInfo = 
-    import reflect.{_, given}
+    import quotes.reflect.{_, given}
 
     var index: Int = fields.length - 1
 
@@ -35,26 +34,26 @@ trait NonCaseClassReflection:
     val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
     val varDefDeclarations = classDef.body.collect{
         // We just want public var definitions here
-        case s: ValDef if !s.symbol.flags.is(reflect.Flags.Private) 
-          && !s.symbol.flags.is(reflect.Flags.Protected) 
+        case s: ValDef if !s.symbol.flags.is(quotes.reflect.Flags.Private) 
+          && !s.symbol.flags.is(quotes.reflect.Flags.Protected) 
           && !fieldNames.contains(s.name) 
-          && s.symbol.flags.is(reflect.Flags.Mutable) => 
+          && s.symbol.flags.is(quotes.reflect.Flags.Mutable) => 
             val annoSymbol = s.symbol.annots.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
             val fieldAnnos = 
               annoSymbol.map{ a => 
-                val reflect.Apply(_, params) = a
+                val quotes.reflect.Apply(_, params) = a
                 val annoName = a.symbol.signature.resultSig
-                (annoName, annoSymToString(reflect)(params))
+                (annoName, annoSymToString(quotes)(params))
 
               }.toMap
             varAnnos.put(s.name, fieldAnnos) // yes, this is a side-effect but it saves mutliple field scans!
-            s.name -> s.tpt.tpe.asInstanceOf[reflect.TypeRef]
+            s.name -> s.tpt.tpe.asInstanceOf[quotes.reflect.TypeRef]
 
         // We just want public def definitions here
         // WARNING: These defs may also include non-field functions!  Filter later...
-        case d: DefDef if !d.symbol.flags.is(reflect.Flags.Private) 
-          && !d.symbol.flags.is(reflect.Flags.Protected) 
-          && !d.name.endsWith("_=") => d.name -> d.returnTpt.tpe.asInstanceOf[reflect.TypeRef]
+        case d: DefDef if !d.symbol.flags.is(quotes.reflect.Flags.Private) 
+          && !d.symbol.flags.is(quotes.reflect.Flags.Protected) 
+          && !d.name.endsWith("_=") => d.name -> d.returnTpt.tpe.asInstanceOf[quotes.reflect.TypeRef]
     }.toMap
 
     val numConstructorFields = fields.length
@@ -113,9 +112,9 @@ trait NonCaseClassReflection:
     val knownAnnos = baseAnnos ++ getterSetter.map{ (fGet, fSet) =>
       val both = fGet.annots ++ fSet.annots
       val annoMap = both.map{ a => 
-        val reflect.Apply(_, params) = a
+        val quotes.reflect.Apply(_, params) = a
         val annoName = a.symbol.signature.resultSig
-        (annoName, annoSymToString(reflect)(params))
+        (annoName, annoSymToString(quotes)(params))
       }.toMap
       val allMap = 
         annoMap ++ varAnnos.getOrElse(fGet.name, Map.empty[String,Map[String,String]]) match {
@@ -142,13 +141,13 @@ trait NonCaseClassReflection:
       }
 
       val rtype = 
-        originalTypeSymbol.map( ots => RType.unwindType(reflect)(tob(typeSymbols.indexOf(ots)).asInstanceOf[TypeRepr]) ).getOrElse{
+        originalTypeSymbol.map( ots => RType.unwindType(quotes)(tob(typeSymbols.indexOf(ots)).asInstanceOf[TypeRepr]) ).getOrElse{
           if varDefDeclarations.contains(fieldName) then
-            RType.unwindType(reflect)(varDefDeclarations(fieldName))
+            RType.unwindType(quotes)(varDefDeclarations(fieldName))
           else
             fGet.tree match {
-              case dd: DefDef => RType.unwindType(reflect)(dd.returnTpt.tpe)
-              case vd: ValDef => RType.unwindType(reflect)(vd.tpt.tpe)
+              case dd: DefDef => RType.unwindType(quotes)(dd.returnTpt.tpe)
+              case vd: ValDef => RType.unwindType(quotes)(vd.tpt.tpe)
             }
         }
   

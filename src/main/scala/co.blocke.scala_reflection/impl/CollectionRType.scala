@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package impl
 
 import info._
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 
 /** Marker trait for all Scala/Java collections */
 trait CollectionRType extends AppliedRType:
@@ -10,13 +10,13 @@ trait CollectionRType extends AppliedRType:
 
   lazy val elementType: RType
 
-  override def toType(reflect: Reflection): reflect.TypeRepr = 
-    import reflect.{_, given}
-    implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
+    implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
     dotty.tools.dotc.core.Types.AppliedType(
       TypeRepr.typeConstructorOf(self.infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-      List(elementType.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type])
-      ).asInstanceOf[reflect.AppliedType]
+      List(elementType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
+      ).asInstanceOf[quotes.reflect.AppliedType]
 
   def select(i: Int): RType = 
     if i == 0 then

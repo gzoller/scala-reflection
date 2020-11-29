@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package info
 
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import impl._
 import java.nio.ByteBuffer
 
@@ -43,17 +43,17 @@ case class TraitInfo protected[scala_reflection](
       paramSymbols
       )
 
-  override def toType(reflect: Reflection): reflect.TypeRepr = 
-    import reflect.{_, given}
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+    import quotes.reflect.{_, given}
     if actualParameterTypes.nonEmpty then
-      val args = actualParameterTypes.map(_.toType(reflect).asInstanceOf[dotty.tools.dotc.core.Types.Type]).toList
-      implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+      val args = actualParameterTypes.map(_.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type]).toList
+      implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
       dotty.tools.dotc.core.Types.AppliedType(
         TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
         args
-        ).asInstanceOf[reflect.AppliedType]
+        ).asInstanceOf[quotes.reflect.AppliedType]
     else
-      reflect.TypeRepr.typeConstructorOf(infoClass)
+      quotes.reflect.TypeRepr.typeConstructorOf(infoClass)
       
   def select(i: Int): RType = 
     if i >= 0 && i <= actualParameterTypes.size-1 then

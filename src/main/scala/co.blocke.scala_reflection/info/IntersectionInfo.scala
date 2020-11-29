@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package info
 
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import java.nio.ByteBuffer
 import impl._
 
@@ -33,9 +33,9 @@ case class IntersectionInfo protected[scala_reflection](
       case e => e
     } 
 
-    override def toType(reflect: Reflection): reflect.TypeRepr = 
-      import reflect.{_, given}
-      AndType(leftType.toType(reflect), rightType.toType(reflect))  
+    override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
+      import quotes.reflect.{_, given}
+      AndType(leftType.toType(quotes), rightType.toType(quotes))  
 
     def _copy( left: RType, right: RType ) = this.copy(_leftType = left, _rightType = right)
     

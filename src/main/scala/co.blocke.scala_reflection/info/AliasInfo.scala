@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package info
 
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import java.nio.ByteBuffer
 import impl._
 
@@ -21,7 +21,7 @@ case class AliasInfo protected[scala_reflection] (
     val fullName = name
 
     lazy val infoClass = unwrappedType.infoClass
-    override def toType(reflect: Reflection): reflect.TypeRepr = unwrappedType.toType(reflect)
+    override def toType(quotes: Quotes): quotes.reflect.TypeRepr = unwrappedType.toType(quotes)
 
     def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
       val newTab = {if supressIndent then tab else tab+1}

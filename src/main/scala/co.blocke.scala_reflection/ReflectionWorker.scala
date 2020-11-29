@@ -10,6 +10,7 @@ import dotty.tools.dotc.core.Names._
 import dotty.tools.dotc.plugins.{PluginPhase, StandardPlugin}
 import dotty.tools.dotc.transform.{Pickler,Flatten}
 import dotty.tools.dotc.quoted._
+import scala.quoted.runtime.impl.QuotesImpl
 import info._
 
 
@@ -35,14 +36,14 @@ class ReflectionWorkerPhase extends PluginPhase {
   override def transformTypeDef(tree: TypeDef)(implicit ctx: Context): Tree = 
     if tree.isClassDef && !tree.rhs.symbol.isStatic then  // only look at classes & traits, not objects
       // Reflect on the type (generate an RType), then serialize to string and add the S3Reflection annotation to the class.
-      val reflect = QuoteContextImpl.apply().asInstanceOf[QuoteContextImpl].reflect
+      val quotes = QuotesImpl.apply()
 
-      RType.ofMethod = Some(new RTypeOfWithPlugin(reflect))
+      RType.ofMethod = Some(new RTypeOfWithPlugin(quotes))
 
-      val unpackedType = tree.tpe.classSymbol.appliedRef.asInstanceOf[reflect.TypeRepr]
-      val reflected = RType.unwindType(reflect)(unpackedType,false)
+      val unpackedType = tree.tpe.classSymbol.appliedRef.asInstanceOf[quotes.reflect.TypeRepr]
+      val reflected = RType.unwindType(quotes)(unpackedType,false)
       val s3ReflectionClassSymbol = getClassIfDefined("co.blocke.scala_reflection.S3Reflection")
-      val annoArg = NamedArg("rtype".toTermName, Literal(reflect.Constant.String( reflected.serialize )))
+      val annoArg = NamedArg("rtype".toTermName, Literal(quotes.reflect.Constant.String( reflected.serialize ).asInstanceOf[dotty.tools.dotc.core.Constants.Constant]))
       tree.symbol.addAnnotation(Annotation.apply(s3ReflectionClassSymbol.asInstanceOf[ClassSymbol], annoArg) )
     tree
 }

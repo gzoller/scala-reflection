@@ -3,6 +3,7 @@ package info
 
 import impl._
 import java.nio.ByteBuffer
+import scala.quoted.Quotes
 
 trait ClassInfo extends RType with AppliedRType: 
   lazy val fields:                Array[FieldInfo]
@@ -44,20 +45,20 @@ trait ScalaClassInfoBase extends ClassInfo:
   lazy val infoClass: Class[_] = Class.forName(name)
   lazy val typeParams = infoClass.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
-  override def toType(reflect: scala.tasty.Reflection): reflect.TypeRepr = 
-    import reflect.{_, given}
+  override def toType(quotes: Quotes): quotes.reflect.TypeRepr =  
+    import quotes.reflect.{_, given}
     val actualParameterTypes = fields.collect{
-      case f if f.originalSymbol.isDefined => f.originalSymbol.get -> f.fieldType.toType(reflect).asInstanceOf[TypeRepr]
+      case f if f.originalSymbol.isDefined => f.originalSymbol.get -> f.fieldType.toType(quotes).asInstanceOf[TypeRepr]
     }.toMap
     if typeParams.nonEmpty then
-      val args = typeParams.map(sym => actualParameterTypes.getOrElse(sym,PrimitiveType.Scala_Any.toType(reflect).asInstanceOf[TypeRepr])).toList
-      implicit val stuff = reflect.rootContext.asInstanceOf[dotty.tools.dotc.core.Contexts.Context] 
+      val args = typeParams.map(sym => actualParameterTypes.getOrElse(sym,PrimitiveType.Scala_Any.toType(quotes).asInstanceOf[TypeRepr])).toList
+      implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx
       dotty.tools.dotc.core.Types.AppliedType(
         TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
         args.map(_.asInstanceOf[dotty.tools.dotc.core.Types.Type])
-        ).asInstanceOf[reflect.AppliedType]
+        ).asInstanceOf[quotes.reflect.AppliedType]
     else
-      reflect.TypeRepr.typeConstructorOf(infoClass)
+      quotes.reflect.TypeRepr.typeConstructorOf(infoClass)
  
   // Fields may be self-referencing, so we need to unwind this...
   lazy val fields = _fields.map( f => f.fieldType match {

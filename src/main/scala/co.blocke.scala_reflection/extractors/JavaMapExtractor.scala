@@ -4,33 +4,33 @@ package extractors
 import impl._
 import Clazzes._
 import info._ 
-import scala.tasty.Reflection
+import scala.quoted.Quotes
 import scala.util.Try
 
 case class JavaMapExtractor() extends TypeInfoExtractor[JavaMapInfo]:
 
-  def matches(reflect: Reflection)(symbol: reflect.Symbol): Boolean = 
+  def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean = 
     Try( Class.forName(symbol.fullName) <:< JMapClazz ).toOption.getOrElse(false)
 
-  def extractInfo(reflect: Reflection)(
-    t: reflect.TypeRepr, 
-    tob: List[reflect.TypeRepr], 
-    symbol: reflect.Symbol): RType = 
+  def extractInfo(quotes: Quotes)(
+    t: quotes.reflect.TypeRepr, 
+    tob: List[quotes.reflect.TypeRepr], 
+    symbol: quotes.reflect.Symbol): RType = 
       val clazz = Class.forName(symbol.fullName)
 
       val leftType = tob(0)
       val leftRType = 
-        if leftType.typeSymbol.flags.is(reflect.Flags.Param) then
+        if leftType.typeSymbol.flags.is(quotes.reflect.Flags.Param) then
           TypeSymbolInfo(tob(0).typeSymbol.name)
         else
-          RType.unwindType(reflect)(tob(0))
+          RType.unwindType(quotes)(tob(0))
   
       val rightType = tob(1)
       val rightRType = 
-        if rightType.typeSymbol.flags.is(reflect.Flags.Param) then
+        if rightType.typeSymbol.flags.is(quotes.reflect.Flags.Param) then
           TypeSymbolInfo(tob(1).typeSymbol.name)
         else
-          RType.unwindType(reflect)(tob(1))
+          RType.unwindType(quotes)(tob(1))
   
       JavaMapInfo(
         clazz.getName,
