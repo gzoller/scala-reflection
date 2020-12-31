@@ -11,15 +11,15 @@ import scala.util.Try
 inline def annoSymToString(quotes: Quotes)( terms: List[quotes.reflect.Term] ): Map[String,String] =
   import quotes.reflect._
   terms.collect {
-    case NamedArg(argName, Literal(Constant.Boolean(argValue))) => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Byte(argValue)))    => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Short(argValue)))   => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Char(argValue)))    => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Int(argValue)))     => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Long(argValue)))    => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Float(argValue)))   => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.Double(argValue)))  => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(Constant.String(argValue)))  => (argName.toString -> argValue)
+    case NamedArg(argName, Literal(BooleanConstant(argValue))) => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(ByteConstant(argValue)))    => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(ShortConstant(argValue)))   => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(CharConstant(argValue)))    => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(IntConstant(argValue)))     => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(LongConstant(argValue)))    => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(FloatConstant(argValue)))   => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(DoubleConstant(argValue)))  => (argName.toString -> argValue.toString)
+    case NamedArg(argName, Literal(StringConstant(argValue)))  => (argName.toString -> argValue)
   }.toMap
 
 
@@ -90,7 +90,7 @@ object TastyReflection extends NonCaseClassReflection:
               TypeSymbolInfo(typeRef.name)  // TypeSymbols Foo[T] have typeRef of Any
             case cs if is2xEnumeration => 
               val enumerationClassSymbol = typeRef.qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass
-              ScalaEnumerationInfo(enumerationClassSymbol.fullName.dropRight(1), enumerationClassSymbol.fields.map( _.name ).toArray)  // get the values of the Enumeration
+              ScalaEnumerationInfo(enumerationClassSymbol.fullName.dropRight(1), enumerationClassSymbol.declaredFields.map( _.name ).toArray)  // get the values of the Enumeration
             case cs => 
               // Primitive type test:
               PrimitiveType.values.find(_.name == className).getOrElse{
@@ -156,7 +156,9 @@ object TastyReflection extends NonCaseClassReflection:
       if symbol.flags.is(quotes.reflect.Flags.Sealed) then
         val kidsRTypes = symbol.children.map{ c => 
           c.tree match {
-            case b: Bind => ObjectInfo(b.pattern.symbol.fullName)  // sealed object implementation
+            case vd: ValDef =>
+              RType.unwindType(quotes)(vd.tpt.tpe)
+              ObjectInfo(vd.symbol.fullName)  // sealed object implementation
             case _ =>   // sealed case class implementation
               val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
               RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
@@ -183,7 +185,7 @@ object TastyReflection extends NonCaseClassReflection:
             }
             val paramMap: Map[TypeSymbol, RType] = typeSymbols.zip(actualParamTypes).toMap
 
-            val traitFields = symbol.fields.zipWithIndex.map { (f,index) =>
+            val traitFields = symbol.declaredFields.zipWithIndex.map { (f,index) =>
               val fieldType = 
                 // A lot of complex messiness to sew down the mapped type:  Foo[T]( val x: List[T]) where we call Foo[W] from a higher class,
                 // so T -> W.  We need resolveTypeParams to sew down for deeper nested types like List.  Ugh.
@@ -231,7 +233,7 @@ object TastyReflection extends NonCaseClassReflection:
 
     else if symbol.flags.is(quotes.reflect.Flags.Enum) then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
       val enumClassSymbol = typeRef.classSymbol.get
-      enumClassSymbol.companionClass.methods // <-- This shouldn't "do" anything!  For some reason it is needed or Enums test explodes.
+      enumClassSymbol.companionClass.declaredMethods // <-- This shouldn't "do" anything!  For some reason it is needed or Enums test explodes.
       val enumValues = enumClassSymbol.children.map(_.name)
       ScalaEnumInfo(symbol.fullName, enumValues.toArray)
 
@@ -248,7 +250,7 @@ object TastyReflection extends NonCaseClassReflection:
       val classDef = symbol.tree.asInstanceOf[ClassDef]
 
       // Class annotations -> annotation map
-      val annoSymbol = symbol.annots.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
+      val annoSymbol = symbol.annotations.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
       val classAnnos = annoSymbol.map{ a => 
         val quotes.reflect.Apply(_, params) = a
         val annoName = a.symbol.signature.resultSig
@@ -270,7 +272,7 @@ object TastyReflection extends NonCaseClassReflection:
       // Get any case field default value accessor method names (map by field index)
       val fieldDefaultMethods = symbol.companionClass match {
         case dotty.tools.dotc.core.Symbols.NoSymbol => Map.empty[Int, (String,String)]
-        case s: Symbol => symbol.companionClass.methods.collect {
+        case s: Symbol => symbol.companionClass.declaredMethods.collect {
           case DefaultMethod(defaultIndex) => defaultIndex-1 -> (className+"$", ("$lessinit$greater$default$"+defaultIndex))
         }.toMap
       }
@@ -347,7 +349,7 @@ object TastyReflection extends NonCaseClassReflection:
         
         // ensure all constructur fields are vals
         val constructorParams = classDef.constructor.paramss.head
-        val caseFields = symbol.fields.filter( _.flags.is(Flags.ParamAccessor))
+        val caseFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))
           .zipWithIndex
           .map{ (oneField, idx) => 
             if oneField.flags.is(Flags.PrivateLocal) then
@@ -389,7 +391,7 @@ object TastyReflection extends NonCaseClassReflection:
     import quotes.reflect.{_, given}
     val fieldAnnos = {
       val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
-      baseAnnos ++ valDef.symbol.annots.map{ a => 
+      baseAnnos ++ valDef.symbol.annotations.map{ a => 
         val quotes.reflect.Apply(_, params) = a
         val annoName = a.symbol.signature.resultSig
         (annoName, annoSymToString(quotes)(params))

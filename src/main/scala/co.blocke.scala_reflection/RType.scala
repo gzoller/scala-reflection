@@ -71,9 +71,10 @@ class RTypeOfNoPlugin() extends RTypeOf:
             tc.inspected
           case _ =>
             // Non-Tasty top-level class (Java, or String-marshalled Class)
-            val fn = (using qctx: Quotes) => 
-              RType.unwindType(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz), false )
+            val fn = (qctx: Quotes) ?=> RType.unwindType(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz), false )
             val reflectedRType = withQuotes(fn)
+            // dotty/staging/src/scala/quoted/staging/staging.scala:35:  def withQuotes[T](thunk: Quotes ?=> T)(using toolbox: Toolbox): T
+            // >>> Expect withQuotes to accept a thunk and return an RType (RType.unwindType returns RType)
             RType.cache.synchronized {
               RType.cache.put(clazz.getName, reflectedRType)
             }
@@ -83,7 +84,7 @@ class RTypeOfNoPlugin() extends RTypeOf:
     )
 
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
-    val fn = (using qctx: Quotes) => TypeLoom.descendParents(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+    val fn = (qctx: Quotes) ?=> TypeLoom.descendParents(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
     withQuotes(fn)
 
 

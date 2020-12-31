@@ -38,7 +38,7 @@ trait NonCaseClassReflection:
           && !s.symbol.flags.is(quotes.reflect.Flags.Protected) 
           && !fieldNames.contains(s.name) 
           && s.symbol.flags.is(quotes.reflect.Flags.Mutable) => 
-            val annoSymbol = s.symbol.annots.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
+            val annoSymbol = s.symbol.annotations.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
             val fieldAnnos = 
               annoSymbol.map{ a => 
                 val quotes.reflect.Apply(_, params) = a
@@ -64,43 +64,16 @@ trait NonCaseClassReflection:
       case _ => Map.empty[String,Map[String, Map[String,String]]]
     }
 
-    // val seen = scala.collection.mutable.Set.empty[Symbol]
-
-    // FIX: Traverse up ALL the parents, until the first found fieldName is discovered... not just the first parent!
-    def upTreeFind(fieldName: String, sym: Symbol): Option[Symbol] = 
-      var foundSymbol: Option[Symbol] = None
-      breakable {
-        symbol.tree.asInstanceOf[ClassDef].parents.foreach{ _ match {
-          case tt: TypeTree => //if !seen.contains(tt.tpe.classSymbol.get) =>
-            // seen += tt.tpe.classSymbol.get
-            tt.tpe.classSymbol.get.field(fieldName) match {
-              case dotty.tools.dotc.core.Symbols.NoSymbol if tt.tpe.classSymbol.get.fullName == "java.lang.Object" => // top of tree 
-              case dotty.tools.dotc.core.Symbols.NoSymbol => upTreeFind(fieldName, tt.tpe.classSymbol.get)
-              case found => 
-                foundSymbol = Some(found)
-                break
-            }
-          case _ =>
-        }}
-      }
-      foundSymbol
-
-
     // Include inherited methods (var & def), including inherited!
     // Produces (val <field>, method <field>_=)
-    val getterSetter: List[(Symbol,Symbol)] = symbol.methods.filter(_.name.endsWith("_=")).map{ setter => 
+    val getterSetter: List[(Symbol,Symbol)] = symbol.memberMethods.filter(_.name.endsWith("_=")).map{ setter => 
       // Trying to get the setter... which could be a val (field) if declared is a var, or it could be a method 
       // in the case of user-written getter/setter... OR it could be defined in the superclass
-      symbol.field(setter.name.dropRight(2)) match {
+      symbol.memberField(setter.name.dropRight(2)) match {
         case dotty.tools.dotc.core.Symbols.NoSymbol => 
-          symbol.method(setter.name.dropRight(2)) match {
+          symbol.memberMethod(setter.name.dropRight(2)) match {
             case Nil => 
-              upTreeFind(setter.name.dropRight(2), symbol) match {
-                case Some(getter) => 
-                  (getter, setter)
-                case None =>
-                  throw new ReflectException(s"Can't find field getter ${setter.name.dropRight(2)} in class ${symbol.fullName} or its superclass(es).")
-              }
+              throw new ReflectException(s"Can't find field getter ${setter.name.dropRight(2)} in class ${symbol.fullName} or its superclass(es).")
             case getter => 
               (getter.head, setter)
           }
@@ -110,7 +83,7 @@ trait NonCaseClassReflection:
     }
 
     val knownAnnos = baseAnnos ++ getterSetter.map{ (fGet, fSet) =>
-      val both = fGet.annots ++ fSet.annots
+      val both = fGet.annotations ++ fSet.annotations
       val annoMap = both.map{ a => 
         val quotes.reflect.Apply(_, params) = a
         val annoName = a.symbol.signature.resultSig
@@ -157,7 +130,7 @@ trait NonCaseClassReflection:
         index,
         fieldName,
         rtype,
-        knownAnnos(fieldName),
+        knownAnnos(fieldName).toMap,
         None, // we don't know how to get the default values (initial set values) of non-constructor fields at present
         originalTypeSymbol.map(_.asInstanceOf[TypeSymbol]),
         true
