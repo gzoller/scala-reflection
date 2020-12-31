@@ -3,26 +3,26 @@ package co.blocke.scala_reflection
 import quoted._
 import java.io._
 import java.util._
-import Liftable._
+import ToExpr._
 
 import info._
 import impl.SelfRefRType
 
-given Liftable[TypeSymbol] {
-  def toExpr(t: TypeSymbol) = '{ ${Expr(t.asInstanceOf[String])}.asInstanceOf[TypeSymbol] }
+given ToExpr[TypeSymbol] with {
+  def apply(t: TypeSymbol)(using Quotes) = '{ ${Expr(t.asInstanceOf[String])}.asInstanceOf[TypeSymbol] }
 }
 
-given Liftable[RType] {
-  def toExpr(x: RType) =
+given ToExpr[RType] with {
+  def apply(x: RType)(using Quotes) =
     '{ RType.deserialize(${Expr(x.serialize) }).asInstanceOf[RType] }
 }
 
-given Liftable[TypeMemberInfo] {
-  def toExpr(x: TypeMemberInfo) =
+given ToExpr[TypeMemberInfo] with {
+  def apply(x: TypeMemberInfo)(using Quotes) =
     '{ new TypeMemberInfo(${Expr(x.name)}, ${Expr(x.typeSymbol)}, ${ Expr(x.memberType) } ) }
 }
 
-given Liftable[SelfRefRType] {
-  def toExpr(x: SelfRefRType) =
+given ToExpr[SelfRefRType] with {
+  def apply(x: SelfRefRType)(using Quotes) =
     '{ new SelfRefRType(${Expr(x.name)}) }
 }
