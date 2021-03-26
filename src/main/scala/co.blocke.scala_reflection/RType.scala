@@ -6,6 +6,7 @@ import impl._
 import info._
 import java.io._
 import java.nio.ByteBuffer
+import scala.tasty.inspector.TastyInspector
 
 /** A materializable type */
 trait RType extends Serializable:
@@ -58,7 +59,7 @@ trait RTypeOf:
 
 class RTypeOfNoPlugin() extends RTypeOf:
   import scala.quoted.staging._ 
-  given Toolbox = Toolbox.make(getClass.getClassLoader)
+  given Compiler = Compiler.make(getClass.getClassLoader)
 
   def of(clazz: Class[_]): RType = 
     RType.cache.getOrElse(clazz.getName,
@@ -67,7 +68,7 @@ class RTypeOfNoPlugin() extends RTypeOf:
         val tastyPath = Option(clazz.getProtectionDomain.getCodeSource).map(src => src.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty")
         tastyPath match {
           case Some(path) if ( new java.io.File(path) ).exists =>
-            tc.inspectTastyFiles(List(path))
+            TastyInspector.inspectTastyFiles(List(path))(tc)
             tc.inspected
           case _ =>
             // Non-Tasty top-level class (Java, or String-marshalled Class)
@@ -95,7 +96,7 @@ class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
         val tc = new TastyInspection(clazz)
         val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty"
         if ( new java.io.File(tastyPath) ).exists then
-          tc.inspectTastyFiles(List(tastyPath))
+          TastyInspector.inspectTastyFiles(List(tastyPath))(tc)
           tc.inspected
         else
           // Non-Tasty top-level class (Java, or String-marshalled Class)
