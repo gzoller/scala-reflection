@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 package impl
 
-import info._
-import scala.quoted._
-import scala.reflect._
+import info.*
+import scala.quoted.*
+import scala.reflect.*
 import scala.quoted.Quotes
 import scala.util.Try
 
@@ -311,23 +311,30 @@ object TastyReflection extends NonCaseClassReflection:
       }
       val paramMap: Map[TypeSymbol, RType] = typeSymbols.zip(actualParamTypes).toMap
 
+      val constructorParams =  // Annoying "ism"... different param order dep on whether class is parameterized or not!
+        if classDef.constructor.paramss.tail == Nil then
+          classDef.constructor.paramss.head.params
+        else
+          classDef.constructor.paramss.tail.head.params
+
       if symbol.flags.is(quotes.reflect.Flags.Case) then
 
         // === Case Classes ===
-        val caseFields = classDef.constructor.paramss.head.zipWithIndex.map{ (valDef, idx) => 
+        val caseFields = constructorParams.zipWithIndex.map{ (definition, idx) => 
+          val valDef = definition.asInstanceOf[ValDef]
           val fieldType = scala.util.Try{ 
             if resolveTypeSyms then
               RType.unwindType(quotes)(typeRef.memberType(symbol.caseFields(idx))) match {
                 case NONE  => 
-                  TypeSymbolInfo(valDef.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name)
+                  TypeSymbolInfo(valDef.tpt.tpe.typeSymbol.name)
                 case other => other
               }
-            else if valDef.asInstanceOf[ValDef].tpt.tpe.typeSymbol.flags.is(Flags.Param) then
-              TypeSymbolInfo(valDef.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name)
+            else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then
+              TypeSymbolInfo(valDef.tpt.tpe.typeSymbol.name)
             else
               RType.unwindType(quotes)(valDef.tpt.tpe, false)
           }.toOption.getOrElse{
-            TypeSymbolInfo(valDef.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name)
+            TypeSymbolInfo(valDef.tpt.tpe.typeSymbol.name)
           }
           reflectOnField(quotes)(fieldType, valDef, idx, dad, fieldDefaultMethods).resolveTypeParams( paramMap )
         }      
@@ -348,7 +355,6 @@ object TastyReflection extends NonCaseClassReflection:
         // === Non-Case Classes ===
         
         // ensure all constructur fields are vals
-        val constructorParams = classDef.constructor.paramss.head
         val caseFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))
           .zipWithIndex
           .map{ (oneField, idx) => 
@@ -356,7 +362,7 @@ object TastyReflection extends NonCaseClassReflection:
               throw new ReflectException(s"Class [${symbol.fullName}]: Non-case class constructor arguments must all be 'val'")
             else
               val fieldType = RType.unwindType(quotes)(typeRef.memberType(oneField))
-              reflectOnField(quotes)(fieldType, constructorParams(idx), idx, dad, fieldDefaultMethods)
+              reflectOnField(quotes)(fieldType, constructorParams(idx).asInstanceOf[ValDef], idx, dad, fieldDefaultMethods)
           }
 
         inspectNonCaseClass(quotes)(

@@ -1,6 +1,20 @@
+inThisBuild(List(
+  organization := "co.blocke",
+  homepage := Some(url("https://github.com/gzoller/scala-reflection")),
+  licenses := List("MIT" -> url("https://opensource.org/licenses/MIT")),
+  developers := List(
+    Developer(
+      "gzoller",
+      "Greg Zoller",
+      "gzoller@outlook.com",
+      url("http://www.blocke.co")
+    )
+  )
+))
+
 name := "scala-reflection"
 organization in ThisBuild := "co.blocke"
-scalaVersion := "3.0.0-M3"
+scalaVersion := "3.0.0-RC1"
 
 lazy val root = project
   .in(file("."))
@@ -17,16 +31,17 @@ lazy val root = project
       "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
       "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
       "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
-      "org.scalameta"  %% "munit"                  % "0.7.20" % Test
+      "org.scalameta"  %% "munit"                  % "0.7.22" % Test
     )
   )
 
 //==========================
 // Settings
 //==========================
-lazy val settings = 
-  commonSettings ++
-  publishSettings
+lazy val settings = Seq(
+  scalacOptions ++= compilerOptions,
+  testFrameworks += new TestFramework("munit.Framework")
+)
 
 lazy val compilerOptions = Seq(
   "-unchecked",
@@ -35,19 +50,4 @@ lazy val compilerOptions = Seq(
   "-deprecation",
   "-encoding",
   "utf8"
-)
-
-lazy val commonSettings = Seq(
-  scalacOptions ++= compilerOptions,
-  resolvers += Resolver.jcenterRepo,
-  testFrameworks += new TestFramework("munit.Framework")
-)
-
-lazy val publishSettings = Seq(
-  publishMavenStyle := true,
-  bintrayOrganization := Some("blocke"),
-  bintrayReleaseOnPublish in ThisBuild := true,
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  bintrayRepository := "releases",
-  bintrayPackageLabels := Seq("scala", "dotty", "reflection")
 )

@@ -1,8 +1,8 @@
 package co.blocke.scala_reflection
 
-import munit._
-import info._
-import impl.PrimitiveType._
+import munit.*
+import info.*
+import impl.PrimitiveType.*
 
 class Collections extends munit.FunSuite:
 

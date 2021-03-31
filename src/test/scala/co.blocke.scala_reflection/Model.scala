@@ -1,6 +1,6 @@
 package co.blocke.scala_reflection
 
-import co.blocke.reflect._
+import co.blocke.reflect.*
 import scala.util.Try
 
 // Basic Tasty class
@@ -293,11 +293,11 @@ case class Drawer[T]( id: Int, nextInChain: Option[Drawer[T]], thing: T)
 
 // Implicit Method adds.. (extension methods)
 import info._
-extension [T](s: ScalaCaseClassInfo)
-  def constructWith(args: List[Object]): T = s.infoClass.getConstructors.head.newInstance(args:_*).asInstanceOf[T]
+extension (s: ScalaCaseClassInfo)
+  def constructWith[T](args: List[Object]): T = s.infoClass.getConstructors.head.newInstance(args:_*).asInstanceOf[T]
 
-extension [T](s: JavaClassInfo)
-  def constructWith(args: List[Object]): T = 
+extension (s: JavaClassInfo)
+  def constructWith[T](args: List[Object]): T = 
     val asBuilt = s.infoClass.getConstructors.head.newInstance().asInstanceOf[T]
     s.fields.map(f => f.asInstanceOf[JavaFieldInfo].valueSetter.invoke(asBuilt, args(f.index)))
     asBuilt

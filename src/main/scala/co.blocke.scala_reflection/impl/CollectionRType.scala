@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package impl
 
-import info._
+import info.*
 import scala.quoted.Quotes
 
 /** Marker trait for all Scala/Java collections */
