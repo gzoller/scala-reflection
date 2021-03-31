@@ -1,12 +1,12 @@
 package co.blocke.scala_reflection
 package impl
 
-import info._
-import extractors._
-import java.lang.reflect.{Type=>JType,_}
+import info.*
+import extractors.*
+import java.lang.reflect.{Type as JType, *}
 import java.lang.annotation.Annotation
 import java.beans.{ Introspector, PropertyDescriptor }
-import Clazzes._
+import Clazzes.*
 
 /** Inspects core Java classes including JavaBeans, basic collections (Map/List/Set/Queue flavors), Optional, and primitive types.
  *  Other "extra" classes, e.g. UUID, woudld be handled by creating & registering a custom TypeInfoExtractor, and would be processed in 

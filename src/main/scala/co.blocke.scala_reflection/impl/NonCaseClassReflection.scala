@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 package impl
 
-import info._
+import info.*
 import scala.quoted.Quotes
-import scala.util.control.Breaks._
+import scala.util.control.Breaks.*
 
 
 trait NonCaseClassReflection:

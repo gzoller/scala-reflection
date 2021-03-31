@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package info
 
-import impl._
+import impl.*
 import java.nio.ByteBuffer
 
 object EitherInfo:

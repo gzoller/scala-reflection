@@ -1,12 +1,12 @@
 package co.blocke.scala_reflection
 package impl
 
-import info._
-import extractors._
-import scala.quoted._
-import scala.reflect._
+import info.*
+import extractors.*
+import scala.quoted.*
+import scala.reflect.*
 import scala.quoted.Quotes
-import scala.tasty.inspector._
+import scala.tasty.inspector.*
 import dotty.tools.dotc.ast.Trees.AppliedTypeTree
   
 /** This class is needed for runtime inspection--so we can get a Reflection object to pass to unwindType

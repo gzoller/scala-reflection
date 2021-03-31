@@ -3,15 +3,15 @@ package co.blocke.scala_reflection
 import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Constants.Constant
 import dotty.tools.dotc.core.Contexts.Context
-import dotty.tools.dotc.core.Decorators._
-import dotty.tools.dotc.core.Symbols._
-import dotty.tools.dotc.core.Annotations._
-import dotty.tools.dotc.core.Names._
+import dotty.tools.dotc.core.Decorators.*
+import dotty.tools.dotc.core.Symbols.*
+import dotty.tools.dotc.core.Annotations.*
+import dotty.tools.dotc.core.Names.*
 import dotty.tools.dotc.plugins.{PluginPhase, StandardPlugin}
-import dotty.tools.dotc.transform.{Pickler,Flatten}
-import dotty.tools.dotc.quoted._
+import dotty.tools.dotc.transform.Pickler
+import dotty.tools.dotc.quoted.*
 import scala.quoted.runtime.impl.QuotesImpl
-import info._
+import info.*
 
 
 /** Compiler plugin (phase) that will tap into any TypeDefs, and identify any classes being defined.

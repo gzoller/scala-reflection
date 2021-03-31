@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package impl
 
-import Clazzes._
+import Clazzes.*
 import java.nio.ByteBuffer
 
 enum PrimitiveType(val name: String, val _infoClass: Class[_], serialToken: Byte) extends RType:

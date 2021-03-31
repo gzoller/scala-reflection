@@ -1,10 +1,10 @@
 package co.blocke.scala_reflection
 
-import scala.quoted._
+import scala.quoted.*
 import quoted.Quotes
-import impl._
-import info._
-import java.io._
+import impl.*
+import info.*
+import java.io.*
 import java.nio.ByteBuffer
 import scala.tasty.inspector.TastyInspector
 

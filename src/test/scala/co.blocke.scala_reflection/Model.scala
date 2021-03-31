@@ -1,6 +1,6 @@
 package co.blocke.scala_reflection
 
-import co.blocke.reflect._
+import co.blocke.reflect.*
 import scala.util.Try
 
 // Basic Tasty class

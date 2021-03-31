@@ -1,8 +1,8 @@
 package co.blocke.scala_reflection
 package impl
 
-import java.io._
-import java.nio._
+import java.io.*
+import java.nio.*
 import scala.reflect.ClassTag
 import info.{FieldInfo, ScalaFieldInfo, JavaFieldInfo}
 

@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 
-import munit._
+import munit.*
 import co.blocke.reflect.{ClassAnno,FieldAnno}
-import info._
-import impl.PrimitiveType._
+import info.*
+import impl.PrimitiveType.*
 
 
 inline def describe(message: String, color: String = Console.MAGENTA): Unit = println(s"$color$message${Console.RESET}")

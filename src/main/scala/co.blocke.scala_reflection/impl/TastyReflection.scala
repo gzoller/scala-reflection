@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 package impl
 
-import info._
-import scala.quoted._
-import scala.reflect._
+import info.*
+import scala.quoted.*
+import scala.reflect.*
 import scala.quoted.Quotes
 import scala.util.Try
 

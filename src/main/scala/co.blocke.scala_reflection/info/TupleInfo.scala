@@ -3,7 +3,7 @@ package info
 
 import scala.quoted.Quotes
 import java.nio.ByteBuffer
-import impl._
+import impl.*
 
 
 object TupleInfo:

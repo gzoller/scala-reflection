@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 package info
 
-import java.lang.reflect._
+import java.lang.reflect.*
 import java.util.Optional
-import impl._
+import impl.*
 import scala.quoted.Quotes
 import java.nio.ByteBuffer
 

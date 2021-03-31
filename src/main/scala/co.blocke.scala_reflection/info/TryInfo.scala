@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package info
 
 import scala.util.Try
-import impl._
+import impl.*
 import scala.quoted.Quotes
 import java.nio.ByteBuffer
 
