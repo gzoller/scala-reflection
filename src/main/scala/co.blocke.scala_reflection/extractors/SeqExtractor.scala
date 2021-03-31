@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 package extractors
 
-import impl._
-import Clazzes._
-import info._ 
+import impl.*
+import Clazzes.*
+import info.* 
 import scala.quoted.Quotes
 
 case class SeqExtractor() extends TypeInfoExtractor[SeqLikeInfo]:

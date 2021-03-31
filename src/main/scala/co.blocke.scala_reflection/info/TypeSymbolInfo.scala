@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package info
 
 import java.nio.ByteBuffer
-import impl._
+import impl.*
 
 /** RType for unassigned type symbol, e.g. Foo[T]
  */

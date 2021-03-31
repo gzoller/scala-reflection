@@ -1,6 +1,6 @@
 package co.blocke.scala_reflection
 
-import impl._
+import impl.*
 // import scala.runtime.Statics.releaseFence
 
 /** Mnemonic symbol for a type--typically a paramaterized type, e.g. Foo[T], where T is the symbol */

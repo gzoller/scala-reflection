@@ -1,9 +1,9 @@
 package co.blocke.scala_reflection
 
-import quoted._
-import java.io._
-import java.util._
-import ToExpr._
+import quoted.*
+import java.io.*
+import java.util.*
+import ToExpr.*
 
 import info._
 import impl.SelfRefRType

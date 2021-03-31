@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package info
 
 import scala.quoted.Quotes
-import impl._
+import impl.*
 import java.nio.ByteBuffer
 
 
