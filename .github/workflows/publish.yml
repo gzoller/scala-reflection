@@ -11,6 +11,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: openjdk@1.13
         if: github.event.ref_type == 'tag'
       - uses: olafurpg/setup-gpg@v3
         if: github.event.ref_type == 'tag'
