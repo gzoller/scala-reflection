@@ -13,8 +13,9 @@ inThisBuild(List(
 ))
 
 name := "scala-reflection"
-organization in ThisBuild := "co.blocke"
-scalaVersion := "3.0.0-RC3"
+//organization in ThisBuild := "co.blocke"
+ThisBuild / organization := "co.blocke"
+scalaVersion := "3.0.0"
 
 lazy val root = project
   .in(file("."))
@@ -25,7 +26,8 @@ lazy val root = project
       (baseDirectory.value / "plugin.properties") -> "plugin.properties"
     },
     doc := null,  // disable dottydoc for now
-    sources in (Compile, doc) := Seq(),
+    Compile / doc / sources := Seq(),
+    //sources in (Compile, doc) := Seq(),
     Test / parallelExecution := false,
     libraryDependencies ++= Seq(
       "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,

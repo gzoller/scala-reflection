@@ -1,14 +1,15 @@
 # Scala Reflection
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT) [![bintray](https://api.bintray.com/packages/blocke/releases/dotty-reflection/images/download.svg)](https://bintray.com/blocke/releases/scala-reflection/_latestVersion)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.0.0/jar)
 
-Scala 3 introduced many exciting new language features, and broke one old one.  Scala 2's runtime reflection has been eliminated in favor of using compile-time macros to reflect on classes. This approach is a mixed blessing.  If the type you want to reflect on is known at compile-time then performance of this new mechanism is very fast, however if you only know the reflected type at run-time you're basically out of luck.  Well... not entirely out of luck.  Scala 3 offers something called Tasty Inspection that can reflect on a run-type type but at a severe performance penalty, as this approach involves file IO to read your class' .tasty file.  Tasty Inspection works, but it is *orders of magnitude slower* than Scala 2 run-time reflection.
+Scala 3 introduced many exciting new language features, and broke one old one.  Scala 2's runtime reflection has been eliminated in favor of using compile-time macros to reflect on classes. This approach is a mixed blessing.  If the type you want to reflect on is known at compile-time then performance of this new mechanism is very fast, however if you only know the reflected type at run-time you're basically out of luck.  Well... not entirely out of luck.  Scala 3 offers something called Tasty Inspection that can reflect on a run-time type but at a severe performance penalty, as this approach involves file IO to read your class' .tasty file.  Tasty Inspection works, but it is *orders of magnitude slower* than Scala 2 run-time reflection.
  
 The scala-reflection project seeks to accomplish two goals:
 
 * Make Scala 3 reflection a little more approachable by exposing higher-level abstractions for reflected things, vs using macros to dive through Scala 3 internals
 
-* Allow for a true runtime reflection capability
+* Allow for a true, performant, runtime reflection capability
 
 That second goal, runtime reflection, poses a unique challenge. Just how do you provide a runtime reflection ability in a language that doesn't have that facility? How, indeed! 
 
@@ -24,7 +25,7 @@ The solution offered by this library is to provide a compiler plugin for your co
 |With nested case class and non-case class (inverted)|0.234s|0.005s|
 |InTermsOf deep type substitution|0.239s|0.013s|
 
-Everything will still work fine if you elect not to use the plugin, or encounter classes that weren't compiled using the plugin. Performance will just be slower the first time a class is reflected upon. (The library caches, so subsequent reflection on an already-seen class is 1-2ms.). You can see from this chart that for these results the compiler plug-in is offering more than an order of magnitude improvement.
+Everything will still work fine if you elect not to use the plugin, or if you encounter classes that weren't compiled using the plugin. Performance will just be slower the first time a class is reflected upon. (The library caches, so subsequent reflection on an already-seen class is 1-2ms.). You can see from this chart that for these results the compiler plug-in is offering more than an order of magnitude improvement.
 
 ## Configuration
 In your build.sbt file be sure you've set co.blocke's releases repo in bintray as a resolver and add the current version of the library to libraryDependences:
@@ -33,7 +34,7 @@ In your build.sbt file be sure you've set co.blocke's releases repo in bintray a
 libraryDependencies += "co.blocke" %% "scala-reflection" % CURRENT_VERSION
 ```
 
-(CURRENT_VERSION value can be taken from the Download badge in this github repo.)
+(CURRENT_VERSION value can be taken from the 'maven central' badge in this github repo.)
 
 To use the compiler plugin mode (recommended) add this to your project's build.sbt:
 ```scala
@@ -165,7 +166,7 @@ See unit tests for detailed examples of usage.
 
 * No support for parameters in Intersection or Union types (```val t: X|Y``` or ```val u: X&Y```). This is because union/intersection types don't appear to be implemented as full classes in Scala and we haven't yet figured out this would work in scala-reflection.
 
-* The entire serialized RType tree (incl. any nested RTypes) must not exceed 64K bytes. This is so that it will fit into a Java Annotation.  (If this becomes a frequent show-stopper, there may be a way to extend this limitation, but we have no desire to prematurely over-engineer.  Until we learn otherwise, 64K seems a reasonable amount.)
+* The entire serialized RType tree (incl. any nested RTypes) must not exceed 64K bytes. This is so that it will fit into a JVM Annotation.  (If this becomes a frequent show-stopper, there may be a way to extend this limitation, but we have no desire to prematurely over-engineer.  Until we learn otherwise, 64K seems a reasonable amount.)
 
 
 ## Acknowledgements
@@ -180,5 +181,6 @@ Nicolas Stucki (@nicolasstucki)
 
 ## Release Notes:
 
+* 1.0.0 - First GA release
 * 1.0.0-RC2 - Match compatibility with Scala 3 RC2
 * 1.0.0-M2 - Initial release for Scala 3.0.0-M2
