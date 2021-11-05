@@ -18,3 +18,4 @@ tags
 wip/
 .dotty-ide*
 _site/
+.bsp/sbt.json
