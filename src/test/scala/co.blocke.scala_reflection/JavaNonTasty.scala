@@ -8,7 +8,6 @@ import impl.PrimitiveType.*
 
 class JavaNonTasty extends munit.FunSuite:
 
-/*
   test("basic Java collections") {
     val result = RType.of[JColl]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.JColl):
@@ -151,7 +150,6 @@ class JavaNonTasty extends munit.FunSuite:
     assert( r.asInstanceOf[java.lang.Object] == "empty" && r.getClass.getName == "java.lang.String" )
     assert( s.asInstanceOf[java.lang.Number].intValue == 456 && s.getClass.getName == "java.lang.Integer" )
   }
-  */
 
   test("Detect parameterized Java class") {
     val wp = Class.forName("co.blocke.reflect.ParamAnno")
@@ -167,8 +165,7 @@ class JavaNonTasty extends munit.FunSuite:
     |   annotations: Map(co.blocke.reflect.ClassAnno -> Map(name -> Foom))
     |""".stripMargin)
   }
-
-  /*
+  
   test("Java collection types") {
     val result = RType.of[co.blocke.reflect.JavaCollections]
     assertEquals( result.show(), """JavaClassInfo(co.blocke.reflect.JavaCollections):
@@ -211,4 +208,3 @@ class JavaNonTasty extends munit.FunSuite:
     |            (0) jThing: java.lang.Integer
     |""".stripMargin)
   }
-*/
