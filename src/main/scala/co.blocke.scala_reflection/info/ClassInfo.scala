@@ -42,7 +42,19 @@ trait ScalaClassInfoBase extends ClassInfo:
   lazy val typeMembers = _typeMembers
   lazy val annotations = _annotations
   lazy val mixins = _mixins
-  lazy val infoClass: Class[_] = Class.forName(name)
+  lazy val infoClass: Class[_] = {
+    try {
+      Class.forName(name)
+    } catch {
+      case cnfe: ClassNotFoundException => {
+        if (name.contains("$.")) {
+          Class.forName(name.replace("$.", "$"))
+        } else {
+          throw cnfe
+        }
+      }
+    }
+  }
   lazy val typeParams = infoClass.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
   override def toType(quotes: Quotes): quotes.reflect.TypeRepr =  
