@@ -1,6 +1,6 @@
 inThisBuild(List(
-  organization := "co.blocke",
-  homepage := Some(url("https://github.com/gzoller/scala-reflection")),
+  organization := "com.github.pjfanning",
+  homepage := Some(url("https://github.com/pjfanning/scala3-reflection")),
   licenses := List("MIT" -> url("https://opensource.org/licenses/MIT")),
   developers := List(
     Developer(
@@ -12,9 +12,9 @@ inThisBuild(List(
   )
 ))
 
-name := "scala-reflection"
+name := "scala3-reflection"
 //organization in ThisBuild := "co.blocke"
-ThisBuild / organization := "co.blocke"
+ThisBuild / organization := "com.github.pjfanning"
 scalaVersion := "3.0.2"
 
 lazy val root = project
