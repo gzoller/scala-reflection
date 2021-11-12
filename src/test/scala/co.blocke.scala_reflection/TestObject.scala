@@ -12,5 +12,5 @@ class TestObject extends munit.FunSuite:
                                    |   fields:
                                    |      (0)[T] t: scala.Int
                                    |""".stripMargin)
-    assertEquals("co.blocke.scala_reflection.TestObject$GenericTestClass", result.infoClass.getName)
+    assertEquals(result.infoClass.getName, "co.blocke.scala_reflection.TestObject$GenericTestClass")
   }
