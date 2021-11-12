@@ -17,8 +17,6 @@ name := "scala3-reflection"
 ThisBuild / organization := "com.github.pjfanning"
 scalaVersion := "3.0.2"
 
-ThisBuild / version := "1.0.1"
-
 lazy val root = project
   .in(file("."))
   .settings(settings)
