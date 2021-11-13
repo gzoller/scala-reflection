@@ -21,7 +21,7 @@ libraryDependencies += "com.github.pjfanning" %% "scala3-reflection" % "1.0.1"
 For best results, compile all classes you intend to reflect on with this plugin enabled.
 
 ```scala
-addCompilerPlugin("co.blocke" %% "scala-reflection" % "1.0.0")
+addCompilerPlugin("com.github.pjfanning" %% "scala3-reflection" % "1.0.1")
 ```
 
 ## Release Notes:
