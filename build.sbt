@@ -1,3 +1,5 @@
+import sbtghactions.JavaSpec.Distribution.Zulu
+
 inThisBuild(List(
   organization := "com.github.pjfanning",
   homepage := Some(url("https://github.com/pjfanning/scala3-reflection")),
@@ -8,6 +10,12 @@ inThisBuild(List(
       "Greg Zoller",
       "gzoller@outlook.com",
       url("http://www.blocke.co")
+    ),
+    Developer(
+      "pjfanning",
+      "PJ Fanning",
+      "",
+      url("https://github.com/pjfanning")
     )
   )
 ))
@@ -15,7 +23,7 @@ inThisBuild(List(
 name := "scala3-reflection"
 //organization in ThisBuild := "co.blocke"
 ThisBuild / organization := "com.github.pjfanning"
-scalaVersion := "3.0.2"
+ThisBuild / scalaVersion := "3.0.2"
 
 lazy val root = project
   .in(file("."))
@@ -36,6 +44,26 @@ lazy val root = project
       "org.scalameta"  %% "munit"                  % "0.7.29" % Test
     )
   )
+
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"))
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(
+  RefPredicate.Equals(Ref.Branch("main")),
+  RefPredicate.StartsWith(Ref.Tag("v"))
+)
+
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME }}",
+      "CI_SNAPSHOT_RELEASE" -> "+publishSigned"
+    )
+  )
+)
 
 //==========================
 // Settings
