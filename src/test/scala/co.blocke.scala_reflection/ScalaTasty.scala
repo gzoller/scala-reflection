@@ -280,6 +280,22 @@ class ScalaTasty extends munit.FunSuite:
     |""".stripMargin)
   }
 
+  test("non-case class with no constructor params") {
+    val result = RType.of[NoConstructorParams]
+    assertEquals( result.show(), """ScalaClassInfo(co.blocke.scala_reflection.NoConstructorParams):
+                                   |   fields:
+                                   |   non-constructor fields:
+                                   |""".stripMargin)
+  }
+
+  test("non-case defined in and object class with constructor param") {
+    val result = RType.of[ClassExtensions.Mixin]
+    assertEquals( result.show(), """ScalaClassInfo(co.blocke.scala_reflection.ClassExtensions$.Mixin):
+                                   |   fields:
+                                   |   non-constructor fields:
+                                   |""".stripMargin)
+  }
+
   test("Ensure caching (equals) works") {
     val r0 = RType.of[Int]
     val r1 = RType.of[Int]

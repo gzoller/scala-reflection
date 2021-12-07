@@ -354,15 +354,16 @@ object TastyReflection extends NonCaseClassReflection:
       else
         // === Non-Case Classes ===
         
-        // ensure all constructur fields are vals
+        // ensure all constructor fields are vals
         val caseFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))
           .zipWithIndex
-          .map{ (oneField, idx) => 
+          .flatMap{ (oneField, idx) =>
             if oneField.flags.is(Flags.PrivateLocal) then
-              throw new ReflectException(s"Class [${symbol.fullName}]: Non-case class constructor arguments must all be 'val'")
+              None
+              //throw new ReflectException(s"Class [${symbol.fullName}]: Non-case class constructor arguments must all be 'val'")
             else
               val fieldType = RType.unwindType(quotes)(typeRef.memberType(oneField))
-              reflectOnField(quotes)(fieldType, constructorParams(idx).asInstanceOf[ValDef], idx, dad, fieldDefaultMethods)
+              Some(reflectOnField(quotes)(fieldType, constructorParams(idx).asInstanceOf[ValDef], idx, dad, fieldDefaultMethods))
           }
 
         inspectNonCaseClass(quotes)(
