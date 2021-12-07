@@ -58,8 +58,8 @@ ThisBuild / githubWorkflowPublish := Seq(
     env = Map(
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}",
       "CI_SNAPSHOT_RELEASE" -> "+publishSigned"
     )
   )
