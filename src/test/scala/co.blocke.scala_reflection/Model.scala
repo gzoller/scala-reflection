@@ -40,6 +40,9 @@ case class WithMix(id:String) extends SJCapture
 @ClassAnno(name="Foom")
 case class WithAnnotation(@FieldAnno(idx=5) id: String)
 
+@Skip_Reflection
+case class SkipMe(a: Int, b: String)
+
 // Opaque type aliases
 opaque type EMP_ID = Int
 case class Employee(eId: EMP_ID, age: Int)

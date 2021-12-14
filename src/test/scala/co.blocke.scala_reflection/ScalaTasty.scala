@@ -37,6 +37,11 @@ class ScalaTasty extends munit.FunSuite:
     |      (1) stuff: scala.Char
     |""".stripMargin)
   }
+
+  test("Skip_Reflection annotation works") {
+    val result = RType.of[SkipMe]
+    assertEquals( result.show().stripLineEnd, """UnknownInfo(co.blocke.scala_reflection.SkipMe)""")
+  }
   
   test("process mixins") {
     val m = RType.of[WithMix]

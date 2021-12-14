@@ -128,7 +128,8 @@ object TastyReflection extends NonCaseClassReflection:
   def reflectOnClass(quotes: Quotes)(typeRef: quotes.reflect.TypeRef, fullName: String, resolveTypeSyms: Boolean, appliedTob: List[quotes.reflect.TypeRepr] =  Nil): RType = 
     import quotes.reflect.{_, given}
 
-    val className = typeRef.classSymbol.get.fullName
+    // The .replace here "fixes" wrong class name in the case where a class is defined inside an object
+    val className = typeRef.classSymbol.get.fullName.replace("$.","$")
 
     object DefaultMethod {
       val reg = """\$lessinit\$greater\$default\$(\d+)""".r
