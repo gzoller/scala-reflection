@@ -322,3 +322,7 @@ trait Basis[T] {
   val c: T
 }
 case class Thingy[T]( a: Int, b: String, c: T) extends Basis[T]
+
+// Classes inside objects
+object BigObject:
+  case class LittleThing(a: Int)

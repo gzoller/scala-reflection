@@ -290,3 +290,12 @@ class ScalaTasty extends munit.FunSuite:
     assert(r0 == r1)
     assert(r0.equals(r1))
   }
+
+  test("Classes defined inside objects should work") {
+    val result = RType.of[BigObject.LittleThing]
+    assertEquals(result.infoClass.getName(), "co.blocke.scala_reflection.BigObject$LittleThing")
+    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.BigObject$LittleThing):
+     |   fields:
+     |      (0) a: scala.Int
+     |""".stripMargin)
+  }
