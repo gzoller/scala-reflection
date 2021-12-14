@@ -7,12 +7,12 @@ import impl.*
 
 
 trait FieldInfo extends Serializable:
-  val index:                Int
-  val name:                 String
-  val fieldType:            RType
-  val originalSymbol:       Option[TypeSymbol]
-  val annotations:          Map[String,Map[String,String]]
-  lazy val defaultValue:    Option[Object]
+  val index:                     Int
+  val name:                      String
+  val fieldType:                 RType
+  val originalSymbol:            Option[TypeSymbol]
+  val annotations:               Map[String,Map[String,String]]
+  lazy val defaultValue:         Option[Object]
 
   def valueOf[T](target: T): Object
   def reIndex(i: Int): FieldInfo
@@ -21,10 +21,10 @@ trait FieldInfo extends Serializable:
 
   def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
     val newTab = {if supressIndent then tab else tab+1}
-    {if(!supressIndent) tabs(tab) else ""} 
+    {if(!supressIndent) tabs(tab) else ""}
       + s"(${if !modified then index else '_'})" 
       + {if originalSymbol.isDefined then s"[${originalSymbol.get}]" else ""}
-      + s" $name: " 
+      + s" $name: "
       + fieldType.show(newTab,name :: seenBefore,true) 
       + { if annotations.nonEmpty then tabs(newTab) + "annotations: " + annotations.toString + "\n" else "" }
 
@@ -39,6 +39,7 @@ object ScalaFieldInfo:
       MapStringByteEngine.read(bbuf),
       OptionArrayStringByteEngine.read(bbuf).map(found => (found(0),found(1))),
       OptionStringByteEngine.read(bbuf).asInstanceOf[Option[TypeSymbol]],
+      BooleanByteEngine.read(bbuf),
       BooleanByteEngine.read(bbuf)
       )
 
@@ -49,7 +50,8 @@ case class ScalaFieldInfo(
   annotations:              Map[String,Map[String,String]],
   defaultValueAccessorName: Option[(String,String)], // (class, method)  //Option[()=>Object],
   originalSymbol:           Option[TypeSymbol],
-  isNonConstructorField:    Boolean = false
+  isNonConstructorField:    Boolean = false,
+  isNonValConstructorField: Boolean = false,
 ) extends FieldInfo:
 
   def valueOf[T](target: T) = target.getClass.getMethod(name).invoke(target)
@@ -92,6 +94,7 @@ case class ScalaFieldInfo(
     OptionArrayStringByteEngine.write(bbuf, defaultValueAccessorName.map( dvan => Array(dvan._1, dvan._2)))
     OptionStringByteEngine.write(bbuf, originalSymbol.asInstanceOf[Option[String]])
     BooleanByteEngine.write(bbuf, isNonConstructorField)
+    BooleanByteEngine.write(bbuf, isNonValConstructorField)
 
 //------------------------------------------------------------
 

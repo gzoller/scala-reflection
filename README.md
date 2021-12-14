@@ -126,6 +126,8 @@ ScalaCaseClassInfo(com.foo.Dog):
       (2)[T] special: scala.Boolean
 ```
 
+If, for any reason, you wish NOT to have scala-reflection examine a class, you may annotate that class with @Skip_Reflection and scala-reflection will return an RType of UnknownInfo.
+
 ## Learning to Drive with Macros
 scala-reflection uses macros to the fullest extent possible to do the hard work of reflecting on types. Macros impact the compile/test cycle in ways that are non-intuitive at first. Think of this example:
 
