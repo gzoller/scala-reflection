@@ -124,10 +124,9 @@ class ScalaTasty extends munit.FunSuite:
     |      (1) b: java.lang.String
     |   non-constructor fields:
     |""".stripMargin)
-    // Can't test this... happens at runti
-    // interceptMessage[java.lang.Exception]("Class [co.blocke.scala_reflection.PlainBad]: Non-case class constructor arguments must all be 'val'"){
-    //   RType.of[PlainBad]
-    // }
+
+    val nonVal = RType.of[PlainNonVal]
+    assertEquals(nonVal.asInstanceOf[ScalaClassInfo].fields.map(_.asInstanceOf[ScalaFieldInfo].isNonValConstructorField).toList, List(false,true))
   }
 
   test("all Scala primitive types") {

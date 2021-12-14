@@ -73,7 +73,7 @@ case class OptionHavingUnion(a: Option[Boolean|String])
 
 // Plain class
 class PlainGood(val a: Int, val b: String)
-class PlainBad(val a: Int, b: String)
+class PlainNonVal(val a: Int, b: String)
 
 // Collections - immutable
 case class Coll1(a: List[String])
