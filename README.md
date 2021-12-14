@@ -15,13 +15,13 @@ idea how this project works.
 ## Configuration
 
 ```scala
-libraryDependencies += "com.github.pjfanning" %% "scala3-reflection" % "1.0.1"
+libraryDependencies += "com.github.pjfanning" %% "scala3-reflection" % "1.0.2"
 ```
 
 For best results, compile all classes you intend to reflect on with this plugin enabled.
 
 ```scala
-addCompilerPlugin("com.github.pjfanning" %% "scala3-reflection" % "1.0.1")
+addCompilerPlugin("com.github.pjfanning" %% "scala3-reflection" % "1.0.2")
 ```
 
 ## Release Notes:
