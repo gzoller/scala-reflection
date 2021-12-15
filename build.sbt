@@ -52,6 +52,5 @@ lazy val compilerOptions = Seq(
   "-language:implicitConversions",
   "-deprecation",
   "-encoding",
-  "utf8",
-  "-target:jvm-1.8"
+  "utf8"
 )
