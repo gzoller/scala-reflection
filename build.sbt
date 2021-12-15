@@ -41,6 +41,7 @@ lazy val root = project
 // Settings
 //==========================
 lazy val settings = Seq(
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   scalacOptions ++= compilerOptions,
   testFrameworks += new TestFramework("munit.Framework")
 )
@@ -51,5 +52,6 @@ lazy val compilerOptions = Seq(
   "-language:implicitConversions",
   "-deprecation",
   "-encoding",
-  "utf8"
+  "utf8",
+  "-target:jvm-1.8"
 )
