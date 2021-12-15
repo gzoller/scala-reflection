@@ -24,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [3.0.2]
-        java: [zulu@13]
+        java: [zulu@8]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -32,12 +32,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (zulu@13)
-        if: matrix.java == 'zulu@13'
+      - name: Setup Java (zulu@8)
+        if: matrix.java == 'zulu@8'
         uses: actions/setup-java@v2
         with:
           distribution: zulu
-          java-version: 13
+          java-version: 8
 
       - name: Cache sbt
         uses: actions/cache@v2
@@ -74,7 +74,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [3.0.2]
-        java: [zulu@13]
+        java: [zulu@8]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -82,12 +82,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (zulu@13)
-        if: matrix.java == 'zulu@13'
+      - name: Setup Java (zulu@8)
+        if: matrix.java == 'zulu@8'
         uses: actions/setup-java@v2
         with:
           distribution: zulu
-          java-version: 13
+          java-version: 8
 
       - name: Cache sbt
         uses: actions/cache@v2
