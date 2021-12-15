@@ -56,8 +56,6 @@ trait NonCaseClassReflection:
           && !d.name.endsWith("_=") => d.name -> d.returnTpt.tpe.asInstanceOf[quotes.reflect.TypeRef]
     }.toMap
 
-    val numConstructorFields = fields.length
-
     // Include inherited methods (var & def), including inherited!
     val baseAnnos = superClass match {
       case Some(c: ScalaClassInfo) => c.nonConstructorFields.map( f => f.name -> (f.annotations - S3ANNO) ).toMap

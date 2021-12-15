@@ -165,7 +165,7 @@ class JavaNonTasty extends munit.FunSuite:
     |   annotations: Map(co.blocke.reflect.ClassAnno -> Map(name -> Foom))
     |""".stripMargin)
   }
-  
+
   test("Java collection types") {
     val result = RType.of[co.blocke.reflect.JavaCollections]
     assertEquals( result.show(), """JavaClassInfo(co.blocke.reflect.JavaCollections):

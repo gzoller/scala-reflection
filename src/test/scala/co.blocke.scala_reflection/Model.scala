@@ -40,6 +40,9 @@ case class WithMix(id:String) extends SJCapture
 @ClassAnno(name="Foom")
 case class WithAnnotation(@FieldAnno(idx=5) id: String)
 
+@Skip_Reflection
+case class SkipMe(a: Int, b: String)
+
 // Opaque type aliases
 opaque type EMP_ID = Int
 case class Employee(eId: EMP_ID, age: Int)
@@ -73,7 +76,7 @@ case class OptionHavingUnion(a: Option[Boolean|String])
 
 // Plain class
 class PlainGood(val a: Int, val b: String)
-class PlainBad(val a: Int, b: String)
+class PlainNonVal(val a: Int, b: String)
 
 // Collections - immutable
 case class Coll1(a: List[String])
@@ -320,8 +323,6 @@ trait Basis[T] {
 }
 case class Thingy[T]( a: Int, b: String, c: T) extends Basis[T]
 
-class NoConstructorParams
-
-object ClassExtensions {
-  final class Mixin private[ClassExtensions](constructorValue: String)
-}
+// Classes inside objects
+object BigObject:
+  case class LittleThing(a: Int)
