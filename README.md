@@ -4,10 +4,10 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/scala3-reflection_3/badge.svg)](https://search.maven.org/artifact/com.github.pjfanning/scala3-reflection_3/1.0.1/jar)
 
 This is a fork of [gzoller/scala-reflection](https://github.com/gzoller/scala-reflection).
-Hopefully, this fork will only be needed as a short term measure. The fixes in this fork have been
-submitted as Pull Requests to the upstream project.
+This fork was only needed as a short term measure. The fixes in this fork have been
+submitted and as Pull Requests to the upstream project and they are now merged.
 
-This fork is used by [jackson-scala3-reflection-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions).
+This fork was used by [jackson-scala3-reflection-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions).
 
 Please read the readme on [gzoller/scala-reflection](https://github.com/gzoller/scala-reflection) to get a better
 idea how this project works.
