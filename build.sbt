@@ -41,6 +41,7 @@ lazy val root = project
 // Settings
 //==========================
 lazy val settings = Seq(
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   scalacOptions ++= compilerOptions,
   testFrameworks += new TestFramework("munit.Framework")
 )
