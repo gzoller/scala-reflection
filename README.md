@@ -5,7 +5,8 @@
 
 This is a fork of [gzoller/scala-reflection](https://github.com/gzoller/scala-reflection).
 This fork was only needed as a short term measure. The fixes in this fork have been
-submitted and as Pull Requests to the upstream project and they are now merged. Please use [gzoller/scala-reflection] instead of this fork.
+submitted and as Pull Requests to the upstream project and they are now merged.
+Please use [gzoller/scala-reflection](https://github.com/gzoller/scala-reflection) instead of this fork.
 
 This fork was used by [jackson-scala3-reflection-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions).
 
