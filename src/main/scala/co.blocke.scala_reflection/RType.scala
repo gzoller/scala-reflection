@@ -94,8 +94,8 @@ class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
     RType.cache.getOrElse(clazz.getName,
       RType.unpackAnno(clazz).getOrElse{
         val tc = new TastyInspection(clazz)
-        val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".","/") + ".tasty"
-        if ( new java.io.File(tastyPath) ).exists then
+        val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".", File.pathSeparator) + ".tasty"
+        if ( new File(tastyPath) ).exists then
           TastyInspector.inspectTastyFiles(List(tastyPath))(tc)
           tc.inspected
         else
