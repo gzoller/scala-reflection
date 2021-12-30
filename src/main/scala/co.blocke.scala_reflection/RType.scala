@@ -4,8 +4,10 @@ import scala.quoted.*
 import quoted.Quotes
 import impl.*
 import info.*
+
 import java.io.*
 import java.nio.ByteBuffer
+import java.nio.file.{Files, Path}
 import scala.tasty.inspector.TastyInspector
 
 /** A materializable type */
@@ -24,7 +26,7 @@ trait RType extends Serializable:
     seenBefore: List[String] = Nil,
     supressIndent: Boolean = false,
     modified: Boolean = false // modified is "special", ie. don't show index & sort for nonconstructor fields
-    ): String  
+    ): String
 
   override def toString(): String = show()
 
@@ -56,19 +58,27 @@ trait RTypeOf:
   def of(clazz: Class[_]): RType
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]]
 
+object RTypeOf {
+  private[scala_reflection] def findPathForClass(clazz: Class[?]): Option[Path] = {
+    Option(clazz.getProtectionDomain.getCodeSource)
+      .map(src => src.getLocation.toURI)
+      .map(src => Path.of(src))
+      .map(path => path.resolve(clazz.getName.replace(".", File.separator) + ".tasty").normalize())
+  }
+}
 
 class RTypeOfNoPlugin() extends RTypeOf:
-  import scala.quoted.staging._ 
+  import scala.quoted.staging._
   given Compiler = Compiler.make(getClass.getClassLoader)
 
-  def of(clazz: Class[_]): RType = 
+  def of(clazz: Class[_]): RType =
     RType.cache.getOrElse(clazz.getName,
       RType.unpackAnno(clazz).getOrElse{
         val tc = new TastyInspection(clazz)
-        val tastyPath = Option(clazz.getProtectionDomain.getCodeSource).map(src => src.getLocation.getPath + clazz.getName.replace(".", File.pathSeparator) + ".tasty")
+        val tastyPath = RTypeOf.findPathForClass(clazz)
         tastyPath match {
-          case Some(path) if ( new File(path) ).exists =>
-            TastyInspector.inspectTastyFiles(List(path))(tc)
+          case Some(path) if Files.exists(path) =>
+            TastyInspector.inspectTastyFiles(List(path.toString))(tc)
             tc.inspected
           case _ =>
             // Non-Tasty top-level class (Java, or String-marshalled Class)
@@ -85,31 +95,33 @@ class RTypeOfNoPlugin() extends RTypeOf:
     )
 
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
-    val fn = (qctx: Quotes) ?=> TypeLoom.descendParents(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+    val fn = (qctx: Quotes) ?=> TypeLoom.descendParents(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) )
     withQuotes(fn)
 
 
 class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
-  def of(clazz: Class[_]): RType = 
+  def of(clazz: Class[_]): RType =
     RType.cache.getOrElse(clazz.getName,
       RType.unpackAnno(clazz).getOrElse{
         val tc = new TastyInspection(clazz)
-        val tastyPath = clazz.getProtectionDomain.getCodeSource.getLocation.getPath + clazz.getName.replace(".", File.pathSeparator) + ".tasty"
-        if ( new File(tastyPath) ).exists then
-          TastyInspector.inspectTastyFiles(List(tastyPath))(tc)
-          tc.inspected
-        else
-          // Non-Tasty top-level class (Java, or String-marshalled Class)
-          val reflectedRType = RType.unwindType(quotes)( quotes.reflect.TypeRepr.typeConstructorOf(clazz), false )
-          RType.cache.synchronized {
-            RType.cache.put(clazz.getName, reflectedRType)
-          }
-          reflectedRType
+        val tastyPathOpt = RTypeOf.findPathForClass(clazz)
+        tastyPathOpt match {
+          case Some(path) if Files.exists(path) =>
+            TastyInspector.inspectTastyFiles(List(path.toString))(tc)
+            tc.inspected
+          case _ =>
+            // Non-Tasty top-level class (Java, or String-marshalled Class)
+            val reflectedRType = RType.unwindType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(clazz), false)
+            RType.cache.synchronized {
+              RType.cache.put(clazz.getName, reflectedRType)
+            }
+            reflectedRType
+        }
       }
     )
 
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
-    TypeLoom.descendParents(quotes)( quotes.reflect.TypeRepr.typeConstructorOf(clazz) ) 
+    TypeLoom.descendParents(quotes)( quotes.reflect.TypeRepr.typeConstructorOf(clazz) )
 
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -120,47 +132,47 @@ object RType:
   //  <<  MACRO ENTRY >>
   //------------------------
   inline def of[T]: RType = ${ ofImpl[T]() }
-  
-  def ofImpl[T]()(implicit qctx: Quotes, ttype: scala.quoted.Type[T]): Expr[RType] = 
+
+  def ofImpl[T]()(implicit qctx: Quotes, ttype: scala.quoted.Type[T]): Expr[RType] =
     import qctx.reflect.{_, given}
     Expr( unwindType(qctx)( TypeRepr.of[T]) )
 
   // This is preset if used as a compiler plugin
-  var ofMethod: Option[RTypeOf] = None 
+  var ofMethod: Option[RTypeOf] = None
 
   def of(clazz: Class[_]): RType = (ofMethod match {
     case Some(om) => om
-    case None => 
+    case None =>
       ofMethod = Some(new RTypeOfNoPlugin())
       ofMethod.get
   }).of(clazz)
-  
-  inline def inTermsOf[T](clazz: Class[_]): RType = 
+
+  inline def inTermsOf[T](clazz: Class[_]): RType =
     inTermsOf(clazz, of[T].asInstanceOf[TraitInfo])
 
-  inline def inTermsOf(clazz: Class[_], ito: TraitInfo): RType = 
+  inline def inTermsOf(clazz: Class[_], ito: TraitInfo): RType =
     cache.get(clazz.getName) match {
-      case Some(scib: ScalaClassInfoBase) => 
+      case Some(scib: ScalaClassInfoBase) =>
         scib.paths.get(ito.name) match {
           case Some(paths) => scib.resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
           case None        => scib
         }
-      case None => 
+      case None =>
         unpackAnno(clazz) match {
-          case Some(scib: ScalaClassInfoBase) => 
+          case Some(scib: ScalaClassInfoBase) =>
             scib.paths.get(ito.name) match {
               case Some(paths) => scib.resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
               case None        => scib
             }
-            
+
           case None =>
             val clazzRType = of(clazz)
             if !clazzRType.asInstanceOf[ClassInfo].isParameterized then
-              clazzRType 
+              clazzRType
             else
               val symPaths = (ofMethod match {
                 case Some(om) => om
-                case None => 
+                case None =>
                   ofMethod = Some(new RTypeOfNoPlugin())
                   ofMethod.get
               }).descendParents(clazz)
@@ -168,8 +180,8 @@ object RType:
                 case Some(paths) => clazzRType.asInstanceOf[ScalaClassInfoBase].resolveTypeParams( TypeLoom.Recipe.navigate( paths, ito ))
                 case None        => clazzRType
               }
-              
-          case _ => 
+
+          case _ =>
             throw new ReflectException(s"ClassInfo in annotation for ${clazz.getName} is not a Scala 3 class")
         }
       case _ =>
@@ -197,7 +209,7 @@ object RType:
 
     this.synchronized {
       val tName = typeName(quotes)(aType)
-      cache.getOrElse(tName, { 
+      cache.getOrElse(tName, {
         if className == "scala.Any" then
           TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
         else
@@ -214,7 +226,7 @@ object RType:
     import quotes.reflect.{_, given}
     val name = aType.asInstanceOf[TypeRef] match {
       case sym if aType.typeSymbol.flags.is(Flags.Param) => sym.name
-      case AppliedType(t,tob) => 
+      case AppliedType(t,tob) =>
         typeName(quotes)(t) + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
       case AndType(left, right) => INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case OrType(left, right) => UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
@@ -226,12 +238,12 @@ object RType:
       case tn => tn
     }
 
-  def fromBytes( bbuf: ByteBuffer ): RType = 
+  def fromBytes( bbuf: ByteBuffer ): RType =
     bbuf.get() match {
       case SCALA_BOOLEAN         => PrimitiveType.Scala_Boolean
       case SCALA_DOUBLE          => PrimitiveType.Scala_Double
       case SCALA_INT             => PrimitiveType.Scala_Int
-      case SCALA_LONG            => PrimitiveType.Scala_Long 
+      case SCALA_LONG            => PrimitiveType.Scala_Long
       case SCALA_STRING          => PrimitiveType.Scala_String
       case SCALA_ANY             => PrimitiveType.Scala_Any
       case SELFREF               => SelfRefRType.fromBytes(bbuf)
