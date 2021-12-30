@@ -58,15 +58,6 @@ trait RTypeOf:
   def of(clazz: Class[_]): RType
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]]
 
-object RTypeOf {
-  private[scala_reflection] def findPathForClass(clazz: Class[?]): Option[Path] = {
-    Option(clazz.getProtectionDomain.getCodeSource)
-      .map(src => src.getLocation.toURI)
-      .map(src => Path.of(src))
-      .map(path => path.resolve(clazz.getName.replace(".", File.separator) + ".tasty").normalize())
-  }
-}
-
 class RTypeOfNoPlugin() extends RTypeOf:
   import scala.quoted.staging._
   given Compiler = Compiler.make(getClass.getClassLoader)
@@ -75,7 +66,7 @@ class RTypeOfNoPlugin() extends RTypeOf:
     RType.cache.getOrElse(clazz.getName,
       RType.unpackAnno(clazz).getOrElse{
         val tc = new TastyInspection(clazz)
-        val tastyPath = RTypeOf.findPathForClass(clazz)
+        val tastyPath = PathResolver.findPathForClass(clazz)
         tastyPath match {
           case Some(path) if Files.exists(path) =>
             TastyInspector.inspectTastyFiles(List(path.toString))(tc)
@@ -104,7 +95,7 @@ class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
     RType.cache.getOrElse(clazz.getName,
       RType.unpackAnno(clazz).getOrElse{
         val tc = new TastyInspection(clazz)
-        val tastyPathOpt = RTypeOf.findPathForClass(clazz)
+        val tastyPathOpt = PathResolver.findPathForClass(clazz)
         tastyPathOpt match {
           case Some(path) if Files.exists(path) =>
             TastyInspector.inspectTastyFiles(List(path.toString))(tc)
