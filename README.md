@@ -1,7 +1,7 @@
 # Scala Reflection
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.1.0/jar)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.1.2/jar)
 
 Scala 3 introduced many exciting new language features, and broke one old one.  Scala 2's runtime reflection has been eliminated in favor of using compile-time macros to reflect on classes. This approach is a mixed blessing.  If the type you want to reflect on is known at compile-time then performance of this new mechanism is very fast, however if you only know the reflected type at run-time you're basically out of luck.  Well... not entirely out of luck.  Scala 3 offers something called Tasty Inspection that can reflect on a run-time type but at a severe performance penalty, as this approach involves file IO to read your class' .tasty file.  Tasty Inspection works, but it is *orders of magnitude slower* than Scala 2 run-time reflection.
  
