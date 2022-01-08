@@ -19,5 +19,4 @@ class Serialization extends munit.FunSuite:
     rtype.toBytes(buffer)
     val str = java.util.Base64.getEncoder().encodeToString(buffer.array.slice(0, buffer.position))
     assertEquals(RType.deserialize(str), rtype)
-    println(RType.deserialize(str))
   }

@@ -34,7 +34,7 @@ object JavaClassInspector:
 
   private def typeParamSymbols(c: Class[_]): List[TypeSymbol] = c.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
-  private def parseFields(clazz: Class[?]): List[JavaFieldInfo] = 
+  private def parseFields(clazz: Class[?]): List[JavaFieldInfo] =
     Introspector
       .getBeanInfo(clazz)
       .getPropertyDescriptors
@@ -55,6 +55,7 @@ object JavaClassInspector:
         (f,i) => f.copy(index = i)
       }
 
+  import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl
   private def inspectType(mainTypeParams: List[TypeVariable[_]], fieldType: JType): RType =
 
     fieldType match {
@@ -64,7 +65,7 @@ object JavaClassInspector:
 
       // All this stuff gets triggered if there are Java collections *in a Java class*.  They don't get triggered
       // if we're inspecting a top-level collection, i.e. a Java collection that is a member of a Scala class.
-      case p: ParameterizedType if p.getRawType.isInstanceOf[Class[_]] => 
+      case p: ParameterizedType if p.getRawType.isInstanceOf[Class[_]] =>
         p.getRawType.asInstanceOf[Class[_]] match {
           case c if c =:= OptionalClazz =>
             JavaOptionalInfo(c.getName, inspectType(mainTypeParams, p.getActualTypeArguments.head))
@@ -78,19 +79,20 @@ object JavaClassInspector:
           case c if c <:< JSetClazz =>
             JavaSetInfo(c.getName, inspectType(mainTypeParams, p.getActualTypeArguments.head))
           case c => // some other (user-written) parameterized Java class
-//            println(">> c: "+c.getClass.getName)
             val params = p.getActualTypeArguments.toList.map { t =>
-//              println("   t >> "+t.getClass.getName)
-              RType.of(t.asInstanceOf[Class[_]])
+              if t.isInstanceOf[WildcardTypeImpl] then
+                UnknownInfo(t.getClass.getName)
+              else
+                RType.of(t.asInstanceOf[Class[_]])
             }
             val raw = RType.of(c).asInstanceOf[AppliedRType]
             val paramMap = typeParamSymbols(c).zip(params).toMap
             raw.resolveTypeParams(paramMap)
         }
       case v: TypeVariable[_] => TypeSymbolInfo(v.getName)
-      case p if PrimitiveType.unapply(p.asInstanceOf[Class[_]].getName()).isDefined => PrimitiveType.unapply(p.asInstanceOf[Class[_]].getName()).get
       case w: WildcardType => throw new ReflectException("Wildcard types not currently supported in reflection library")
-      case other => 
+      case p if PrimitiveType.unapply(p.asInstanceOf[Class[_]].getName()).isDefined => PrimitiveType.unapply(p.asInstanceOf[Class[_]].getName()).get
+      case other =>
         other.asInstanceOf[Class[_]] match {
           case c if c.isArray => 
             val elementType = inspectType(mainTypeParams, c.getComponentType)
