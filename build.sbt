@@ -1,3 +1,5 @@
+import sbt.Keys.libraryDependencies
+
 inThisBuild(List(
   organization := "co.blocke",
   homepage := Some(url("https://github.com/gzoller/scala-reflection")),
@@ -33,6 +35,24 @@ lazy val root = project
       "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
       "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
       "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
+      "org.scalameta"  %% "munit"                  % "0.7.29" % Test
+    )
+  )
+
+lazy val tests = project
+  .in(file("plugin_tests"))
+  .settings(
+    name := "hello",
+    version := "0.1.0",
+    scalaVersion := "3.0.2",
+
+    libraryDependencies += "co.blocke" %% "scala-reflection" % s"cachefix_ebe2e1",
+    libraryDependencies += compilerPlugin("co.blocke" %% "scala-reflection" % "cachefix_ebe2e1"),
+    libraryDependencies ++= Seq(
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.1",  // misc 3rd party library for test only--could be anything
+//      "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
+//      "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
+//      "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
       "org.scalameta"  %% "munit"                  % "0.7.29" % Test
     )
   )
