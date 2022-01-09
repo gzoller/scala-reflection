@@ -63,8 +63,8 @@ class RTypeOfNoPlugin() extends RTypeOf:
   given Compiler = Compiler.make(getClass.getClassLoader)
 
   def of(clazz: Class[_]): RType =
-    RType.cache.getOrElse(clazz.getName,
-      RType.unpackAnno(clazz).getOrElse{
+    RType.cache.getOrElse(clazz.getName, {
+      val newRType = RType.unpackAnno(clazz).getOrElse {
         val tc = new TastyInspection(clazz)
         val tastyPath = PathResolver.findPathForClass(clazz)
         tastyPath match {
@@ -73,17 +73,17 @@ class RTypeOfNoPlugin() extends RTypeOf:
             tc.inspected
           case _ =>
             // Non-Tasty top-level class (Java, or String-marshalled Class)
-            val fn = (qctx: Quotes) ?=> RType.unwindType(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz), false )
-            val reflectedRType = withQuotes(fn)
+            val fn = (qctx: Quotes) ?=> RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(clazz), false)
+            withQuotes(fn)
             // dotty/staging/src/scala/quoted/staging/staging.scala:35:  def withQuotes[T](thunk: Quotes ?=> T)(using toolbox: Toolbox): T
             // >>> Expect withQuotes to accept a thunk and return an RType (RType.unwindType returns RType)
-            RType.cache.synchronized {
-              RType.cache.put(clazz.getName, reflectedRType)
-            }
-            reflectedRType
         }
       }
-    )
+      RType.cache.synchronized {
+        RType.cache.put(clazz.getName, newRType)
+      }
+      newRType
+    })
 
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
     val fn = (qctx: Quotes) ?=> TypeLoom.descendParents(qctx)( qctx.reflect.TypeRepr.typeConstructorOf(clazz) )
@@ -92,8 +92,8 @@ class RTypeOfNoPlugin() extends RTypeOf:
 
 class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
   def of(clazz: Class[_]): RType =
-    RType.cache.getOrElse(clazz.getName,
-      RType.unpackAnno(clazz).getOrElse{
+    RType.cache.getOrElse(clazz.getName, {
+      val newRType = RType.unpackAnno(clazz).getOrElse {
         val tc = new TastyInspection(clazz)
         val tastyPathOpt = PathResolver.findPathForClass(clazz)
         tastyPathOpt match {
@@ -102,14 +102,14 @@ class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
             tc.inspected
           case _ =>
             // Non-Tasty top-level class (Java, or String-marshalled Class)
-            val reflectedRType = RType.unwindType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(clazz), false)
-            RType.cache.synchronized {
-              RType.cache.put(clazz.getName, reflectedRType)
-            }
-            reflectedRType
+            RType.unwindType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(clazz), false)
         }
       }
-    )
+      RType.cache.synchronized {
+        RType.cache.put(clazz.getName, newRType)
+      }
+      newRType
+    })
 
   def descendParents(clazz: Class[_]): Map[String, Map[String, List[Int]]] =
     TypeLoom.descendParents(quotes)( quotes.reflect.TypeRepr.typeConstructorOf(clazz) )
