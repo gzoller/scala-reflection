@@ -399,13 +399,15 @@ object TastyReflection extends NonCaseClassReflection:
     isNonValConstructorField: Boolean = false
   ): FieldInfo = 
     import quotes.reflect.{_, given}
-    val fieldAnnos = {
-      val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
-      baseAnnos ++ valDef.symbol.annotations.map{ a => 
-        val quotes.reflect.Apply(_, params) = a
-        val annoName = a.symbol.signature.resultSig
-        (annoName, annoSymToString(quotes)(params))
-      }.toMap
+    val fieldAnnos = dad match {
+      case Some(c) if c.isInstanceOf[JavaClassInfo] => Map.empty[String,Map[String,String]]
+      case _ =>
+        val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
+        baseAnnos ++ valDef.symbol.annotations.map{ a =>
+          val quotes.reflect.Apply(_, params) = a
+          val annoName = a.symbol.signature.resultSig
+          (annoName, annoSymToString(quotes)(params))
+        }.toMap
     }
 
     // Figure out the original type symbols, i.e. T, (if any)

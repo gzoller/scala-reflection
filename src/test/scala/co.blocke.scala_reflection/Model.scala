@@ -291,6 +291,7 @@ class ParamChild[T](override val thing: T) extends ParamBase[T](thing)
 
 // Self-referencing
 case class Shape(id: Int, parent: Option[Shape])
+case class Person2(name: String, age: Int, boss: Person2)
 case class Drawer[T]( id: Int, nextInChain: Option[Drawer[T]], thing: T)
 
 
