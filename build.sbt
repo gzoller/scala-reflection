@@ -41,15 +41,15 @@ lazy val root = project
 
 lazy val tests = project
   .in(file("plugin_tests"))
+  .settings(settings)
   .settings(
     name := "hello",
-    version := "0.1.0",
     scalaVersion := "3.0.2",
 
-    libraryDependencies += "co.blocke" %% "scala-reflection" % s"cachefix_f61944",
-    libraryDependencies += compilerPlugin("co.blocke" %% "scala-reflection" % "cachefix_f61944"),
+    libraryDependencies += "co.blocke" %% "scala-reflection" % version.value,
+    libraryDependencies += compilerPlugin("co.blocke" %% "scala-reflection" % version.value),
     libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.1",  // misc 3rd party library for test only--could be anything
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.1",  // misc 3rd party Java library for test only--could be anything
       "org.scalameta"  %% "munit"                  % "0.7.29" % Test
     )
   )
