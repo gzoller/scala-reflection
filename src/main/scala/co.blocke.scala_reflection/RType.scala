@@ -195,7 +195,9 @@ object RType:
       case AndType(_,_) => INTERSECTION_CLASS
       case OrType(_,_)  => UNION_CLASS
       case _: dotty.tools.dotc.core.Types.WildcardType => "scala.Any"
-      case normal       => normal.classSymbol.get.fullName
+      case normal       => normal.classSymbol
+        .getOrElse(throw new IllegalArgumentException("unsupported class " + aType))
+        .fullName
     }
 
     this.synchronized {
@@ -222,7 +224,9 @@ object RType:
       case AndType(left, right) => INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case OrType(left, right) => UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case _: dotty.tools.dotc.core.Types.WildcardType => "unmapped"
-      case _ => aType.classSymbol.get.fullName
+      case _ => aType.classSymbol
+        .getOrElse(throw new IllegalArgumentException("unsupported class " + aType))
+        .fullName
     }
     name match {
       case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
