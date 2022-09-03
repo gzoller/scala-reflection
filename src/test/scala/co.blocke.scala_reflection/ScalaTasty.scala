@@ -269,6 +269,13 @@ class ScalaTasty extends munit.FunSuite:
     |      (0) id: scala.Int
     |      (1) parent: Option of ScalaCaseClassInfo(co.blocke.scala_reflection.Shape) (self-ref recursion)
     |""".stripMargin)
+    val result2 = RType.of[Person2]
+    assertEquals( result2.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Person2):
+    |   fields:
+    |      (0) name: java.lang.String
+    |      (1) age: scala.Int
+    |      (2) boss: ScalaCaseClassInfo(co.blocke.scala_reflection.Person2) (self-ref recursion)
+    |""".stripMargin)
   }
 
   test("Self-referencing types (parameterized") {

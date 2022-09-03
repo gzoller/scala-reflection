@@ -243,9 +243,11 @@ case class JavaClassInfo protected[scala_reflection] (
     paramTypes:    Array[RType], 
     _proxy:        Option[JavaClassInfoProxy] = None 
   ) extends ClassInfo:
+
   lazy val infoClass: Class[_] = Class.forName(name)
-  private lazy val proxy = _proxy.getOrElse(impl.JavaClassInspector.inspectClass(infoClass, fullName, paramTypes).asInstanceOf[JavaClassInfoProxy])
-  lazy val fields = proxy.fields
+  private lazy val proxy =
+    _proxy.getOrElse(impl.JavaClassInspector.inspectClass(infoClass, fullName, paramTypes).asInstanceOf[JavaClassInfoProxy])
+  lazy val fields                                                 = proxy.fields
   lazy val typeMembers:           Array[TypeMemberInfo]           = proxy.typeMembers
   lazy val annotations:           Map[String, Map[String,String]] = proxy.annotations
   lazy val mixins:                Array[String]                   = proxy.mixins
