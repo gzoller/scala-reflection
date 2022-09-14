@@ -23,7 +23,7 @@ case class TraitInfo protected[scala_reflection](
   ) extends RType with AppliedRType: 
 
   val fullName: String = 
-    if actualParameterTypes.size > 0 then
+    if actualParameterTypes.nonEmpty then
       name + actualParameterTypes.map(_.fullName).toList.mkString("[",",","]")
     else
       name
@@ -93,7 +93,7 @@ object SealedTraitInfo:
       ArrayRTypeByteEngine.read(bbuf)
       )
 
-case class SealedTraitInfo protected(
+case class SealedTraitInfo protected[scala_reflection](
     name: String, 
     children: Array[RType]
   ) extends RType:

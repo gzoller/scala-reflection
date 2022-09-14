@@ -25,7 +25,7 @@ class ScalaTasty extends munit.FunSuite:
 
   test("create basic Tasty class") {
     val p = RType.of[Person]
-    val person = p.asInstanceOf[ScalaCaseClassInfo].constructWith[Person](List("Frank", 35, 5))
+    val person = p.asInstanceOf[ScalaCaseClassInfo].constructWith[Person](List("Frank", Integer.valueOf(35), Integer.valueOf(5)))
     assertEquals(person, Person("Frank",35,5))
   }
 
@@ -117,7 +117,7 @@ class ScalaTasty extends munit.FunSuite:
     |      (1) b: java.lang.String
     |""".stripMargin)
     val wd = result.asInstanceOf[ScalaCaseClassInfo]
-    val newWd = wd.constructWith[WithDefault](List(5,wd.fields(1).defaultValue.get))
+    val newWd = wd.constructWith[WithDefault](List(Integer.valueOf(5),wd.fields(1).defaultValue.get))
     assertEquals(newWd, WithDefault(5))
   }
 

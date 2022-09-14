@@ -148,7 +148,7 @@ object TastyReflection extends NonCaseClassReflection:
     // Class annotations -> annotation map
     val annoSymbol = symbol.annotations.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
     val classAnnos = annoSymbol.map{ a =>
-      val quotes.reflect.Apply(_, params) = a
+      val quotes.reflect.Apply(_, params) = a: @unchecked
       val annoName = a.symbol.signature.resultSig
       (annoName, annoSymToString(quotes)(params))
     }.toMap
@@ -404,7 +404,7 @@ object TastyReflection extends NonCaseClassReflection:
       case _ =>
         val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
         baseAnnos ++ valDef.symbol.annotations.map{ a =>
-          val quotes.reflect.Apply(_, params) = a
+          val quotes.reflect.Apply(_, params) = a: @unchecked
           val annoName = a.symbol.signature.resultSig
           (annoName, annoSymToString(quotes)(params))
         }.toMap
