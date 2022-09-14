@@ -112,7 +112,7 @@ trait NonCaseClassReflection:
       }
 
       val rtype = 
-        originalTypeSymbol.map( ots => RType.unwindType(quotes)(tob(typeSymbols.indexOf(ots)).asInstanceOf[TypeRepr]) ).getOrElse{
+        originalTypeSymbol.map( ots => RType.unwindType(quotes)(tob(typeSymbols.indexOf(ots))) ).getOrElse{
           if varDefDeclarations.contains(fieldName) then
             RType.unwindType(quotes)(varDefDeclarations(fieldName))
           else
@@ -128,7 +128,7 @@ trait NonCaseClassReflection:
         index,
         fieldName,
         rtype,
-        knownAnnos(fieldName).toMap,
+        knownAnnos(fieldName),
         None, // we don't know how to get the default values (initial set values) of non-constructor fields at present
         originalTypeSymbol.map(_.asInstanceOf[TypeSymbol]),
         true
@@ -139,7 +139,7 @@ trait NonCaseClassReflection:
       name,
       fullName,
       paramSymbols,
-      typeMembers.toArray,
+      typeMembers,
       fields,
       nonConstructorFields,
       annotations,

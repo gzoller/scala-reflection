@@ -55,9 +55,9 @@ case class ScalaOptionInfo protected[scala_reflection](
       List(optionParamType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
       ).asInstanceOf[quotes.reflect.AppliedType]
     
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
-    {if(!supressIndent) tabs(tab) else ""} + "Option of " + optionParamType.show(newTab,name :: seenBefore,true)
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
+    {if(!suppressIndent) tabs(tab) else ""} + "Option of " + optionParamType.show(newTab,name :: seenBefore,true)
 
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( OPTION_INFO )
@@ -94,9 +94,9 @@ case class JavaOptionalInfo protected[scala_reflection](
       List(optionParamType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
       ).asInstanceOf[quotes.reflect.AppliedType]
    
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
-    {if(!supressIndent) tabs(tab) else ""} + "Optional of " + optionParamType.show(newTab,name :: seenBefore,true)
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
+    {if(!suppressIndent) tabs(tab) else ""} + "Optional of " + optionParamType.show(newTab,name :: seenBefore,true)
 
   override def resolveTypeParams( paramMap: Map[TypeSymbol, RType] ): RType = 
     _optionParamType match {

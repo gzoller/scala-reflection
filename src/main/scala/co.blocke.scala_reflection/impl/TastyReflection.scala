@@ -2,24 +2,26 @@ package co.blocke.scala_reflection
 package impl
 
 import info.*
+
 import scala.quoted.*
 import scala.reflect.*
 import scala.quoted.Quotes
 import scala.util.Try
+import scala.util.matching.Regex
 
 
 inline def annoSymToString(quotes: Quotes)( terms: List[quotes.reflect.Term] ): Map[String,String] =
   import quotes.reflect._
   terms.collect {
-    case NamedArg(argName, Literal(BooleanConstant(argValue))) => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(ByteConstant(argValue)))    => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(ShortConstant(argValue)))   => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(CharConstant(argValue)))    => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(IntConstant(argValue)))     => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(LongConstant(argValue)))    => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(FloatConstant(argValue)))   => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(DoubleConstant(argValue)))  => (argName.toString -> argValue.toString)
-    case NamedArg(argName, Literal(StringConstant(argValue)))  => (argName.toString -> argValue)
+    case NamedArg(argName, Literal(BooleanConstant(argValue))) => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(ByteConstant(argValue)))    => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(ShortConstant(argValue)))   => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(CharConstant(argValue)))    => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(IntConstant(argValue)))     => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(LongConstant(argValue)))    => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(FloatConstant(argValue)))   => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(DoubleConstant(argValue)))  => (argName -> argValue.toString)
+    case NamedArg(argName, Literal(StringConstant(argValue)))  => (argName -> argValue)
   }.toMap
 
 
@@ -132,7 +134,7 @@ object TastyReflection extends NonCaseClassReflection:
     val className = typeRef.classSymbol.get.fullName.replace("$.","$")
 
     object DefaultMethod {
-      val reg = """\$lessinit\$greater\$default\$(\d+)""".r
+      val reg: Regex = """\$lessinit\$greater\$default\$(\d+)""".r
       def unapply(s: quotes.reflect.Symbol): Option[Int] = reg.findFirstIn(s.toString) match {
         case Some(reg(a)) => Some(a.toInt)
         case _ => None
@@ -255,12 +257,12 @@ object TastyReflection extends NonCaseClassReflection:
       // User-written Java classes will have the source file.  Java library files will have <no file> for source
       else if symbol.flags.is(Flags.JavaDefined) then
         // Reflecting Java classes requires the materialized Class, which may be available (e.g. Java collections) or not (e.g. user-written class).
-        // So for now just burp forth a proxy and we'll resovle the details at runtime.
+        // So for now just burp forth a proxy and we'll resolve the details at runtime.
         JavaClassInfo(symbol.fullName, symbol.fullName, typeSymbols.toArray, appliedTob.map( at => RType.unwindType(quotes)(at.asInstanceOf[TypeRef])).toArray )
 
       // === Scala Classes ===
       else if symbol.isClassDef then
-        // Get field annotatations (from body of class--they're not on the constructor fields)
+        // Get field annotations (from body of class--they're not on the constructor fields)
         val classDef = symbol.tree.asInstanceOf[ClassDef]
 
         val isValueClass = typeRef.baseClasses.contains(Symbol.classSymbol("scala.AnyVal"))
