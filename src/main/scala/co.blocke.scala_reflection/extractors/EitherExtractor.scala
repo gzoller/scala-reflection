@@ -30,7 +30,6 @@ case class EitherExtractor() extends TypeInfoExtractor[EitherInfo]:
       else
         RType.unwindType(quotes)(tob(1))
 
-    val tparms = EitherClazz.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
     EitherInfo(
       t.classSymbol.get.fullName,
       leftRType,
