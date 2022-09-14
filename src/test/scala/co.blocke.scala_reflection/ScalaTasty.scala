@@ -195,6 +195,28 @@ class ScalaTasty extends munit.FunSuite:
     |""".stripMargin)
   }
 
+  test("sealed abstract class with case class") {
+    val result = RType.of[PetOwner]
+    assertEquals(result.show(),
+      """ScalaCaseClassInfo(co.blocke.scala_reflection.PetOwner):
+        |   fields:
+        |      (0) owner: java.lang.String
+        |      (1) pet: ScalaClassInfo(co.blocke.scala_reflection.Animal):
+        |         fields:
+        |            (0) animalType: java.lang.String
+        |         non-constructor fields:
+        |         children:
+        |            ScalaClassInfo(co.blocke.scala_reflection.Dog):
+        |               fields:
+        |                  (0) name: java.lang.String
+        |               non-constructor fields:
+        |            ScalaClassInfo(co.blocke.scala_reflection.Cat):
+        |               fields:
+        |                  (0) name: java.lang.String
+        |               non-constructor fields:
+        |""".stripMargin)
+  }
+
   test("handle intersection types") {
     val result = RType.of[IntersectionHolder]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.IntersectionHolder):

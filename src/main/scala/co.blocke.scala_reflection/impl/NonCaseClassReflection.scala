@@ -135,6 +135,20 @@ trait NonCaseClassReflection:
       )
     }.toArray
 
+    val kidsRTypes = if symbol.flags.is(quotes.reflect.Flags.Sealed) then
+      symbol.children.map { c =>
+        c.tree match {
+          case vd: ValDef =>
+            RType.unwindType(quotes)(vd.tpt.tpe)
+            ObjectInfo(vd.symbol.fullName) // sealed object implementation
+          case _ => // sealed case class implementation
+            val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
+            RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
+        }
+      }
+    else
+      Seq.empty
+
     ScalaClassInfo(
       name,
       fullName,
@@ -145,6 +159,7 @@ trait NonCaseClassReflection:
       annotations,
       paths,
       mixins,
+      kidsRTypes.toArray,
       isAppliedType,
       isValueClass
     )

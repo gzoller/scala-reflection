@@ -128,6 +128,16 @@ case object Chocolate extends Flavor
 case object Bourbon extends Flavor
 case class FlavorHolder(f: Flavor)
 
+sealed abstract class Animal(val animalType: String) {
+  val name: String
+}
+
+class Dog(val name: String) extends Animal("Dog")
+
+class Cat(val name: String) extends Animal("Cat")
+
+case class PetOwner(owner: String, pet: Animal)
+
 // Type substitution models
 //-------------------------
 // 0-level
