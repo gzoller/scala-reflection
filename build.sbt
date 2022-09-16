@@ -1,4 +1,4 @@
-import sbtghactions.JavaSpec.Distribution.Zulu
+import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
 
 inThisBuild(List(
   organization := "com.github.pjfanning",
@@ -48,7 +48,6 @@ lazy val root = project
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"))
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
   RefPredicate.StartsWith(Ref.Tag("v"))

@@ -33,19 +33,19 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout current branch (full)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 8
 
       - name: Cache sbt
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.sbt
@@ -58,20 +58,27 @@ jobs:
 
       - name: Check that workflows are up to date
         shell: bash
-        run: sbt ++${{ matrix.scala }} githubWorkflowCheck
+        run: sbt '++${{ matrix.scala }}' 'project /' githubWorkflowCheck
 
       - name: Build project
         shell: bash
-        run: sbt ++${{ matrix.scala }} test
+        run: sbt '++${{ matrix.scala }}' test
+
+      - name: Make target directories
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        shell: bash
+        run: mkdir -p target project/target
 
       - name: Compress target directories
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         shell: bash
         run: tar cf targets.tar target project/target
 
       - name: Upload target directories
-        uses: actions/upload-artifact@v2
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        uses: actions/upload-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}
+          name: target-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.scala }}
           path: targets.tar
 
   publish:
@@ -90,19 +97,19 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout current branch (full)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 8
 
       - name: Cache sbt
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.sbt
@@ -114,9 +121,9 @@ jobs:
           key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
       - name: Download target directories (3.2.0)
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-3.2.0-${{ matrix.java }}
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.2.0
 
       - name: Inflate target directories (3.2.0)
         run: |
@@ -129,4 +136,4 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-        run: sbt ++${{ matrix.scala }} ci-release
+        run: sbt '++${{ matrix.scala }}' ci-release
