@@ -1,7 +1,7 @@
 # Scala3 Reflection
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/scala3-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.2.0/jar)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/scala3-reflection_3/badge.svg)](https://search.maven.org/artifact/com.github.pjfanning/scala-reflection_3/1.2.0/jar)
 
 This is a fork of [gzoller/scala-reflection](https://github.com/gzoller/scala-reflection). Please see its readme to understand how this lib works.
 
