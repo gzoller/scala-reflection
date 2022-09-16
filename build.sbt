@@ -21,8 +21,6 @@ inThisBuild(List(
 ))
 
 name := "scala3-reflection"
-version := "1.2.0-SNAPSHOT"
-//organization in ThisBuild := "co.blocke"
 ThisBuild / organization := "com.github.pjfanning"
 ThisBuild / scalaVersion := "3.2.0"
 
