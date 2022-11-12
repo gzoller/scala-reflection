@@ -18,12 +18,12 @@ case class TypeMemberInfo(
     memberType: RType
   ) extends RType:
 
-  val fullName = name
+  val fullName: String = name
 
-  lazy val infoClass = impl.Clazzes.ObjectClazz
+  lazy val infoClass: Class[_] = impl.Clazzes.ObjectClazz
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    {if(!supressIndent) tabs(tab) else ""} + name + s"[$typeSymbol]: "+ memberType.show(tab+1,name :: seenBefore, true)
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    {if(!suppressIndent) tabs(tab) else ""} + name + s"[$typeSymbol]: "+ memberType.show(tab+1,name :: seenBefore, true)
     
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( TYPE_MEMBER_INFO )

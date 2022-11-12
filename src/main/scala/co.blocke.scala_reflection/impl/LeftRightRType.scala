@@ -50,13 +50,13 @@ trait LeftRightRType extends AppliedRType:
     }   
 
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = 
+    val newTab = {if suppressIndent then tab else tab+1}
     val simpleName = this.getClass.getSimpleName match {
       case "EitherInfo"       => "Either"
       case "UnionInfo"        => "Union"
       case "IntersectionInfo" => "Intersection"
     }
-    {if(!supressIndent) tabs(tab) else ""} + simpleName+":\n"
+    {if(!suppressIndent) tabs(tab) else ""} + simpleName+":\n"
     + tabs(newTab)+ "left--" + leftType.show(newTab+1,name :: seenBefore,true)
     + tabs(newTab)+ "right--" + rightType.show(newTab+1,name :: seenBefore,true)  

@@ -1,6 +1,8 @@
 package co.blocke.scala_reflection
 
 import impl.*
+
+import scala.annotation.tailrec
 // import scala.runtime.Statics.releaseFence
 
 /** Mnemonic symbol for a type--typically a paramaterized type, e.g. Foo[T], where T is the symbol */
@@ -44,14 +46,15 @@ def mangleArrayClassName(tpe: RType): String =
 extension [A,B](xs: List[A]) {
   def findMap( p: (A) => Option[B] ): Option[B] = 
     var these: List[A] = xs
-    while (!these.isEmpty) {
+    while (these.nonEmpty) {
       val pRet = p(these.head)
       if pRet.isDefined then return pRet
       these = these.tail
     }
     None
 
-  def filterMap(p: A => Option[B]): List[B] = 
+  def filterMap(p: A => Option[B]): List[B] =
+    @tailrec
     def doit(l: List[A], acc: List[B]): List[B] = {
       if (l.isEmpty)
         acc

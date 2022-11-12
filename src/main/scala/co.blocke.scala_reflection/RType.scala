@@ -24,7 +24,7 @@ trait RType extends Serializable:
   def show(
             tab: Int = 0,
             seenBefore: List[String] = Nil,
-            supressIndent: Boolean = false,
+            suppressIndent: Boolean = false,
             modified: Boolean = false // modified is "special", ie. don't show index & sort for nonconstructor fields
           ): String
 
