@@ -42,7 +42,19 @@ trait ScalaClassInfoBase extends ClassInfo:
   lazy val typeMembers = _typeMembers
   lazy val annotations = _annotations
   lazy val mixins = _mixins
-  lazy val infoClass: Class[_] = Class.forName(name)
+  lazy val infoClass: Class[_] = {
+    try {
+      Class.forName(name)
+    } catch {
+      case cnfe: ClassNotFoundException => {
+        if (name.contains("$.")) {
+          Class.forName(name.replace("$.", "$"))
+        } else {
+          throw cnfe
+        }
+      }
+    }
+  }
   lazy val typeParams = infoClass.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
   override def toType(quotes: Quotes): quotes.reflect.TypeRepr =  
@@ -73,12 +85,12 @@ trait ScalaClassInfoBase extends ClassInfo:
   // type hint modifiers, so for the purposes of serialization we want to filter out "uninteresting" type members (e.g. primitives)
   def filterTraitTypeParams: ScalaClassInfoBase 
 
-  def show(tab:Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
+  def show(tab:Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
     if seenBefore.contains(name) then
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
     else
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName
       + {if isValueClass then "--Value Class--" else ""}
       + s"($name):\n"
       + tabs(newTab) + "fields:\n" + {if modified then fields.map(f => tabs(newTab+1) + f.name+s"<${f.fieldType.infoClass.getName}>\n").mkString else fields.map(_.show(newTab+1, name::seenBefore)).mkString}
@@ -151,9 +163,10 @@ object ScalaClassInfo:
       MapStringByteEngine.read(bbuf),
       MapStringListByteEngine.read(bbuf),
       ArrayStringByteEngine.read(bbuf),
+      ArrayRTypeByteEngine.read(bbuf),
       BooleanByteEngine.read(bbuf),
       BooleanByteEngine.read(bbuf)
-      )
+    )
 
 case class ScalaClassInfo protected[scala_reflection] (
     name:                   String,
@@ -165,6 +178,7 @@ case class ScalaClassInfo protected[scala_reflection] (
     _annotations:           Map[String, Map[String,String]],
     paths:                  Map[String, Map[String,List[Int]]],
     _mixins:                Array[String],
+    children:               Array[RType],
     override val isAppliedType: Boolean,
     isValueClass:           Boolean
   ) extends ScalaClassInfoBase:
@@ -179,20 +193,21 @@ case class ScalaClassInfo protected[scala_reflection] (
       )
 
 
-  override def show(tab:Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
+  override def show(tab:Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
     val showNCFields = {if !modified then nonConstructorFields else nonConstructorFields.sortBy(_.name) }
 
     if seenBefore.contains(name) then
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
     else
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName
       + {if isValueClass then "--Value Class--" else ""}
       + s"($name):\n"
       + tabs(newTab) + "fields:\n" + fields.map(_.show(newTab+1,name :: seenBefore)).mkString
-      + tabs(newTab) + "non-constructor fields:\n" + showNCFields.map(_.show(newTab+1,name :: seenBefore, supressIndent, modified)).mkString
+      + tabs(newTab) + "non-constructor fields:\n" + showNCFields.map(_.show(newTab+1,name :: seenBefore, suppressIndent, modified)).mkString
       + {if annotations.filterNot((k,_)=>k == "co.blocke.scala_reflection.S3Reflection").nonEmpty then tabs(newTab) + "annotations: "+annotations.filterNot((k,_)=>k == "co.blocke.scala_reflection.S3Reflection").toString + "\n" else ""}
       + {if( typeMembers.nonEmpty ) tabs(newTab) + "type members:\n" + typeMembers.map(_.show(newTab+1,name :: seenBefore)).mkString else ""}
+      + {if children.isEmpty then "" else tabs(newTab) + "children:\n" + children.map(_.show(newTab+1,name :: seenBefore)).mkString}
 
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( SCALA_CLASS_INFO )
@@ -205,6 +220,7 @@ case class ScalaClassInfo protected[scala_reflection] (
     MapStringByteEngine.write(bbuf, _annotations)
     MapStringListByteEngine.write(bbuf, paths)
     ArrayStringByteEngine.write(bbuf, _mixins)
+    ArrayRTypeByteEngine.write(bbuf, children)
     BooleanByteEngine.write(bbuf, isAppliedType)
     BooleanByteEngine.write(bbuf, isValueClass)
 
@@ -256,13 +272,13 @@ case class JavaClassInfo protected[scala_reflection] (
         name
     this.copy(_proxy = Some(newProxy), fullName = newFullName)
 
-  def show(tab:Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
+  def show(tab:Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
 
     if seenBefore.contains(name) then
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
     else
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName
       + s"($name):\n"
       + tabs(newTab) + "fields:\n" + fields.map(_.show(newTab+1,name :: seenBefore)).mkString
       + {if annotations.nonEmpty then tabs(newTab) + "annotations: "+annotations.toString + "\n" else ""}
@@ -319,8 +335,8 @@ case class JavaClassInfoProxy protected[scala_reflection] (
 
   val typeMembers: Array[TypeMemberInfo] = Nil.toArray  // unused for Java classes but needed on ClassInfo
 
-  def show(tab:Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name)\n"
+  def show(tab:Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name)\n"
 
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( JAVA_CLASS_INFO_PROXY )

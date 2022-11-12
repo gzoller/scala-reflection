@@ -12,10 +12,10 @@ object SelfRefRType:
   def fromBytes( bbuf: ByteBuffer ): SelfRefRType = SelfRefRType(StringByteEngine.read(bbuf))
 
 case class SelfRefRType(name: String) extends RType:
-  val fullName = name
-  lazy val infoClass = Class.forName(name)
-  def resolve = RType.of(infoClass)
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = s"SelfRefRType of $name" 
+  val fullName: String = name
+  lazy val infoClass: Class[_] = Class.forName(name)
+  def resolve: RType = RType.of(infoClass)
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = s"SelfRefRType of $name" 
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put(SELFREF)
     StringByteEngine.write(bbuf, name)

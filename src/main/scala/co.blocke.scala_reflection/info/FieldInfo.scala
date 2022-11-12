@@ -19,9 +19,9 @@ trait FieldInfo extends Serializable:
 
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType] ): FieldInfo
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
-    {if(!supressIndent) tabs(tab) else ""}
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
+    {if(!suppressIndent) tabs(tab) else ""}
       + s"(${if !modified then index else '_'})" 
       + {if originalSymbol.isDefined then s"[${originalSymbol.get}]" else ""}
       + s" $name: "
