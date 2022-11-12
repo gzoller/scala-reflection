@@ -7,16 +7,6 @@ import java.util.Optional
 
 class Options extends munit.FunSuite:
 
-  test("Option[String]") {
-    val result = RType.of[Option[String]]
-    assertEquals( result.show(), "Option of java.lang.String\n")
-  }
-
-  test("java ArrayList of Option[String]") {
-    val result = RType.of[java.util.ArrayList[Option[String]]]
-    assertEquals( result.show(), "JavaListInfo(java.util.ArrayList): Option of java.lang.String\n")
-  }
-
   test("Scala optional field") {
     val result = RType.of[NormalOption]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.NormalOption):

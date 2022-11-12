@@ -72,7 +72,7 @@ class Collections extends munit.FunSuite:
     val result = RType.of[Coll4m]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Coll4m):
     |   fields:
-    |      (0) a: MapLikeInfo(scala.collection.mutable.HashMap):
+    |      (0) a: MapLikeInfo(scala.collection.mutable.ListMap):
     |         java.lang.String
     |         scala.Boolean
     |""".stripMargin)

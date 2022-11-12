@@ -17,8 +17,8 @@ case class ObjectInfo protected[scala_reflection](
   val fullName = name
   lazy val infoClass: Class[_] = Class.forName(name)
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = 
-    {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name)\n"
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+    {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name)\n"
 
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( OBJECT_INFO )

@@ -12,9 +12,9 @@ trait EnumInfo extends RType:
   def ordinal(s: String): Int
   def valueOf(s: String): Any
   def valueOf(i: Int): Any
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
-    val newTab = {if suppressIndent then tab else tab+1}
-    {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) with values [${values.map(_.toString).mkString(",")}]\n"
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+    val newTab = {if supressIndent then tab else tab+1}
+    {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) with values [${values.map(_.toString).mkString(",")}]\n"
 
 //---------------------------------------------------------
 
@@ -87,9 +87,9 @@ case class JavaEnumInfo protected[scala_reflection](
   val fullName = name
   lazy val infoClass: Class[_] = Class.forName(name)
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
-    val newTab = {if suppressIndent then tab else tab+1}
-    {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName +s"(${infoClass.getName})\n"
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+    val newTab = {if supressIndent then tab else tab+1}
+    {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName +s"(${infoClass.getName})\n"
 
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( JAVA_ENUM_INFO )

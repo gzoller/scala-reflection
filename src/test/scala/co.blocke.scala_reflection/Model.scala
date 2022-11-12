@@ -87,7 +87,7 @@ case class Coll4(a: scala.collection.immutable.ListMap[String,Boolean])
 case class Coll1m(a: scala.collection.mutable.ListBuffer[String])
 case class Coll2m(a: scala.collection.mutable.HashSet[String])
 case class Coll3m(a: scala.collection.mutable.Map[String,Float])
-case class Coll4m(a: scala.collection.mutable.HashMap[String,Boolean])
+case class Coll4m(a: scala.collection.mutable.ListMap[String,Boolean])
 case class NestedColl(a: Map[String, List[Option[Int]]])
 
 // Tuple
@@ -127,16 +127,6 @@ case object Vanilla extends Flavor
 case object Chocolate extends Flavor
 case object Bourbon extends Flavor
 case class FlavorHolder(f: Flavor)
-
-sealed abstract class Animal(val animalType: String) {
-  val name: String
-}
-
-class Dog(val name: String) extends Animal("Dog")
-
-class Cat(val name: String) extends Animal("Cat")
-
-case class PetOwner(owner: String, pet: Animal)
 
 // Type substitution models
 //-------------------------
