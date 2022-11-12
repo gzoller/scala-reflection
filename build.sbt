@@ -1,14 +1,14 @@
 import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
 
 inThisBuild(List(
-  organization := "com.github.pjfanning",
-  homepage := Some(url("https://github.com/pjfanning/scala3-reflection")),
+  organization := "co.blocke",
+  homepage := Some(url("https://github.com/gzoller/scala-reflection")),
   licenses := List("MIT" -> url("https://opensource.org/licenses/MIT")),
   developers := List(
     Developer(
       "gzoller",
       "Greg Zoller",
-      "gzoller@outlook.com",
+      "gzoller@blocke.co",
       url("http://www.blocke.co")
     ),
     Developer(
@@ -20,8 +20,8 @@ inThisBuild(List(
   )
 ))
 
-name := "scala3-reflection"
-ThisBuild / organization := "com.github.pjfanning"
+name := "scala-reflection"
+ThisBuild / organization := "co.blocke"
 ThisBuild / scalaVersion := "3.2.1"
 
 lazy val root = project
