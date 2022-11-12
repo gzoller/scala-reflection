@@ -5,7 +5,7 @@ import Clazzes.*
 import java.nio.ByteBuffer
 
 enum PrimitiveType(val name: String, val _infoClass: Class[_], serialToken: Byte) extends RType:
-  val fullName: String = name
+  val fullName = name
   lazy val infoClass: Class[_] = _infoClass
   def toBytes( bbuf: ByteBuffer ): Unit = bbuf.put( serialToken )
 
@@ -31,8 +31,8 @@ enum PrimitiveType(val name: String, val _infoClass: Class[_], serialToken: Byte
   case Java_Object   extends PrimitiveType("java.lang.Object", ObjectClazz, JAVA_OBJECT)
   case Java_Number   extends PrimitiveType("java.lang.Number", JNumberClazz, JAVA_NUMBER)
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
-    {if(!suppressIndent) tabs(tab) else ""} + this.name + "\n"
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+    {if(!supressIndent) tabs(tab) else ""} + this.name + "\n"
 
 
 import PrimitiveType._

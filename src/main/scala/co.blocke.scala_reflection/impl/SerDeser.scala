@@ -44,10 +44,10 @@ object MapStringByteEngine extends BytesEngine[Map[String,Map[String,String]]]:
 
   def read( bbuf: ByteBuffer ): Map[String,Map[String,String]] =
     val len = bbuf.getInt()
-    (0 until len).map{ _ => 
+    (0 to len-1).map{ _ => 
       val k = StringByteEngine.read(bbuf)
       val vlen = bbuf.getInt()
-      val v: Map[String,String] = (0 until vlen).map {_ =>
+      val v: Map[String,String] = (0 to vlen-1).map {_ =>
         val k2 = StringByteEngine.read(bbuf)
         val v2 = StringByteEngine.read(bbuf)
         (k2,v2)
@@ -72,13 +72,13 @@ object MapStringListByteEngine extends BytesEngine[Map[String,Map[String,List[In
 
   def read( bbuf: ByteBuffer ): Map[String,Map[String,List[Int]]] =
     val len = bbuf.getInt()
-    (0 until len).map{ _ => 
+    (0 to len-1).map{ _ => 
       val k = StringByteEngine.read(bbuf)
       val len2 = bbuf.getInt()
-      val v = (0 until len2).map{ _ =>
+      val v = (0 to len2-1).map{ _ =>
         val k2 = StringByteEngine.read(bbuf)
         val arrLen = bbuf.getInt()
-        val v2 = (0 until arrLen).map(_ => bbuf.getInt()).toList
+        val v2 = (0 to arrLen-1).map(_ => bbuf.getInt()).toList
         (k2,v2)
       }.toMap
       (k,v)
@@ -96,7 +96,7 @@ object MapStringRTypeByteEngine extends BytesEngine[Map[String,RType]]:
 
   def read( bbuf: ByteBuffer ): Map[String,RType] =
     val len = bbuf.getInt()
-    (0 until len).map{ _ => 
+    (0 to len-1).map{ _ => 
       val k = StringByteEngine.read(bbuf)
       val v = RTypeByteEngine.read(bbuf)
       (k,v)
@@ -111,7 +111,7 @@ object ArrayStringByteEngine extends BytesEngine[Array[String]]:
 
   def read( bbuf: ByteBuffer ): Array[String] =
     val len = bbuf.getInt()
-    (0 until len).map(_ => StringByteEngine.read(bbuf)).toArray
+    (0 to len-1).map(_ => StringByteEngine.read(bbuf)).toArray
 
 
 // *** CUSTOM ***
@@ -122,7 +122,7 @@ object ArrayRTypeByteEngine extends BytesEngine[Array[RType]]:
 
   def read( bbuf: ByteBuffer ): Array[RType] =
     val len = bbuf.getInt()
-    (0 until len).map(_ => RTypeByteEngine.read(bbuf)).toArray
+    (0 to len-1).map(_ => RTypeByteEngine.read(bbuf)).toArray
 
 
 // *** CUSTOM ***
@@ -133,7 +133,7 @@ object ArrayFieldInfoByteEngine extends BytesEngine[Array[FieldInfo]]:
 
   def read( bbuf: ByteBuffer ): Array[FieldInfo] =
     val len = bbuf.getInt()
-    (0 until len).map(_ => FieldInfoByteEngine.read(bbuf)).toArray
+    (0 to len-1).map(_ => FieldInfoByteEngine.read(bbuf)).toArray
 
 
 // *** CUSTOM ***
@@ -151,7 +151,7 @@ object OptionArrayStringByteEngine extends BytesEngine[Option[Array[String]]]:
       case 0 => None
       case 1 => Some{
           val len = bbuf.getInt()
-          (0 until len).map(_ => StringByteEngine.read(bbuf)).toArray    
+          (0 to len-1).map(_ => StringByteEngine.read(bbuf)).toArray    
         }
     }
 

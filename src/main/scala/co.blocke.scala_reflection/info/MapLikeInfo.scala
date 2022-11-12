@@ -64,9 +64,9 @@ case class MapLikeInfo protected[scala_reflection](
     case e => e
   }
 
-  override def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if suppressIndent then tab else tab+1}
-    {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
+  override def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+    val newTab = {if supressIndent then tab else tab+1}
+    {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
     + s"($name):\n"
     + elementType.show(newTab)
     + elementType2.show(newTab)
