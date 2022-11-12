@@ -213,3 +213,13 @@ class JavaNonTasty extends munit.FunSuite:
     |            (0) jThing: java.lang.Integer
     |""".stripMargin)
   }
+
+  test("Java parameterized class field member (Wildcard)") {
+    val result = RType.of[co.blocke.reflect.JavaParamHolder2]
+    assertEquals( result.show(), """JavaClassInfo(co.blocke.reflect.JavaParamHolder2):
+    |   fields:
+    |      (0) jFoo: JavaClassInfo(co.blocke.reflect.JavaParam):
+    |         fields:
+    |            (0) jThing: UnknownInfo(sun.reflect.generics.reflectiveObjects.WildcardTypeImpl)
+    |""".stripMargin)
+  }

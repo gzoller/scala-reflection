@@ -87,7 +87,7 @@ case class Coll4(a: scala.collection.immutable.ListMap[String,Boolean])
 case class Coll1m(a: scala.collection.mutable.ListBuffer[String])
 case class Coll2m(a: scala.collection.mutable.HashSet[String])
 case class Coll3m(a: scala.collection.mutable.Map[String,Float])
-case class Coll4m(a: scala.collection.mutable.ListMap[String,Boolean])
+case class Coll4m(a: scala.collection.mutable.HashMap[String,Boolean])
 case class NestedColl(a: Map[String, List[Option[Int]]])
 
 // Tuple
