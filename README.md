@@ -183,6 +183,7 @@ Nicolas Stucki (@nicolasstucki)
 
 ## Release Notes:
 
+* 1.1.5 - Support Scala 3.2.1 and fix issues
 * 1.0.0 - First GA release
 * 1.0.0-RC2 - Match compatibility with Scala 3 RC2
 * 1.0.0-M2 - Initial release for Scala 3.0.0-M2
