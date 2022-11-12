@@ -40,9 +40,9 @@ case class TryInfo protected[scala_reflection](
     else
       throw new ReflectException(s"AppliedType select index $i out of range for ${name}")
       
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
-    {if(!supressIndent) tabs(tab) else ""} + s"Try of " + tryType.show(newTab,name :: seenBefore,true)
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
+    {if(!suppressIndent) tabs(tab) else ""} + s"Try of " + tryType.show(newTab,name :: seenBefore,true)
 
   override def resolveTypeParams( paramMap: Map[TypeSymbol, RType] ): RType = 
     _tryType match {

@@ -25,7 +25,7 @@ class ScalaTasty extends munit.FunSuite:
 
   test("create basic Tasty class") {
     val p = RType.of[Person]
-    val person = p.asInstanceOf[ScalaCaseClassInfo].constructWith[Person](List("Frank", 35, 5))
+    val person = p.asInstanceOf[ScalaCaseClassInfo].constructWith[Person](List("Frank", Integer.valueOf(35), Integer.valueOf(5)))
     assertEquals(person, Person("Frank",35,5))
   }
 
@@ -117,7 +117,7 @@ class ScalaTasty extends munit.FunSuite:
     |      (1) b: java.lang.String
     |""".stripMargin)
     val wd = result.asInstanceOf[ScalaCaseClassInfo]
-    val newWd = wd.constructWith[WithDefault](List(5,wd.fields(1).defaultValue.get))
+    val newWd = wd.constructWith[WithDefault](List(Integer.valueOf(5),wd.fields(1).defaultValue.get))
     assertEquals(newWd, WithDefault(5))
   }
 
@@ -193,6 +193,28 @@ class ScalaTasty extends munit.FunSuite:
     |            ObjectInfo(co.blocke.scala_reflection.Chocolate)
     |            ObjectInfo(co.blocke.scala_reflection.Bourbon)
     |""".stripMargin)
+  }
+
+  test("sealed abstract class with case class") {
+    val result = RType.of[PetOwner]
+    assertEquals(result.show(),
+      """ScalaCaseClassInfo(co.blocke.scala_reflection.PetOwner):
+        |   fields:
+        |      (0) owner: java.lang.String
+        |      (1) pet: ScalaClassInfo(co.blocke.scala_reflection.Animal):
+        |         fields:
+        |            (0) animalType: java.lang.String
+        |         non-constructor fields:
+        |         children:
+        |            ScalaClassInfo(co.blocke.scala_reflection.Dog):
+        |               fields:
+        |                  (0) name: java.lang.String
+        |               non-constructor fields:
+        |            ScalaClassInfo(co.blocke.scala_reflection.Cat):
+        |               fields:
+        |                  (0) name: java.lang.String
+        |               non-constructor fields:
+        |""".stripMargin)
   }
 
   test("handle intersection types") {

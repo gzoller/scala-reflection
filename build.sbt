@@ -1,8 +1,8 @@
-import sbt.Keys.libraryDependencies
+import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
 
 inThisBuild(List(
-  organization := "co.blocke",
-  homepage := Some(url("https://github.com/gzoller/scala-reflection")),
+  organization := "com.github.pjfanning",
+  homepage := Some(url("https://github.com/pjfanning/scala3-reflection")),
   licenses := List("MIT" -> url("https://opensource.org/licenses/MIT")),
   developers := List(
     Developer(
@@ -10,14 +10,19 @@ inThisBuild(List(
       "Greg Zoller",
       "gzoller@outlook.com",
       url("http://www.blocke.co")
+    ),
+    Developer(
+      "pjfanning",
+      "PJ Fanning",
+      "",
+      url("https://github.com/pjfanning")
     )
   )
 ))
 
-name := "scala-reflection"
-//organization in ThisBuild := "co.blocke"
-ThisBuild / organization := "co.blocke"
-scalaVersion := "3.0.2"
+name := "scala3-reflection"
+ThisBuild / organization := "com.github.pjfanning"
+ThisBuild / scalaVersion := "3.2.1"
 
 lazy val root = project
   .in(file("."))
@@ -39,20 +44,25 @@ lazy val root = project
     )
   )
 
-lazy val tests = project
-  .in(file("plugin_tests"))
-  .settings(settings)
-  .settings(
-    name := "hello",
-    scalaVersion := "3.0.2",
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"))
+ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(
+  RefPredicate.Equals(Ref.Branch("main")),
+  RefPredicate.StartsWith(Ref.Tag("v"))
+)
 
-    libraryDependencies += "co.blocke" %% "scala-reflection" % version.value,
-    libraryDependencies += compilerPlugin("co.blocke" %% "scala-reflection" % version.value),
-    libraryDependencies ++= Seq(
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.1",  // misc 3rd party Java library for test only--could be anything
-      "org.scalameta"  %% "munit"                  % "0.7.29" % Test
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}",
+      "CI_SNAPSHOT_RELEASE" -> "+publishSigned"
     )
   )
+)
 
 //==========================
 // Settings

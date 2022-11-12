@@ -23,7 +23,7 @@ case class TraitInfo protected[scala_reflection](
   ) extends RType with AppliedRType: 
 
   val fullName: String = 
-    if actualParameterTypes.size > 0 then
+    if actualParameterTypes.nonEmpty then
       name + actualParameterTypes.map(_.fullName).toList.mkString("[",",","]")
     else
       name
@@ -61,11 +61,11 @@ case class TraitInfo protected[scala_reflection](
     else
       throw new ReflectException(s"AppliedType select index $i out of range for ${name}")   
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
 
     if seenBefore.contains(name) then
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
     else
       val params = 
         if actualParameterTypes.isEmpty then 
@@ -73,7 +73,7 @@ case class TraitInfo protected[scala_reflection](
         else 
           val syms = actualParameterTypes.zip(paramSymbols)
           " actualParamTypes: [\n"+syms.map{ (ap:RType, s:TypeSymbol) => tabs(tab+1) + s.toString+": "+ap.show(tab+2,name :: seenBefore, true) }.mkString + tabs(tab) + "]"
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName
       + s"($name)$params with fields:\n"
       + { fields.toList.map(f => tabs(tab+1)+f.name+{if f.originalSymbol.isDefined then "["+f.originalSymbol.get.toString+"]" else ""}+": "+f.fieldType.show(tab+1, Nil, true)).mkString("") }
 
@@ -93,7 +93,7 @@ object SealedTraitInfo:
       ArrayRTypeByteEngine.read(bbuf)
       )
 
-case class SealedTraitInfo protected(
+case class SealedTraitInfo protected[scala_reflection](
     name: String, 
     children: Array[RType]
   ) extends RType:
@@ -101,12 +101,12 @@ case class SealedTraitInfo protected(
   val fullName: String = name + children.map(_.fullName).toList.mkString("[",",","]")
   lazy val infoClass: Class[_] = Class.forName(name)
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if supressIndent then tab else tab+1}
+  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
+    val newTab = {if suppressIndent then tab else tab+1}
     if seenBefore.contains(name) then
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
     else
-      {if(!supressIndent) tabs(tab) else ""} + this.getClass.getSimpleName 
+      {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName
       + s"($name)"
       + {if children.isEmpty then "\n" else ":\n"+ tabs(newTab) + "children:\n" + children.map(_.show(newTab+1,name :: seenBefore)).mkString}
 
