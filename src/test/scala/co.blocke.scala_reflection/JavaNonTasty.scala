@@ -38,7 +38,7 @@ class JavaNonTasty extends munit.FunSuite:
 
   test("create Java object") {
     val p = RType.of[co.blocke.reflect.Person].asInstanceOf[JavaClassInfo]
-    val person = p.constructWith[co.blocke.reflect.Person](List(Integer.valueOf(35), "Frank", Integer.valueOf(5)))
+    val person = p.constructWith[co.blocke.reflect.Person](List(35, "Frank", 5))
     assertEquals(person.getName,"Frank")
     assertEquals(person.getAge,35)
     assertEquals(person.getOther,5)
@@ -51,12 +51,7 @@ class JavaNonTasty extends munit.FunSuite:
     val jx = RType.of[co.blocke.reflect.JavaTypes].asInstanceOf[JavaClassInfo]
     val number: java.lang.Number = java.lang.Integer.valueOf(123).asInstanceOf[java.lang.Number]
     val inst = jx.constructWith[co.blocke.reflect.JavaTypes](List(
-      java.lang.Boolean.TRUE, java.lang.Boolean.FALSE, java.lang.Byte.valueOf(5.toByte),
-      java.lang.Byte.valueOf(3.toByte), java.lang.Character.valueOf('x'), java.lang.Character.valueOf('y'),
-      java.lang.Double.valueOf(1.2D), java.lang.Double.valueOf(2.3D), java.lang.Float.valueOf(4.5F),
-      java.lang.Float.valueOf(5.6F), Integer.valueOf(1), Integer.valueOf(2), java.lang.Long.valueOf(3L),
-      java.lang.Long.valueOf(4L), number, "something", java.lang.Short.valueOf(5.toShort),
-      java.lang.Short.valueOf(6.toShort), "foom"
+      true, false, 5.toByte, 3.toByte, 'x', 'y', 1.2D, 2.3D, 4.5F, 5.6F, 1, 2, 3L, 4L, number, "something", 5.toShort, 6.toShort, "foom"
     ))
 
     val _a = jx.field("jBoolean").get
@@ -211,15 +206,5 @@ class JavaNonTasty extends munit.FunSuite:
     |      (0) jFoo: JavaClassInfo(co.blocke.reflect.JavaParam):
     |         fields:
     |            (0) jThing: java.lang.Integer
-    |""".stripMargin)
-  }
-
-  test("Java parameterized class field member (Wildcard)") {
-    val result = RType.of[co.blocke.reflect.JavaParamHolder2]
-    assertEquals( result.show(), """JavaClassInfo(co.blocke.reflect.JavaParamHolder2):
-    |   fields:
-    |      (0) jFoo: JavaClassInfo(co.blocke.reflect.JavaParam):
-    |         fields:
-    |            (0) jThing: UnknownInfo(sun.reflect.generics.reflectiveObjects.WildcardTypeImpl)
     |""".stripMargin)
   }

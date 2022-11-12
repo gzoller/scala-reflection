@@ -15,7 +15,7 @@ import info.*
 
 
 /** Compiler plugin (phase) that will tap into any TypeDefs, and identify any classes being defined.
- *  It will then pre-reflect on that class and serialized the resultant RType into an annotation.
+ *  It will then pre-reflect on thta class and serialized the resultant RType into an annotation.
  *  This saves 2-6 sec of "priming" time when reflecting on a class using Tasty Inspection (runtime).
  */
 

@@ -35,9 +35,9 @@ case class ArrayInfo protected[scala_reflection](
     case e => e
   }
 
-  override def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = 
-    val newTab = {if suppressIndent then tab else tab+1}
-    {if(!suppressIndent) tabs(tab) else ""} + s"array of " + elementType.show(newTab,name :: seenBefore,true)
+  override def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+    val newTab = {if supressIndent then tab else tab+1}
+    {if(!supressIndent) tabs(tab) else ""} + s"array of " + elementType.show(newTab,name :: seenBefore,true)
   
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( ARRAY_INFO )
