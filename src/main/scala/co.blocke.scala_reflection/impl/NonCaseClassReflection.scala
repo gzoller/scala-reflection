@@ -41,7 +41,7 @@ trait NonCaseClassReflection:
             val annoSymbol = s.symbol.annotations.filter( a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
             val fieldAnnos = 
               annoSymbol.map{ a => 
-                val quotes.reflect.Apply(_, params) = a: @unchecked
+                val quotes.reflect.Apply(_, params) = a
                 val annoName = a.symbol.signature.resultSig
                 (annoName, annoSymToString(quotes)(params))
 
@@ -64,12 +64,12 @@ trait NonCaseClassReflection:
 
     // Include inherited methods (var & def), including inherited!
     // Produces (val <field>, method <field>_=)
-    val getterSetter: List[(Symbol,Symbol)] = symbol.methodMembers.filter(_.name.endsWith("_=")).map{ setter =>
+    val getterSetter: List[(Symbol,Symbol)] = symbol.memberMethods.filter(_.name.endsWith("_=")).map{ setter => 
       // Trying to get the setter... which could be a val (field) if declared is a var, or it could be a method 
       // in the case of user-written getter/setter... OR it could be defined in the superclass
-      symbol.fieldMember(setter.name.dropRight(2)) match {
+      symbol.memberField(setter.name.dropRight(2)) match {
         case dotty.tools.dotc.core.Symbols.NoSymbol => 
-          symbol.methodMember(setter.name.dropRight(2)) match {
+          symbol.memberMethod(setter.name.dropRight(2)) match {
             case Nil => 
               throw new ReflectException(s"Can't find field getter ${setter.name.dropRight(2)} in class ${symbol.fullName} or its superclass(es).")
             case getter => 
@@ -83,7 +83,7 @@ trait NonCaseClassReflection:
     val knownAnnos = baseAnnos ++ getterSetter.map{ (fGet, fSet) =>
       val both = fGet.annotations ++ fSet.annotations
       val annoMap = both.map{ a => 
-        val quotes.reflect.Apply(_, params) = a: @unchecked
+        val quotes.reflect.Apply(_, params) = a
         val annoName = a.symbol.signature.resultSig
         (annoName, annoSymToString(quotes)(params))
       }.toMap
@@ -112,7 +112,7 @@ trait NonCaseClassReflection:
       }
 
       val rtype = 
-        originalTypeSymbol.map( ots => RType.unwindType(quotes)(tob(typeSymbols.indexOf(ots))) ).getOrElse{
+        originalTypeSymbol.map( ots => RType.unwindType(quotes)(tob(typeSymbols.indexOf(ots)).asInstanceOf[TypeRepr]) ).getOrElse{
           if varDefDeclarations.contains(fieldName) then
             RType.unwindType(quotes)(varDefDeclarations(fieldName))
           else
@@ -128,38 +128,23 @@ trait NonCaseClassReflection:
         index,
         fieldName,
         rtype,
-        knownAnnos(fieldName),
+        knownAnnos(fieldName).toMap,
         None, // we don't know how to get the default values (initial set values) of non-constructor fields at present
         originalTypeSymbol.map(_.asInstanceOf[TypeSymbol]),
         true
       )
     }.toArray
 
-    val kidsRTypes = if symbol.flags.is(quotes.reflect.Flags.Sealed) then
-      symbol.children.map { c =>
-        c.tree match {
-          case vd: ValDef =>
-            RType.unwindType(quotes)(vd.tpt.tpe)
-            ObjectInfo(vd.symbol.fullName) // sealed object implementation
-          case _ => // sealed case class implementation
-            val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
-            RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
-        }
-      }
-    else
-      Seq.empty
-
     ScalaClassInfo(
       name,
       fullName,
       paramSymbols,
-      typeMembers,
+      typeMembers.toArray,
       fields,
       nonConstructorFields,
       annotations,
       paths,
       mixins,
-      kidsRTypes.toArray,
       isAppliedType,
       isValueClass
     )

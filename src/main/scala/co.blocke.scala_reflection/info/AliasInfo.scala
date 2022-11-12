@@ -23,9 +23,9 @@ case class AliasInfo protected[scala_reflection] (
     lazy val infoClass = unwrappedType.infoClass
     override def toType(quotes: Quotes): quotes.reflect.TypeRepr = unwrappedType.toType(quotes)
 
-    def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = 
-      val newTab = {if suppressIndent then tab else tab+1}
-      {if(!suppressIndent) tabs(tab) else ""} + s"alias $name defined as " + unwrappedType.show(newTab,name :: seenBefore,true)
+    def show(tab: Int = 0, seenBefore: List[String] = Nil, supressIndent: Boolean = false, modified: Boolean = false): String = 
+      val newTab = {if supressIndent then tab else tab+1}
+      {if(!supressIndent) tabs(tab) else ""} + s"alias $name defined as " + unwrappedType.show(newTab,name :: seenBefore,true)
 
     def toBytes( bbuf: ByteBuffer ): Unit = 
       bbuf.put( ALIAS_INFO )
