@@ -39,3 +39,8 @@ case class JavaSetInfo protected[scala_reflection](
     bbuf.put( JAVA_SET_INFO )
     StringByteEngine.write(bbuf, name)
     RTypeByteEngine.write(bbuf, _elementType)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Java set","name":"$name","fullName":"$fullName","_elementType":""")
+    _elementType.jsSerialize(sb)
+    sb.append("}")

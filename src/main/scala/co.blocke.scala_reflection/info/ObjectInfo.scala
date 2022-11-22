@@ -23,3 +23,6 @@ case class ObjectInfo protected[scala_reflection](
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( OBJECT_INFO )
     StringByteEngine.write(bbuf, name)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"object","name":"$name","fullName":"$fullName"}""")

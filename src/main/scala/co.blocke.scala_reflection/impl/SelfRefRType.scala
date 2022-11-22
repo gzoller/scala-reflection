@@ -19,3 +19,4 @@ case class SelfRefRType(name: String) extends RType:
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put(SELFREF)
     StringByteEngine.write(bbuf, name)
+  def jsSerialize(sb: StringBuffer): Unit = sb.append(s"""{"kind":"self reference","name":"$name","fullName":"$fullName"}""")

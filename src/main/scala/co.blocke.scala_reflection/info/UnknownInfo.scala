@@ -26,3 +26,6 @@ case class UnknownInfo(name: String) extends RType:
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put(UNKNOWN_INFO)
     StringByteEngine.write(bbuf, name)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"unknown","name":"$name","fullName":"$fullName"}""")

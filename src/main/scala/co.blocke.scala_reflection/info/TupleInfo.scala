@@ -73,3 +73,8 @@ case class TupleInfo protected[scala_reflection](
     bbuf.put( TUPLE_INFO )
     StringByteEngine.write(bbuf, name)
     ArrayRTypeByteEngine.write(bbuf, _tupleTypes)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"tuple","name":"$name","fullName":"$fullName","_tupleTypes":""")
+    RType.jsListSerialize(sb, _tupleTypes.toSeq, (buf:StringBuffer, v:RType)=>v.jsSerialize(buf))
+    sb.append("}")

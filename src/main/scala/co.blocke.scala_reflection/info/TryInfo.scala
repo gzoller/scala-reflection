@@ -55,3 +55,8 @@ case class TryInfo protected[scala_reflection](
     bbuf.put( TRY_INFO )
     StringByteEngine.write(bbuf, name)
     RTypeByteEngine.write(bbuf, _tryType)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Try","name":"$name","fullName":"$fullName","_tryType":""")
+    _tryType.jsSerialize(sb)
+    sb.append("}")

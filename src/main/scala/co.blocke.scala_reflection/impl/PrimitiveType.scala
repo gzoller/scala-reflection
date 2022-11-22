@@ -8,6 +8,7 @@ enum PrimitiveType(val name: String, val _infoClass: Class[_], serialToken: Byte
   val fullName: String = name
   lazy val infoClass: Class[_] = _infoClass
   def toBytes( bbuf: ByteBuffer ): Unit = bbuf.put( serialToken )
+  def jsSerialize(sb: StringBuffer): Unit = sb.append(s"""{"kind":"primitive","name":"$name","fullName":"$fullName"}""")
 
   case Scala_Boolean extends PrimitiveType("scala.Boolean", BooleanClazz, SCALA_BOOLEAN)
   case Scala_Byte    extends PrimitiveType("scala.Byte", ByteClazz, SCALA_BYTE)

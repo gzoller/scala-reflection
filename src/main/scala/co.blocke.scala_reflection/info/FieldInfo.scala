@@ -28,6 +28,8 @@ trait FieldInfo extends Serializable:
       + fieldType.show(newTab,name :: seenBefore,true) 
       + { if annotations.nonEmpty then tabs(newTab) + "annotations: " + annotations.toString + "\n" else "" }
 
+  def jsSerialize(sb: StringBuffer): Unit
+
 //------------------------------------------------------------
 
 object ScalaFieldInfo:
@@ -96,6 +98,20 @@ case class ScalaFieldInfo(
     BooleanByteEngine.write(bbuf, isNonConstructorField)
     BooleanByteEngine.write(bbuf, isNonValConstructorField)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"index":$index,"name":"$name","fieldType":""")
+    fieldType.jsSerialize(sb)
+    sb.append(""","annotations":""")
+    RType.jsMapSerialize(
+      sb,
+      annotations,
+      (buf: StringBuffer, v: Map[String, String]) => RType.jsMapSerialize(buf, v, (sb2: StringBuffer, v2: String) => sb2.append(s""""$v2""""))
+    )
+    defaultValueAccessorName.map { case(classNm,method) => sb.append(s""","defaultValueAccessorName":["$classNm,$method]"""") }
+    originalSymbol.map(osym => sb.append(s""","originalSymbol":"$osym""""))
+    sb.append(s""","isNonConstructorField":$isNonConstructorField,"isNonValConstructorField":$isNonValConstructorField}""")
+
+
 //------------------------------------------------------------
 
 object JavaFieldInfo:
@@ -140,3 +156,15 @@ case class JavaFieldInfo(
     ObjectByteEngine.write(bbuf, valueAccessor)
     ObjectByteEngine.write(bbuf, valueSetter)
     OptionStringByteEngine.write(bbuf, originalSymbol.asInstanceOf[Option[String]])
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"index":$index,"name":"$name","fieldType":""")
+    fieldType.jsSerialize(sb)
+    sb.append(""","annotations":""")
+    RType.jsMapSerialize(
+      sb,
+      annotations,
+      (buf:StringBuffer,v:Map[String,String])=>RType.jsMapSerialize(buf,v,(sb2:StringBuffer,v2:String)=>sb2.append(s""""$v2""""))
+    )
+    originalSymbol.map(osym => sb.append(s""","originalSymbol":"$osym""""))
+    sb.append("}")

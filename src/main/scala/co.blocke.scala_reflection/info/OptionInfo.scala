@@ -64,6 +64,13 @@ case class ScalaOptionInfo protected[scala_reflection](
     StringByteEngine.write(bbuf, name)
     RTypeByteEngine.write(bbuf, _optionParamType)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"option","name":$name,"fullName":$fullName,"_optionParamType":""")
+    _optionParamType.jsSerialize(sb)
+    sb.append("}")
+
+
+//-------------------
 
 object JavaOptionalInfo:
   def fromBytes( bbuf: ByteBuffer ): JavaOptionalInfo =
@@ -72,8 +79,6 @@ object JavaOptionalInfo:
       RTypeByteEngine.read(bbuf)
       )
 
-//-------------------
-      
 case class JavaOptionalInfo protected[scala_reflection](
   name: String,
   _optionParamType: RType
@@ -109,3 +114,8 @@ case class JavaOptionalInfo protected[scala_reflection](
     bbuf.put( OPTIONAL_INFO )
     StringByteEngine.write(bbuf, name)
     RTypeByteEngine.write(bbuf, _optionParamType)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Java option","name":"$name","fullName":"$fullName","_optionParamType":""")
+    _optionParamType.jsSerialize(sb)
+    sb.append("}")

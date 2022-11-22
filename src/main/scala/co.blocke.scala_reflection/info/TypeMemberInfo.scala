@@ -30,3 +30,9 @@ case class TypeMemberInfo(
     StringByteEngine.write(bbuf, name)
     StringByteEngine.write(bbuf, typeSymbol.toString)
     RTypeByteEngine.write(bbuf, memberType)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"type member","name":"$name","fullName":"$fullName","typeSymbol":"$typeSymbol","memberType":""")
+    memberType.jsSerialize(sb)
+    sb.append("}")
+
