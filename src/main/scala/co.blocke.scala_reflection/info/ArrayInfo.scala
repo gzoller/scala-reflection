@@ -43,3 +43,8 @@ case class ArrayInfo protected[scala_reflection](
     bbuf.put( ARRAY_INFO )
     StringByteEngine.write(bbuf, name)
     RTypeByteEngine.write(bbuf, _elementType)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"array","name":"$name","fullName":"$fullName","_elementType":""")
+    _elementType.jsSerialize(sb)
+    sb.append("}")

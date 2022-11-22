@@ -18,3 +18,6 @@ case class TypeSymbolInfo(name: String) extends RType:
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put(TYPE_SYMBOL_INFO)
     StringByteEngine.write(bbuf, name)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"type symbol","name":"$name","fullName":"$fullName"}""")

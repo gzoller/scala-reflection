@@ -39,4 +39,11 @@ case class EitherInfo protected[scala_reflection](
     RTypeByteEngine.write(bbuf, _leftType)
     RTypeByteEngine.write(bbuf, _rightType)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Either","name":"$name","fullName":"$fullName","_leftType":""")
+    _leftType.jsSerialize(sb)
+    sb.append(""","_rightType":""")
+    _rightType.jsSerialize(sb)
+    sb.append("}")
+
 

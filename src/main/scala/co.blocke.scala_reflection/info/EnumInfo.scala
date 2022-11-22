@@ -45,6 +45,12 @@ case class ScalaEnumInfo protected[scala_reflection](
     StringByteEngine.write(bbuf, name)
     ArrayStringByteEngine.write(bbuf, values)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Scala enum","name":$name,"fullName":$fullName,"values":""")
+    RType.jsListSerialize(sb, values.toSeq, (buf: StringBuffer, v: String) => buf.append(""""$v""""))
+    sb.append("}")
+
+
 //---------------------------------------------------------
 
 object ScalaEnumerationInfo:
@@ -73,6 +79,12 @@ case class ScalaEnumerationInfo protected[scala_reflection](
     StringByteEngine.write(bbuf, name)
     ArrayStringByteEngine.write(bbuf, values)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Scala Enumeration","name":$name,"fullName":$fullName,"values":""")
+    RType.jsListSerialize(sb, values.toSeq, (buf: StringBuffer, v: String) => buf.append(""""$v""""))
+    sb.append("}")
+
+
 //---------------------------------------------------------
 
 object JavaEnumInfo:
@@ -94,4 +106,6 @@ case class JavaEnumInfo protected[scala_reflection](
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put( JAVA_ENUM_INFO )
     StringByteEngine.write(bbuf, name)
-  
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Java Enum","name":"$name","fullName":"$fullName"}""")

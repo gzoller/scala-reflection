@@ -44,3 +44,10 @@ case class IntersectionInfo protected[scala_reflection](
       StringByteEngine.write(bbuf, name)
       RTypeByteEngine.write(bbuf, _leftType)
       RTypeByteEngine.write(bbuf, _rightType)
+
+    def jsSerialize(sb: StringBuffer): Unit =
+      sb.append(s"""{"kind":"Intersection","name":"$name","fullName":"$fullName","_leftType":""")
+      _leftType.jsSerialize(sb)
+      sb.append(""","_rightType":""")
+      _rightType.jsSerialize(sb)
+      sb.append("}")

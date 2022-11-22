@@ -76,3 +76,10 @@ case class JavaMapInfo protected[scala_reflection](
     StringByteEngine.write(bbuf, name)
     RTypeByteEngine.write(bbuf, _elementType)
     RTypeByteEngine.write(bbuf, _elementType2)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Java map","name":"$name","fullName":"$fullName","_elementType":""")
+    _elementType.jsSerialize(sb)
+    sb.append(""","_elementType2":""")
+    _elementType2.jsSerialize(sb)
+    sb.append("}")
