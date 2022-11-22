@@ -84,6 +84,16 @@ case class TraitInfo protected[scala_reflection](
     ArrayRTypeByteEngine.write(bbuf, actualParameterTypes)
     ArrayStringByteEngine.write(bbuf, paramSymbols.asInstanceOf[Array[String]])
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"trait","name":"$name","fullName":"$fullName","fields":""")
+    RType.jsListSerialize(sb, fields.toSeq, (buf: StringBuffer, v: FieldInfo) => v.jsSerialize(buf))
+    sb.append(""","actualParameterTypes":""")
+    RType.jsListSerialize(sb, actualParameterTypes.toSeq, (buf: StringBuffer, v: RType) => v.jsSerialize(buf))
+    sb.append(""","paramSymbols":""")
+    RType.jsListSerialize(sb, paramSymbols.toSeq, (buf: StringBuffer, v: TypeSymbol) => buf.append(""""$v""""))
+    sb.append("}")
+
+
 //------------------------------------------------------------
 
 object SealedTraitInfo:
@@ -114,5 +124,10 @@ case class SealedTraitInfo protected[scala_reflection](
     bbuf.put( SEALED_TRAIT_INFO )
     StringByteEngine.write(bbuf, name)
     ArrayRTypeByteEngine.write(bbuf, children)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"sealed trait","name":"$name","fullName":"$fullName","children":""")
+    RType.jsListSerialize(sb, children.toSeq, (buf: StringBuffer, v: RType) => v.jsSerialize(buf))
+    sb.append("}")
     
   

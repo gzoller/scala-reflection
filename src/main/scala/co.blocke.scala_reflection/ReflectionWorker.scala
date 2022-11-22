@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 
 import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Constants.Constant
-import dotty.tools.dotc.core.Contexts.Context
+import dotty.tools.dotc.core.Contexts.{Context, ctx}
 import dotty.tools.dotc.core.Decorators.*
 import dotty.tools.dotc.core.Symbols.*
 import dotty.tools.dotc.core.Annotations.*
@@ -10,7 +10,9 @@ import dotty.tools.dotc.core.Names.*
 import dotty.tools.dotc.plugins.{PluginPhase, StandardPlugin}
 import dotty.tools.dotc.transform.Pickler
 import dotty.tools.dotc.quoted.*
+
 import scala.quoted.runtime.impl.QuotesImpl
+import dotty.tools.backend.sjs.GenSJSIR
 import info.*
 
 
@@ -23,7 +25,8 @@ class ReflectionWorker extends StandardPlugin {
   val name: String = "reflectionWorker"
   override val description: String = "heavy-lift reflection worker"
 
-  def init(options: List[String]): List[PluginPhase] = (new ReflectionWorkerPhase) :: Nil
+  def init(options: List[String]): List[PluginPhase] =
+    new ReflectionWorkerPhase :: Nil
 }
 
 class ReflectionWorkerPhase extends PluginPhase {
@@ -33,7 +36,7 @@ class ReflectionWorkerPhase extends PluginPhase {
 
   override val runsAfter = Set(Pickler.name)
 
-  override def transformTypeDef(tree: TypeDef)(implicit ctx: Context): Tree = 
+  override def transformTypeDef(tree: TypeDef)(implicit ctx: Context): Tree =
     if tree.isClassDef && !tree.rhs.symbol.isStatic then  // only look at classes & traits, not objects
       // Reflect on the type (generate an RType), then serialize to string and add the S3Reflection annotation to the class.
       val quotes = QuotesImpl.apply()
@@ -48,6 +51,30 @@ class ReflectionWorkerPhase extends PluginPhase {
     tree
 }
 
+/* Playing around with JS phase...
+class JSWorkerPhase extends PluginPhase {
+  import tpd._
+
+  val phaseName = "reflectionWorkerJS"
+
+  override val runsAfter = Set(GenSJSIR.name)
+
+  override def transformTypeDef(tree: TypeDef)(implicit ctx: Context): Tree =
+    if tree.isClassDef && !tree.rhs.symbol.isStatic && ctx.settings.scalajs.value then  // only look at classes & traits, not objects
+      println("scala.js is enabled!")
+      val s3ReflectionClassSymbol = getClassIfDefined("co.blocke.scala_reflection.S3Reflection").asInstanceOf[ClassSymbol]
+      val anno = tree.symbol.getAnnotation(s3ReflectionClassSymbol)
+      anno.map{ rt =>
+        val rtypeArg = rt.arguments(0)
+        rtypeArg match {
+          case NamedArg(_,Literal(Constant(c))) => println(RType.deserialize(c.toString))
+        }
+        println("isIt? "+(tree.getClass.getName))
+        println("Tree: "+tree.tpe)
+      }
+    tree
+}
+*/
 
 /*
 Handy way to see compiler phases:

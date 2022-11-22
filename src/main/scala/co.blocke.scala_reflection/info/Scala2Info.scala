@@ -17,3 +17,6 @@ case class Scala2Info(name: String) extends RType:
   def toBytes( bbuf: ByteBuffer ): Unit = 
     bbuf.put(SCALA2_INFO)
     StringByteEngine.write(bbuf, name)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"array","name":"$name","fullName":"$fullName"}""")

@@ -32,3 +32,9 @@ case class AliasInfo protected[scala_reflection] (
       StringByteEngine.write(bbuf, definedType)
       RTypeByteEngine.write(bbuf, unwrappedType)
 
+    def jsSerialize(sb: StringBuffer): Unit =
+      sb.append(s"""{"kind":"alias","name":"$name","fullName":"$fullName","definedType":$definedType,"unwrappedType":""")
+      unwrappedType.jsSerialize(sb)
+      sb.append("}")
+
+

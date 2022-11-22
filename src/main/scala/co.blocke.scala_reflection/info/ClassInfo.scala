@@ -94,7 +94,7 @@ trait ScalaClassInfoBase extends ClassInfo:
       + {if isValueClass then "--Value Class--" else ""}
       + s"($name):\n"
       + tabs(newTab) + "fields:\n" + {if modified then fields.map(f => tabs(newTab+1) + f.name+s"<${f.fieldType.infoClass.getName}>\n").mkString else fields.map(_.show(newTab+1, name::seenBefore)).mkString}
-      + {if annotations.filterNot((k,_)=>k == "co.blocke.scala_reflection.S3Reflection").nonEmpty then tabs(newTab) + "annotations: "+annotations.filterNot((k,_)=>k == "co.blocke.scala_reflection.S3Reflection").toString + "\n" else ""}
+      + {if annotations.filterNot((k,_)=>k == S3ANNO).nonEmpty then tabs(newTab) + "annotations: "+annotations.filterNot((k,_)=>k == S3ANNO).toString + "\n" else ""}
       + {if( typeMembers.nonEmpty ) tabs(newTab) + "type members:\n" + typeMembers.map(_.show(newTab+1,name :: seenBefore)).mkString else ""}
 
 //------------------------------------------------------------
@@ -148,6 +148,32 @@ case class ScalaCaseClassInfo protected[scala_reflection] (
     ArrayStringByteEngine.write(bbuf, _mixins)
     BooleanByteEngine.write(bbuf, isAppliedType)
     BooleanByteEngine.write(bbuf, isValueClass)
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Scala case class","name":"$name","fullName":"$fullName","paramSymbols":""")
+    RType.jsListSerialize(sb, paramSymbols.toSeq, (buf: StringBuffer, v: TypeSymbol) => buf.append(s""""$v""""))
+    sb.append(""","_typeMembers":""")
+    RType.jsListSerialize(sb, _typeMembers.toSeq, (buf: StringBuffer, v: TypeMemberInfo) => v.jsSerialize(buf))
+    sb.append(""","_fields":""")
+    RType.jsListSerialize(sb, _fields.toSeq, (buf: StringBuffer, v: FieldInfo) => v.jsSerialize(buf))
+    sb.append(""","_annotations":""")
+    RType.jsMapSerialize(
+      sb,
+      _annotations,
+      (buf: StringBuffer, v: Map[String, String]) => RType.jsMapSerialize(buf, v, (sb2: StringBuffer, v2: String) => sb2.append(s""""$v2""""))
+    )
+    sb.append(""","paths":""")
+    RType.jsMapSerialize(
+      sb,
+      paths,
+      (buf: StringBuffer, v: Map[String, List[Int]]) => RType.jsMapSerialize(buf, v, (sb2: StringBuffer, v2: List[Int]) => RType.jsListSerialize(sb2, v2, (sb3: StringBuffer, v: Int) => sb3.append(v.toString)))
+    )
+    sb.append(""","_mixins":""")
+    RType.jsListSerialize(sb, _mixins.toSeq, (buf: StringBuffer, v: String) => buf.append(s""""$v""""))
+    sb.append(s""","isAppliedType":${isAppliedType.toString}""")
+    sb.append(s""","isValueClass":${isValueClass.toString}""")
+    sb.append("}")
+
 
 //------------------------------------------------------------
 
@@ -224,6 +250,35 @@ case class ScalaClassInfo protected[scala_reflection] (
     BooleanByteEngine.write(bbuf, isAppliedType)
     BooleanByteEngine.write(bbuf, isValueClass)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Scala class","name":"$name","fullName":"$fullName","paramSymbols":""")
+    RType.jsListSerialize(sb, paramSymbols.toSeq, (buf: StringBuffer, v: TypeSymbol) => buf.append(s""""$v""""))
+    sb.append(""","_typeMembers":""")
+    RType.jsListSerialize(sb, _typeMembers.toSeq, (buf: StringBuffer, v: TypeMemberInfo) => v.jsSerialize(buf))
+    sb.append(""","_fields":""")
+    RType.jsListSerialize(sb, _fields.toSeq, (buf: StringBuffer, v: FieldInfo) => v.jsSerialize(buf))
+    sb.append(""","nonConstructorFields":""")
+    RType.jsListSerialize(sb, nonConstructorFields.toSeq, (buf: StringBuffer, v: ScalaFieldInfo) => v.jsSerialize(buf))
+    sb.append(""","_annotations":""")
+    RType.jsMapSerialize(
+      sb,
+      _annotations,
+      (buf: StringBuffer, v: Map[String, String]) => RType.jsMapSerialize(buf, v, (sb2: StringBuffer, v2: String) => sb2.append(s""""$v2""""))
+    )
+    sb.append(""","paths":""")
+    RType.jsMapSerialize(
+      sb,
+      paths,
+      (buf: StringBuffer, v: Map[String, List[Int]]) => RType.jsMapSerialize(buf, v, (sb2: StringBuffer, v2: List[Int]) => RType.jsListSerialize(sb2, v2, (sb3: StringBuffer, v: Int) => sb3.append(v.toString)))
+    )
+    sb.append(""","_mixins":""")
+    RType.jsListSerialize(sb, _mixins.toSeq, (buf: StringBuffer, v: String) => buf.append(s""""$v""""))
+    sb.append(""","children":""")
+    RType.jsListSerialize(sb, children.toSeq, (buf: StringBuffer, v: RType) => v.jsSerialize(buf))
+    sb.append(s""","isAppliedType":${isAppliedType.toString}""")
+    sb.append(s""","isValueClass":${isValueClass.toString}""")
+    sb.append("}")
+
 //------------------------------------------------------------
 
 
@@ -291,6 +346,16 @@ case class JavaClassInfo protected[scala_reflection] (
     ArrayRTypeByteEngine.write(bbuf, paramTypes)
     OptionRTypeByteEngine.write(bbuf, _proxy)
 
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Java class","name":"$name","fullName":"$fullName","paramSymbols":""")
+    RType.jsListSerialize(sb, paramSymbols.toSeq, (buf: StringBuffer, v: TypeSymbol) => buf.append(s""""$v""""))
+    sb.append(""","paramTypes":""")
+    RType.jsListSerialize(sb, paramTypes.toSeq, (buf: StringBuffer, v: RType) => v.jsSerialize(buf))
+    _proxy.map{proxy =>
+      sb.append(s""","_proxy":""")
+      proxy.jsSerialize(sb)
+    }
+    sb.append("}")
 
 object JavaClassInfoProxy:
   def fromBytes( bbuf: ByteBuffer ): JavaClassInfoProxy = 
@@ -344,3 +409,20 @@ case class JavaClassInfoProxy protected[scala_reflection] (
     ArrayFieldInfoByteEngine.write(bbuf, _fields)
     MapStringByteEngine.write(bbuf, _annotations)
     MapStringRTypeByteEngine.write(bbuf, paramMap.asInstanceOf[Map[String,RType]])
+
+  def jsSerialize(sb: StringBuffer): Unit =
+    sb.append(s"""{"kind":"Java class (proxy)","name":"$name","fullName":"$fullName","_fields":""")
+    RType.jsListSerialize(sb, _fields.toSeq, (buf:StringBuffer, v:FieldInfo)=>v.jsSerialize(buf))
+    sb.append(""","_annotations":""")
+    RType.jsMapSerialize(
+      sb,
+      _annotations,
+      (buf: StringBuffer, v: Map[String, String]) => RType.jsMapSerialize(buf, v, (sb2: StringBuffer, v2: String) => sb2.append(s""""$v2""""))
+    )
+    sb.append(""","paramMap":""")
+    RType.jsMapSerialize(
+      sb,
+      paramMap.asInstanceOf[Map[String,RType]],
+      (buf: StringBuffer, v: RType) => v.jsSerialize(buf)
+    )
+    sb.append("}")

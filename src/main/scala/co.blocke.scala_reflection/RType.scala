@@ -21,12 +21,14 @@ trait RType extends Serializable:
   def toBytes( bbuf: ByteBuffer ): Unit
   def toType(quotes: Quotes): quotes.reflect.TypeRepr  = quotes.reflect.TypeRepr.typeConstructorOf(infoClass)
 
+  def jsSerialize(sb: StringBuffer): Unit
+
   def show(
-            tab: Int = 0,
-            seenBefore: List[String] = Nil,
-            suppressIndent: Boolean = false,
-            modified: Boolean = false // modified is "special", ie. don't show index & sort for nonconstructor fields
-          ): String
+    tab: Int = 0,
+    seenBefore: List[String] = Nil,
+    suppressIndent: Boolean = false,
+    modified: Boolean = false // modified is "special", ie. don't show index & sort for nonconstructor fields
+  ): String
 
   override def toString(): String = show()
 
@@ -118,6 +120,14 @@ class RTypeOfWithPlugin(quotes: Quotes) extends RTypeOf:
 
 
 object RType:
+
+  inline def ofJS[T]: String = ${ ofJSImpl[T]() }
+
+  def ofJSImpl[T]()(implicit qctx: Quotes, ttype: scala.quoted.Type[T]): Expr[String] =
+    import qctx.reflect.{_, given}
+    val jsBuf = new StringBuffer()
+    unwindType(qctx)( TypeRepr.of[T]).jsSerialize(jsBuf)
+    Expr(jsBuf.toString)
 
   //------------------------
   //  <<  MACRO ENTRY >>
@@ -289,3 +299,25 @@ object RType:
     val data = java.util.Base64.getDecoder().decode( s )
     val bbuf = ByteBuffer.wrap(data)
     fromBytes(bbuf)
+
+  // Utility Javascript serializeation functions
+  def jsListInternals[V](sb: StringBuffer, someList: Seq[V], vSerFn: (StringBuffer, V) => Unit): Unit =
+    someList.take(someList.size - 1).map { (aThing: V) =>
+      vSerFn(sb, aThing)
+      sb.append(",")
+    }
+    someList.lastOption.map(aThing => vSerFn(sb, aThing))
+
+  def jsListSerialize[V](sb: StringBuffer, someList: Seq[V], vSerFn: (StringBuffer, V) => Unit): Unit =
+    sb.append("[")
+    jsListInternals(sb, someList, vSerFn)
+    sb.append("]")
+
+  def jsMapSerialize[V](sb: StringBuffer, theMap: Map[String, V], vSerFn: (StringBuffer, V) => Unit): Unit =
+    sb.append("{")
+    val vAsSeq = theMap.toSeq
+    jsListInternals[(String, V)](sb, vAsSeq, (buf: StringBuffer, pair: (String, V)) => {
+      buf.append(s""""${pair._1}":""")
+      vSerFn(buf, pair._2)
+    })
+    sb.append("}")
