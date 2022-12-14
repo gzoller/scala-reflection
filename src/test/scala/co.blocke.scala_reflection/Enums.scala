@@ -28,9 +28,9 @@ class Enums extends munit.FunSuite:
     result match {
       case sc: ScalaCaseClassInfo =>
         val e = sc.fields(0).asInstanceOf[ScalaFieldInfo].fieldType.asInstanceOf[ScalaEnumInfo]
-        assertEquals(e.valueOf("Jan"), Month.Jan)
-        assertEquals(e.ordinal("Feb"), 1)
-        assertEquals(e.valueOf(2), Month.Mar)
+        assertEquals( e.valueOf("Jan"), Month.Jan )
+        assertEquals( e.ordinal("Feb"), 1 )
+        assertEquals( e.valueOf(2), Month.Mar )
       case _ => false
     }
   }
