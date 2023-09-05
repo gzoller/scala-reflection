@@ -47,7 +47,7 @@ class ReflectionWorkerPhase extends PluginPhase {
       val reflected = RType.unwindType(quotes)(unpackedType,false)
       val s3ReflectionClassSymbol = getClassIfDefined("co.blocke.scala_reflection.S3Reflection")
       val annoArg = NamedArg("rtype".toTermName, Literal(quotes.reflect.StringConstant( reflected.serialize ).asInstanceOf[dotty.tools.dotc.core.Constants.Constant]))
-      tree.symbol.addAnnotation(Annotation.apply(s3ReflectionClassSymbol.asInstanceOf[ClassSymbol], annoArg) )
+      tree.symbol.addAnnotation(Annotation.apply(s3ReflectionClassSymbol.asInstanceOf[ClassSymbol], annoArg, tree.span) )
     tree
 }
 
