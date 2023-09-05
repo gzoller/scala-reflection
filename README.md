@@ -194,6 +194,7 @@ Nicolas Stucki (@nicolasstucki)
 
 ## Release Notes:
 
+* 1.2.1 - Scala 3.3.0 LTS support
 * 1.2.0 - Experimental Scala.js support
 * 1.1.11 - Scala 3.2.1 supported, plus issue fixes
 * 1.0.0 - First GA release
