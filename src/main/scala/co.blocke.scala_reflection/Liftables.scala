@@ -1,28 +1,18 @@
 package co.blocke.scala_reflection
 
-import quoted.*
-import java.io.*
-import java.util.*
-import ToExpr.*
+import scala.quoted.*
 
-import info._
-import impl.SelfRefRType
+object Liftables:
 
-given ToExpr[TypeSymbol] with {
-  def apply(t: TypeSymbol)(using Quotes) = '{ ${Expr(t.asInstanceOf[String])}.asInstanceOf[TypeSymbol] }
-}
+  // Allow Expr(RType[T])
+  // given RTypeToExpr[T: Type: ToExpr]: ToExpr[RType[T]] with
+  //   def apply(rt: RType[T])(using Quotes): Expr[RType[T]] = rt match 
+  //     case r: RType[T] => Expr(r)
 
-given ToExpr[RType] with {
-  def apply(x: RType)(using Quotes) =
-    '{ RType.deserialize(${Expr(x.serialize) }).asInstanceOf[RType] }
-}
+  given TypeSymbolToExpr: ToExpr[TypeSymbol] with {
+    def apply(x: TypeSymbol)(using Quotes): Expr[TypeSymbol] = Expr(x)
+  }
 
-given ToExpr[TypeMemberInfo] with {
-  def apply(x: TypeMemberInfo)(using Quotes) =
-    '{ new TypeMemberInfo(${Expr(x.name)}, ${Expr(x.typeSymbol)}, ${ Expr(x.memberType) } ) }
-}
-
-given ToExpr[SelfRefRType] with {
-  def apply(x: SelfRefRType)(using Quotes) =
-    '{ new SelfRefRType(${Expr(x.name)}) }
-}
+  given OptTypeSymbolToExpr: ToExpr[Option[TypeSymbol]] with {
+    def apply(x: Option[TypeSymbol])(using Quotes): Expr[Option[TypeSymbol]] = Expr(x)
+  }

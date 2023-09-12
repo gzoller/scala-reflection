@@ -93,6 +93,7 @@ object JavaEnumInfo:
       StringByteEngine.read(bbuf)
       )
 
+      // When we get here: we can use class.getEnumConstants() to return array of T, the valid values of a Java enum
 case class JavaEnumInfo protected[scala_reflection](
   name: String,
 ) extends RType: 

@@ -1,0 +1,68 @@
+java.lang.IndexOutOfBoundsException: 0
+occurred in the presentation compiler.
+
+action parameters:
+offset: 1403
+uri: file://<WORKSPACE>/src/main/scala/co.blocke.scala_reflection/terms/Primitives.scala
+text:
+package co.blocke.scala_reflection
+package terms
+
+import scala.quoted.*
+import rtypes.*
+
+// case class BooleanRType() extends RType[Boolean]{  val name = "scala.Boolean" }
+
+// case class ByteRType() extends RType[Byte]{ val name = "scala.Byte" }
+
+// case class CharRType() extends RType[Char]{ val name = "scala.char" }
+
+// case class DoubleRType() extends RType[Double]{ val name = "scala.Double" }
+
+// case class FloatRType() extends RType[Float]{ val name = "scala.Float" }
+
+// case class IntRType() extends RType[Int]{ val name = "scala.Int" }
+
+// case class LongRType() extends RType[Long]{ val name = "scala.Double" }
+
+// case class ShortRType() extends RType[Short]{ val name = "scala.Short" }
+
+// case class StringRType() extends RType[String]{ val name = "java.lang.String" }
+
+// case class AnyRType() extends RType[Any]{ val name = "scala.Any" }
+
+
+/*
+Expr("co.blocke.scala_reflection.Big").asTerm
+
+ given RTypeToExpr[T: Type: ToExpr]: ToExpr[RType[T]] with
+    def apply(rt: RType[T])(using Quotes): Expr[RType[T]] = rt match 
+      case r: RType[T] => Expr(r)
+*/
+
+trait TermMaker(using val q:Quotes):
+  import q.reflect.*
+  def makeTermF(): Term
+
+object Primitives:
+
+  given StringRTypeTerm: TermMaker(using val q:Quotes) with
+    import q.reflect.* 
+    def makeTermF(): Term = 
+      Apply(
+        Select.unique(New(TypeTree.of[StringRType]),"<init>"), 
+        Nil
+      ).asExprOf[Rtype[@@]]
+
+
+error stacktrace:
+scala.collection.LinearSeqOps.apply(LinearSeq.scala:131)
+	scala.collection.LinearSeqOps.apply$(LinearSeq.scala:128)
+	scala.collection.immutable.List.apply(List.scala:79)
+	dotty.tools.dotc.util.Signatures$.countParams(Signatures.scala:501)
+	dotty.tools.dotc.util.Signatures$.applyCallInfo(Signatures.scala:186)
+	dotty.tools.dotc.util.Signatures$.computeSignatureHelp(Signatures.scala:97)
+	dotty.tools.dotc.util.Signatures$.signatureHelp(Signatures.scala:63)
+	scala.meta.internal.pc.MetalsSignatures$.signatures(MetalsSignatures.scala:17)
+	scala.meta.internal.pc.SignatureHelpProvider$.signatureHelp(SignatureHelpProvider.scala:51)
+	scala.meta.internal.pc.ScalaPresentationCompiler.signatureHelp$$anonfun$1(ScalaPresentationCompiler.scala:371)

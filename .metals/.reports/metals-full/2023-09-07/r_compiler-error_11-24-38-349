@@ -1,0 +1,59 @@
+java.lang.AssertionError: assertion failed
+occurred in the presentation compiler.
+
+action parameters:
+offset: 956
+uri: file://<WORKSPACE>/src/main/scala/co.blocke.scala_reflection/RType.scala
+text:
+package co.blocke.scala_reflection
+
+import scala.quoted.*
+
+trait RType[R]:
+  type T = R                // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
+  val name: String          // fully-qualified class name of this type
+  val infoClass: Class[R]   // JVM class for this type
+  def toType(quotes: Quotes): quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(infoClass).asType.asInstanceOf[Type[R]]
+  def show(
+    tab: Int = 0,
+    seenBefore: List[String] = Nil,
+    suppressIndent: Boolean = false,
+    modified: Boolean = false // modified is "special", ie. don't show index & sort for nonconstructor fields
+  ): String
+  override def toString(): String = show()
+
+/** Needed because just because something is an AppliedType doesn't mean it has parameters.  For examlpe a case class could be
+ *  an applied type (isAppliedType=true) or not.  A collection is always applied.
+ */
+trait AppliedRType:
+  self: RTyp@@e =>
+  def isAppliedType: Boolean = true  // can be overridden to false, e.g. Scala class that isn't parameterized
+  // Take a parameterized type's normal type 'T' and map it to the declared type 'X'
+  def resolveTypeParams( paramMap: Map[TypeSymbol, RType] ): RType
+
+
+// Poked this here for now.  Used for show()
+final inline def tabs(t:Int) = "   "*t
+
+
+object RType:
+    // Primary macro-based entry point to the scala-reflection library
+    //------------------------
+    inline def of[T]: RType[T] = ${ ofImpl[T]() }
+
+    def ofImpl[T]()(implicit qctx: Quotes, ttype: scala.quoted.Type[T]): Expr[RType[T]] =
+      import qctx.reflect.*
+      // This is hard-wired to return RType[Person].  In real life this is reflected.
+      '{ ClassRType[Person]("co.blocke.scala_reflection.Person",
+            List(FieldInfo("name",StringRType()), FieldInfo("age",IntRType()), FieldInfo("thing",ClassRType[Thing]("co.blocke.scala_reflection.Thing", List(FieldInfo("a",IntRType()),FieldInfo("b",StringRType()))).asInstanceOf[RType[Thing]]))
+            ).asInstanceOf[RType[T]] }
+
+
+
+error stacktrace:
+scala.runtime.Scala3RunTime$.assertFailed(Scala3RunTime.scala:11)
+	scala.meta.internal.pc.MetalsInteractive$.contextOfPath(MetalsInteractive.scala:52)
+	scala.meta.internal.pc.MetalsInteractive$.contextOfPath(MetalsInteractive.scala:30)
+	scala.meta.internal.pc.MetalsInteractive$.contextOfPath(MetalsInteractive.scala:30)
+	scala.meta.internal.pc.HoverProvider$.hover(HoverProvider.scala:87)
+	scala.meta.internal.pc.ScalaPresentationCompiler.hover$$anonfun$1(ScalaPresentationCompiler.scala:325)

@@ -1,3 +1,10 @@
+java.lang.AssertionError: NoDenotation.owner
+occurred in the presentation compiler.
+
+action parameters:
+offset: 426
+uri: file://<WORKSPACE>/src/main/scala/co.blocke.scala_reflection/RType.scala
+text:
 package co.blocke.scala_reflection
 
 import scala.quoted.*
@@ -6,7 +13,7 @@ trait RType[R]:
   type T = R                // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
   val name: String          // fully-qualified class name of this type
   // def toType(quotes: Quotes): quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(name)).asType.asInstanceOf[Type[R]]
-  val qType: quoted.Type[R] //def toType(quotes: Quotes): quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(name)).asType.asInstanceOf[Type[R]]
+  val qType: quoted.Type[R@@def toType(quotes: Quotes): quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(name)).asType.asInstanceOf[Type[R]]
   override def hashCode: Int = name.hashCode
   override def equals(obj: Any) = this.hashCode == obj.hashCode
 //   def show(
@@ -138,3 +145,16 @@ where:    T  is a type in method ofImpl
       case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
       case tn => tn
     }
+
+
+error stacktrace:
+dotty.tools.dotc.core.SymDenotations$NoDenotation$.owner(SymDenotations.scala:2576)
+	scala.meta.internal.pc.SignatureHelpProvider$.isValid(SignatureHelpProvider.scala:83)
+	scala.meta.internal.pc.SignatureHelpProvider$.notCurrentApply(SignatureHelpProvider.scala:94)
+	scala.meta.internal.pc.SignatureHelpProvider$.$anonfun$1(SignatureHelpProvider.scala:48)
+	scala.collection.StrictOptimizedLinearSeqOps.loop$3(LinearSeq.scala:280)
+	scala.collection.StrictOptimizedLinearSeqOps.dropWhile(LinearSeq.scala:282)
+	scala.collection.StrictOptimizedLinearSeqOps.dropWhile$(LinearSeq.scala:278)
+	scala.collection.immutable.List.dropWhile(List.scala:79)
+	scala.meta.internal.pc.SignatureHelpProvider$.signatureHelp(SignatureHelpProvider.scala:48)
+	scala.meta.internal.pc.ScalaPresentationCompiler.signatureHelp$$anonfun$1(ScalaPresentationCompiler.scala:371)

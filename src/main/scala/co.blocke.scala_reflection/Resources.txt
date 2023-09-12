@@ -1,0 +1,7 @@
+Code (Decoder example) to create Apply blocks per field type (scroll to bottom answer)
+
+https://stackoverflow.com/questions/62853337/how-to-access-parameter-list-of-case-class-in-a-dotty-macro/
+
+Code to create Expr of generic trait:
+
+https://stackoverflow.com/questions/65561193/scala-3-macro-how-to-implement-generic-trait

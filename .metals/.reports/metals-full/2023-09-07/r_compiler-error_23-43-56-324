@@ -1,0 +1,121 @@
+java.lang.AssertionError: assertion failed: position error, parent span does not contain child span
+parent      =  extends TermMaker(using null) {
+  import q.reflect.*
+  def makeTermF(): Term = null
+} # -1,
+parent span = <1187..1273>,
+child       = def makeTermF(): Term = null # -1,
+child span  = [1250..1254..1274]
+occurred in the presentation compiler.
+
+action parameters:
+uri: file://<WORKSPACE>/src/main/scala/co.blocke.scala_reflection/terms/Primitives.scala
+text:
+package co.blocke.scala_reflection
+package terms
+
+import scala.quoted.*
+
+// case class BooleanRType() extends RType[Boolean]{  val name = "scala.Boolean" }
+
+// case class ByteRType() extends RType[Byte]{ val name = "scala.Byte" }
+
+// case class CharRType() extends RType[Char]{ val name = "scala.char" }
+
+// case class DoubleRType() extends RType[Double]{ val name = "scala.Double" }
+
+// case class FloatRType() extends RType[Float]{ val name = "scala.Float" }
+
+// case class IntRType() extends RType[Int]{ val name = "scala.Int" }
+
+// case class LongRType() extends RType[Long]{ val name = "scala.Double" }
+
+// case class ShortRType() extends RType[Short]{ val name = "scala.Short" }
+
+// case class StringRType() extends RType[String]{ val name = "java.lang.String" }
+
+// case class AnyRType() extends RType[Any]{ val name = "scala.Any" }
+
+
+/*
+Expr("co.blocke.scala_reflection.Big").asTerm
+
+ given RTypeToExpr[T: Type: ToExpr]: ToExpr[RType[T]] with
+    def apply(rt: RType[T])(using Quotes): Expr[RType[T]] = rt match 
+      case r: RType[T] => Expr(r)
+*/
+
+trait TermMaker(using val q:Quotes):
+  import q.reflect.*
+  def makeTermF(): Term
+
+object Primitives:
+
+  given StringRTypeTerm: TermMaker(using val q:Quotes) with
+    import q.reflect.* 
+    def makeTermF(): Term =
+
+
+
+error stacktrace:
+scala.runtime.Scala3RunTime$.assertFailed(Scala3RunTime.scala:8)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:175)
+	dotty.tools.dotc.ast.Positioned.check$1$$anonfun$3(Positioned.scala:205)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:15)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:10)
+	scala.collection.immutable.List.foreach(List.scala:333)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:205)
+	dotty.tools.dotc.ast.Positioned.checkPos(Positioned.scala:226)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:200)
+	dotty.tools.dotc.ast.Positioned.checkPos(Positioned.scala:226)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:200)
+	dotty.tools.dotc.ast.Positioned.check$1$$anonfun$3(Positioned.scala:205)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:15)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:10)
+	scala.collection.immutable.List.foreach(List.scala:333)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:205)
+	dotty.tools.dotc.ast.Positioned.checkPos(Positioned.scala:226)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:200)
+	dotty.tools.dotc.ast.Positioned.checkPos(Positioned.scala:226)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:200)
+	dotty.tools.dotc.ast.Positioned.check$1$$anonfun$3(Positioned.scala:205)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:15)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:10)
+	scala.collection.immutable.List.foreach(List.scala:333)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:205)
+	dotty.tools.dotc.ast.Positioned.checkPos(Positioned.scala:226)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:200)
+	dotty.tools.dotc.ast.Positioned.check$1$$anonfun$3(Positioned.scala:205)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:15)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:10)
+	scala.collection.immutable.List.foreach(List.scala:333)
+	dotty.tools.dotc.ast.Positioned.check$1(Positioned.scala:205)
+	dotty.tools.dotc.ast.Positioned.checkPos(Positioned.scala:226)
+	dotty.tools.dotc.parsing.Parser.parse$$anonfun$1(ParserPhase.scala:38)
+	dotty.tools.dotc.parsing.Parser.parse$$anonfun$adapted$1(ParserPhase.scala:39)
+	scala.Function0.apply$mcV$sp(Function0.scala:42)
+	dotty.tools.dotc.core.Phases$Phase.monitor(Phases.scala:437)
+	dotty.tools.dotc.parsing.Parser.parse(ParserPhase.scala:39)
+	dotty.tools.dotc.parsing.Parser.runOn$$anonfun$1(ParserPhase.scala:48)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:15)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:10)
+	scala.collection.immutable.List.foreach(List.scala:333)
+	dotty.tools.dotc.parsing.Parser.runOn(ParserPhase.scala:48)
+	dotty.tools.dotc.Run.runPhases$1$$anonfun$1(Run.scala:247)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:15)
+	scala.runtime.function.JProcedure1.apply(JProcedure1.java:10)
+	scala.collection.ArrayOps$.foreach$extension(ArrayOps.scala:1321)
+	dotty.tools.dotc.Run.runPhases$1(Run.scala:263)
+	dotty.tools.dotc.Run.compileUnits$$anonfun$1(Run.scala:271)
+	dotty.tools.dotc.Run.compileUnits$$anonfun$adapted$1(Run.scala:280)
+	dotty.tools.dotc.util.Stats$.maybeMonitored(Stats.scala:67)
+	dotty.tools.dotc.Run.compileUnits(Run.scala:280)
+	dotty.tools.dotc.Run.compileSources(Run.scala:195)
+	dotty.tools.dotc.interactive.InteractiveDriver.run(InteractiveDriver.scala:165)
+	scala.meta.internal.pc.MetalsDriver.run(MetalsDriver.scala:45)
+	scala.meta.internal.pc.PcCollector.<init>(PcCollector.scala:42)
+	scala.meta.internal.pc.PcSemanticTokensProvider$Collector$.<init>(PcSemanticTokensProvider.scala:60)
+	scala.meta.internal.pc.PcSemanticTokensProvider.Collector$lzyINIT1(PcSemanticTokensProvider.scala:60)
+	scala.meta.internal.pc.PcSemanticTokensProvider.Collector(PcSemanticTokensProvider.scala:60)
+	scala.meta.internal.pc.PcSemanticTokensProvider.provide(PcSemanticTokensProvider.scala:81)
+	scala.meta.internal.pc.ScalaPresentationCompiler.semanticTokens$$anonfun$1(ScalaPresentationCompiler.scala:95)
