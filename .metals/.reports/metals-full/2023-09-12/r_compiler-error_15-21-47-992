@@ -1,0 +1,74 @@
+java.lang.AssertionError: NoDenotation.owner
+occurred in the presentation compiler.
+
+action parameters:
+offset: 530
+uri: file://<WORKSPACE>/src/main/scala/co.blocke.scala_reflection/exprs/ExprMaster.scala
+text:
+package co.blocke.scala_reflection
+package exprs
+
+import scala.quoted.*
+import rtypes.*
+
+/*
+Master object that creates all RType[T] Expr's.  Feed it an RType[T] and await the Expr[T].
+When building Expr[T]s for classes there will likely be lots of recursion, so this is the
+safe common entry point for whenever you need to descend into an RType to make an Expr.
+*/
+
+object ExprMaster:
+
+  protected[exprs] val exprCache = scala.collection.mutable.Map.empty[String, quoted.Type[_]]
+
+  def registerPrimitives( m: Map[String, Type[_R[@@_]] )(using q:Quotes): Unit = 
+    m.map{ case(k,v) => exprCache.put(k, v.toType(quotes)) }
+
+  def makeExpr[T](rt: RType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
+    rt match {
+      case primitive: PrimitiveRType => Primitives.makeExpr(primitive)
+      // case clazz: ClassRType[T] => Classes.makeExpr(clazz)
+      // case typeMember: TypeMemberRType[T] => TypeMember.makeExpr(typeMember)
+      case unknown: UnknownRType => 
+        exprCache.put(unknown.name, unknown.toType(quotes))
+        '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }
+    }
+
+/*
+  def makeFieldExpr[T]( fieldInfo: FieldInfo[T] )(using q:Quotes)(using Type[T]): Expr[FieldInfo[T]] =
+    import q.reflect.*
+    import Liftables.OptTypeSymbolToExpr
+
+    println("Making field: "+fieldInfo.name)
+    val fi = fieldInfo.asInstanceOf[ScalaFieldInfo[T]]
+    val typedFieldInfo = fi.fieldType.asInstanceOf[RType[fi.fieldType.T]]
+    val tt = fi.fieldType.toType(quotes).asInstanceOf[Type[fi.fieldType.T]]
+    val fieldTypeExpr = ExprMaster.makeExpr(typedFieldInfo)(using quotes)(using tt).asInstanceOf[Expr[RType[fi.fieldType.T]]]
+    println("Ready field: "+fieldInfo.name)
+ 
+    '{ 
+      ScalaFieldInfo[T](
+        ${Expr(fi.index)}, 
+        ${Expr(fi.name)},
+        ${ fieldTypeExpr }, 
+        ${Expr(fi.annotations)}, 
+        // ${Expr(fi.defaultValueAccessorName)}, 
+        // ${Expr(fi.originalSymbol)},
+        // ${Expr(fi.isNonValConstructorField)}
+     ).asInstanceOf[FieldInfo[T]]
+    }
+    */
+
+
+
+error stacktrace:
+dotty.tools.dotc.core.SymDenotations$NoDenotation$.owner(SymDenotations.scala:2576)
+	scala.meta.internal.pc.SignatureHelpProvider$.isValid(SignatureHelpProvider.scala:83)
+	scala.meta.internal.pc.SignatureHelpProvider$.notCurrentApply(SignatureHelpProvider.scala:94)
+	scala.meta.internal.pc.SignatureHelpProvider$.$anonfun$1(SignatureHelpProvider.scala:48)
+	scala.collection.StrictOptimizedLinearSeqOps.loop$3(LinearSeq.scala:280)
+	scala.collection.StrictOptimizedLinearSeqOps.dropWhile(LinearSeq.scala:282)
+	scala.collection.StrictOptimizedLinearSeqOps.dropWhile$(LinearSeq.scala:278)
+	scala.collection.immutable.List.dropWhile(List.scala:79)
+	scala.meta.internal.pc.SignatureHelpProvider$.signatureHelp(SignatureHelpProvider.scala:48)
+	scala.meta.internal.pc.ScalaPresentationCompiler.signatureHelp$$anonfun$1(ScalaPresentationCompiler.scala:371)

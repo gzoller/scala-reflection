@@ -1,3 +1,10 @@
+java.lang.IndexOutOfBoundsException: 0
+occurred in the presentation compiler.
+
+action parameters:
+offset: 17336
+uri: file://<WORKSPACE>/src/main/scala/co.blocke.scala_reflection/reflect/TastyReflection.scala
+text:
 package co.blocke.scala_reflection
 package reflect
 
@@ -27,7 +34,7 @@ inline def annoSymToString(quotes: Quotes)( terms: List[quotes.reflect.Term] ): 
 
 object TastyReflection: // extends NonCaseClassReflection:
 
-  def reflectOnType(quotes: Quotes)(aType: quotes.reflect.TypeRepr, typedName: TypedName, resolveTypeSyms: Boolean): RType[_] = 
+  def reflectOnType(quotes: Quotes)(quotedTypeCache: TypeCacheMap, aType: quotes.reflect.TypeRepr, typedName: TypedName, resolveTypeSyms: Boolean): RType[_] = 
     import quotes.reflect.*
 
     val typeRef = aType.asInstanceOf[TypeRef]
@@ -104,7 +111,7 @@ object TastyReflection: // extends NonCaseClassReflection:
             case cs => 
               // Hit cache to be sure we haven't seen this type before we do a bunch of work...
               val typedName = RType.typeName(quotes)(typeRef)
-              RType.rtypeCache.getOrElse(typedName, reflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms))
+              RType.rtypeCache.getOrElse(typedName, reflectOnClass(quotes)(quotedTypeCache, typeRef, typedName, resolveTypeSyms))
           }
 
         // Union Type
@@ -138,7 +145,7 @@ object TastyReflection: // extends NonCaseClassReflection:
     }
 
 
-  def reflectOnClass(quotes: Quotes)(typeRef: quotes.reflect.TypeRef, typedName: TypedName, resolveTypeSyms: Boolean, appliedTob: List[quotes.reflect.TypeRepr] =  Nil): RType[_] = 
+  def reflectOnClass(quotes: Quotes)(quotedTypeCache: TypeCacheMap, typeRef: quotes.reflect.TypeRef, typedName: TypedName, resolveTypeSyms: Boolean, appliedTob: List[quotes.reflect.TypeRepr] =  Nil): RType[_] = 
     import quotes.reflect.*
 
     // The .replace here "fixes" wrong class name in the case where a class is defined inside an object
@@ -284,7 +291,7 @@ object TastyReflection: // extends NonCaseClassReflection:
         // Get superclass' field annotations--if any
         val dad = classDef.parents.headOption match {
           case Some(tt: TypeTree) if !isValueClass && tt.tpe.classSymbol.get.fullName != "java.lang.Object" =>
-            reflectOnClass(quotes)(tt.tpe.asInstanceOf[TypeRef], RType.typeName(quotes)(tt.tpe), resolveTypeSyms) match {
+            reflectOnClass(quotes)(quotedTypeCache, tt.tpe.asInstanceOf[TypeRef], RType.typeName(quotes)(tt.tpe), resolveTypeSyms) match {
               case ci: ClassRType[_] => Some(ci) // Any kind of class
               case _ => None // e.g. Unknown
             }
@@ -311,21 +318,21 @@ object TastyReflection: // extends NonCaseClassReflection:
             TypeMemberRType(
               typeName,
               typeSymbols(pos),
-              RType.unwindType(quotes)(tob(pos).asInstanceOf[TypeRepr])
+              RType.unwindType(quotes)(quotedTypeCache, tob(pos).asInstanceOf[TypeRepr])
             )
         }
 
         val actualParamTypes = tob.zipWithIndex.map{ (oneTob,idx) =>
           scala.util.Try{
             if resolveTypeSyms then
-              RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef]) match {
+              RType.unwindType(quotes)(quotedTypeCache, oneTob.asInstanceOf[quotes.reflect.TypeRef]) match {
                 case NONE  => TypeSymbolRType(typeSymbols(idx).toString)
                 case other => other
               }
             else if oneTob.asInstanceOf[quotes.reflect.TypeRef].typeSymbol.flags.is(Flags.Param) then
               TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
             else
-              RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef], false)
+              RType.unwindType(quotes)(quotedTypeCache, oneTob.asInstanceOf[quotes.reflect.TypeRef], false)
           }.toOption.getOrElse{
             TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
           }
@@ -342,9 +349,9 @@ object TastyReflection: // extends NonCaseClassReflection:
           // === Case Classes ===
           val caseFields = constructorParams.zipWithIndex.map{ (definition, idx) =>
             val valDef = definition.asInstanceOf[ValDef]
-            val fieldRType = scala.util.Try{
+            val fieldType = scala.util.Try{
               if resolveTypeSyms then
-                RType.unwindType(quotes)(typeRef.memberType(symbol.caseFields(idx))) match {
+                RType.unwindType(quotes)(quotedTypeCache, @@typeRef.memberType(symbol.caseFields(idx))) match {
                   case NONE  =>
                     TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
                   case other => other
@@ -356,12 +363,12 @@ object TastyReflection: // extends NonCaseClassReflection:
             }.toOption.getOrElse{
               TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
             }
-            reflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods).resolveTypeParams( paramMap )
+            reflectOnField(quotes)(fieldType, valDef, idx, dad, fieldDefaultMethods).resolveTypeParams( paramMap )
           }
 
           var returnedRType = ScalaClassRType(
             className,
-            // typedName,
+            typedName,
             // {if typeSymbols.nonEmpty then className + actualParamTypes.map(t => t.name).mkString("[",",","]") else fullName},
             typeSymbols,
             typeMembers,
@@ -374,8 +381,7 @@ object TastyReflection: // extends NonCaseClassReflection:
             true)
 
             print("caching class type: "+returnedRType.typedName)
-            RType.quotedTypeCache.put(returnedRType.typedName, classDef.symbol.typeRef.asType) // register the quoted.Type into the cache
-            // RType.quotedTypeCache.put(returnedRType.typedName, RType.toType( returnedRType, quotes )) // register the quoted.Type into the cache
+            RType.quotedTypeCache.put(returnedRType.typedName, RType.toType( returnedRType, quotes )) // register the quoted.Type into the cache
             println("  (worked)")
 
             returnedRType
@@ -419,6 +425,7 @@ object TastyReflection: // extends NonCaseClassReflection:
 
 
   def reflectOnField(quotes: Quotes)(
+    quotedTypeCache: TypeCacheMap,
     fieldType: RType[_],
     valDef: quotes.reflect.ValDef, 
     index: Int, 
@@ -426,8 +433,7 @@ object TastyReflection: // extends NonCaseClassReflection:
     fieldDefaultMethods: Map[Int, (String,String)],
     isNonValConstructorField: Boolean = false
   ): FieldInfo = 
-    import quotes.reflect.* 
-
+    import quotes.reflect.{_, given}
     val fieldAnnos = dad match {
       // case Some(c) if c.isInstanceOf[JavaClassInfo] => Map.empty[String,Map[String,String]]
       case _ =>
@@ -444,8 +450,7 @@ object TastyReflection: // extends NonCaseClassReflection:
     val isTypeParam = valTypeRef.typeSymbol.flags.is(quotes.reflect.Flags.Param)
     val originalTypeSymbol = if isTypeParam then Some(valTypeRef.name.asInstanceOf[TypeSymbol]) else None
 
-    RType.quotedTypeCache.put(fieldType.typedName, valDef.tpt.tpe.asType) // register the quoted.Type into the cache
-    // RType.quotedTypeCache.put(fieldType.typedName, RType.toType( fieldType, quotes )) // register the quoted.Type into the cache
+    RType.quotedTypeCache.put(fieldType.typedName, RType.toType( fieldType, quotes )) // register the quoted.Type into the cache
 
     // ScalaFieldInfo(index, valDef.name)
     ScalaFieldInfo(
@@ -455,3 +460,17 @@ object TastyReflection: // extends NonCaseClassReflection:
       fieldAnnos
       )
     // ScalaFieldInfo(index, valDef.name, fieldType, fieldAnnos, fieldDefaultMethods.get(index), originalTypeSymbol, isNonValConstructorField)
+
+
+
+error stacktrace:
+scala.collection.LinearSeqOps.apply(LinearSeq.scala:131)
+	scala.collection.LinearSeqOps.apply$(LinearSeq.scala:128)
+	scala.collection.immutable.List.apply(List.scala:79)
+	dotty.tools.dotc.util.Signatures$.countParams(Signatures.scala:501)
+	dotty.tools.dotc.util.Signatures$.applyCallInfo(Signatures.scala:186)
+	dotty.tools.dotc.util.Signatures$.computeSignatureHelp(Signatures.scala:94)
+	dotty.tools.dotc.util.Signatures$.signatureHelp(Signatures.scala:63)
+	scala.meta.internal.pc.MetalsSignatures$.signatures(MetalsSignatures.scala:17)
+	scala.meta.internal.pc.SignatureHelpProvider$.signatureHelp(SignatureHelpProvider.scala:51)
+	scala.meta.internal.pc.ScalaPresentationCompiler.signatureHelp$$anonfun$1(ScalaPresentationCompiler.scala:371)

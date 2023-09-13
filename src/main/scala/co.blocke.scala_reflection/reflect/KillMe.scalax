@@ -1,0 +1,40 @@
+package co.blocke.scala_reflection
+package reflect
+
+import rtypes.*
+
+import scala.quoted.*
+import scala.reflect.*
+import scala.quoted.Quotes
+import scala.util.Try
+import scala.util.matching.Regex
+
+
+object TastyReflection: // extends NonCaseClassReflection:
+
+  def reflectOnType(quotes: Quotes)(aType: quotes.reflect.TypeRepr, typedName: TypedName, resolveTypeSyms: Boolean): RType[_] = 
+    import quotes.reflect.*
+
+    val typeRef = aType.asInstanceOf[TypeRef]
+    val className = typeRef.classSymbol.get.fullName
+    // println("Before forName")
+    // val clazz = Class.forName(className)
+    // println("After forName")
+    val symbol = typeRef.classSymbol.get
+    val classDef = symbol.tree.asInstanceOf[ClassDef]
+
+    // === Case Classes ===
+    val returnedRType = ScalaClassRType(className, typedName)
+
+    print("caching class type: "+returnedRType.typedName)
+    println("HEY: "+aType.asType)
+    // TypeRepr.typeConstructorOf(clazz).asType
+    println("  (worked)")
+
+    returnedRType
+
+
+case class ScalaClassRType[R] protected[scala_reflection] (
+    name:                   String,
+    override val typedName: TypedName
+) extends RType[R]

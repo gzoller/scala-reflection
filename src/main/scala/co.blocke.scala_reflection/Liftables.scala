@@ -16,3 +16,7 @@ object Liftables:
   given OptTypeSymbolToExpr: ToExpr[Option[TypeSymbol]] with {
     def apply(x: Option[TypeSymbol])(using Quotes): Expr[Option[TypeSymbol]] = Expr(x)
   }
+
+  given TypedNameToExpr: ToExpr[TypedName] with {
+    def apply(x: TypedName)(using Quotes): Expr[TypedName] = Expr(x.toString.asInstanceOf[TypedName])
+  }

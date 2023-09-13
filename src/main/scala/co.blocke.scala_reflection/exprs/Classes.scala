@@ -10,7 +10,7 @@ object Classes:
 
   def makeExpr[T](crt: ClassRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
-    import Liftables.TypeSymbolToExpr
+    import Liftables.{TypeSymbolToExpr,TypedNameToExpr}
     import dotty.tools.dotc.core.Contexts.* 
 
     crt match {
@@ -18,18 +18,12 @@ object Classes:
       case sc: ScalaClassRType[T] => 
 
         println("IN> "+sc.name)
-        val typeMembers = Expr.ofList(sc._typeMembers.map{ tm =>
-          val typedTm = tm.asInstanceOf[TypeMemberRType[tm.memberType.T]]
-          val tt = tm.toType(q).asInstanceOf[Type[tm.memberType.T]]
-          ExprMaster.makeExpr(typedTm)(using q)(using tt).asInstanceOf[Expr[TypeMemberRType[_]]]
-        })
+        val typeMembers = Expr.ofList(sc._typeMembers.map( tm =>
+          ExprMaster.makeExpr(tm)(using q)(using RType.quotedTypeCache(tm.typedName).asInstanceOf[Type[tm.T]]).asInstanceOf[Expr[TypeMemberRType]]
+        ))
         val caseFields = Expr.ofList(sc._fields.map{ f =>
           println("   Field "+f)
-          val typedF = f.asInstanceOf[ScalaFieldInfo[f.fieldType.T]]
-          println("   --1--")
-          val tt = f.fieldType.toType(q).asInstanceOf[Type[f.fieldType.T]]
-          println("   --2--")
-          ExprMaster.makeFieldExpr(typedF)(using q)(using tt).asInstanceOf[Expr[FieldInfo[_]]]
+          makeFieldExpr(f)(using q)(using RType.quotedTypeCache(f.fieldType.typedName).asInstanceOf[Type[f.fieldType.T]]).asInstanceOf[Expr[FieldInfo]]
         })
 
         //-------------------------------
@@ -42,6 +36,7 @@ object Classes:
             ),
             List(
                 Expr(sc.name).asTerm,
+                // Expr(sc.typedName).asTerm,
                 Expr(sc.paramSymbols).asTerm,
                 typeMembers.asTerm,
                 caseFields.asTerm,
@@ -53,7 +48,41 @@ object Classes:
                 Expr(sc.isCaseClass).asTerm
             )
         ).asExprOf[RType[T]]
+    }
 
+  def makeFieldExpr[T]( fieldInfo: FieldInfo )(using q:Quotes)(using tt:Type[T]): Expr[FieldInfo] =
+    import q.reflect.*
+    import Liftables.OptTypeSymbolToExpr
+
+    println("Making field: "+fieldInfo.name)
+    val fi = fieldInfo.asInstanceOf[ScalaFieldInfo]
+    // using RType.quotedTypeCache(fieldInfo.fieldType.typedName)
+    val fieldTypeExpr = ExprMaster.makeExpr(fieldInfo.fieldType)(using q)(using tt.asInstanceOf[Type[fieldInfo.fieldType.T]]).asInstanceOf[Expr[RType[fieldInfo.fieldType.T]]]
+    println("Ready field: "+fieldInfo.name)
+
+    Apply(
+      Select.unique(New(TypeTree.of[ScalaFieldInfo]),"<init>"),
+      List(
+        Expr(fi.index).asTerm, 
+        Expr(fi.name).asTerm,
+        fieldTypeExpr.asTerm, 
+        Expr(fi.annotations).asTerm, 
+      )
+    ).asExprOf[FieldInfo]
+ 
+    // '{ 
+    //   ScalaFieldInfo(
+    //     ${Expr(fi.index)}, 
+    //     ${Expr(fi.name)},
+    //     ${ fieldTypeExpr }, 
+    //     ${Expr(fi.annotations)}, 
+        // ${Expr(fi.defaultValueAccessorName)}, 
+        // ${Expr(fi.originalSymbol)},
+        // ${Expr(fi.isNonValConstructorField)}
+    //  ).asInstanceOf[FieldInfo]
+    // }
+
+//===========================================================================================
         // '{ 
         //   ScalaClassRType[T](
         //     ${Expr(sc.name)}, 
@@ -68,9 +97,6 @@ object Classes:
         //     ${Expr(sc.isCaseClass)}
         //   ) 
         // }
-
-    }
-
 
     /*
 
@@ -107,3 +133,47 @@ def inQuotes(using q: Quotes) = {
 //}
 
     */
+
+
+    /* Discord Wisdom if needed...
+
+    case class Thing[G](stuff: G)
+
+object Macro {
+  inline def invokeBroken = ${ implBroken }
+
+  def implBroken(using Quotes) = {
+    import quotes.reflect.*
+    // In a macro...
+    val ast = Apply(
+      Select.unique(New(TypeTree.of[Thing[Int]]), "<init>"), // also tried thingClassSym.primaryconstructor instead of "<init>"
+      List(Expr(25).asTerm)
+    )
+
+    println(ast.show)
+    ast.asExprOf[Thing[Int]]
+  }
+
+  inline def invokeCorrect = ${ implCorrect }
+
+  def implCorrect(using Quotes) = {
+    import quotes.reflect.*
+
+    val destTpe = TypeRepr.of[Thing[Int]]
+
+    val (tpe, constructor, tpeArgs) = { // you should pattern match here, obviously not safe
+      val AppliedType(repr, tpes) = destTpe: @unchecked 
+      (repr, repr.typeSymbol.primaryConstructor, tpes)
+    }
+
+    val ast = New(Inferred(tpe)) // take the actual class tpe (destTpe is the already applied one)
+      .select(constructor) // take the actuak class' constructor (not the already applied one!)
+      .appliedToTypes(tpeArgs) // apply it to type args
+      .appliedToArgs(List(Expr(25).asTerm))
+
+
+    report.info(ast.show)
+    ast.asExprOf[Thing[Int]]
+  }
+}
+*/

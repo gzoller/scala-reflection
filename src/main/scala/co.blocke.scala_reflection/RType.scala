@@ -5,8 +5,7 @@ import scala.quoted.*
 trait RType[R]:
   type T = R                // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
   val name: String          // fully-qualified class name of this type
-  // def toType(quotes: Quotes): quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(name)).asType.asInstanceOf[Type[R]]
-  val qType: quoted.Type[R] //def toType(quotes: Quotes): quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(name)).asType.asInstanceOf[Type[R]]
+  val typedName: TypedName  // fully-qualified class name w/type parameters, if any, otherwise a copy of name
   override def hashCode: Int = name.hashCode
   override def equals(obj: Any) = this.hashCode == obj.hashCode
 //   def show(
@@ -42,7 +41,13 @@ final inline def tabs(t:Int) = "   "*t
 object RType:
 
   // pre-loaded cache with known language types including primitives
-  val cache = scala.collection.mutable.Map.empty[String,RType[_]] ++ rtypes.PrimitiveRTypes.loadCache
+  protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]] ++= rtypes.PrimitiveRTypes.loadCache()
+
+  protected[scala_reflection] val quotedTypeCache = scala.collection.mutable.Map.empty[TypedName, quoted.Type[_]]
+
+  protected[scala_reflection] def toType[R](rtype: RType[R], quotes: Quotes): quoted.Type[R] = 
+    quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(rtype.name)).asType.asInstanceOf[Type[R]]
+
 
   //------------------------
   //  <<  MACRO ENTRY >>
@@ -52,23 +57,9 @@ object RType:
   def ofImpl[T]()(using quotes: Quotes, ttype: scala.quoted.Type[T]): Expr[RType[T]] =
     import quotes.reflect.*
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
-    println("HERE: "+rtype)
     exprs.ExprMaster.makeExpr(rtype)
-    
-    // val a = Expr("co.blocke.scala_reflection.Big").asTerm
-    // val b = Expr(Class.forName("co.blocke.scala_reflection.Big")).asTerm
-    // println("A: "+a)
-    // println("B: "+b)
-    // Apply(
-    //     Select.unique(New(TypeTree.of[ClassRType]),"<init>"), 
-    //     List( Expr("co.blocke.scala_reflection.Big").asTerm, Expr(Class.forName("co.blocke.scala_reflection.Big")).asTerm )
-    // ).asExprOf[RType[T]]
 
-    // Apply(
-    //     Select.unique(New(TypeTree.of[StringRType]),"<init>"), 
-    //     Nil
-    // ).asExprOf[RType[T]]
-
+   
     /*
 
 No given instance of type quoted.ToExpr[co.blocke.scala_reflection.RType[T]] was found for parameter x$2 of method apply in object Expr.
@@ -102,9 +93,9 @@ where:    T  is a type in method ofImpl
 
     this.synchronized {
       val tName = typeName(quotes)(aType)
-      cache.getOrElse(tName, {
+      rtypeCache.getOrElse(tName, {
         val reflectedRType = reflect.TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
-        cache.put(tName, reflectedRType)
+        rtypeCache.put(tName, reflectedRType)
         reflectedRType
       }).asInstanceOf[RType[T]]
 
@@ -123,18 +114,17 @@ where:    T  is a type in method ofImpl
 
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.
   // This name is used for RType.equals so caching works.
-  def typeName(quotes: Quotes)(aType: quotes.reflect.TypeRepr): String =
+  def typeName(quotes: Quotes)(aType: quotes.reflect.TypeRepr): TypedName =
     import quotes.reflect.{_, given}
-    val name = aType.asInstanceOf[TypeRef] match {
+    aType.asInstanceOf[TypeRef] match {
       case sym if aType.typeSymbol.flags.is(Flags.Param) => sym.name
       case AppliedType(t,tob) =>
-        typeName(quotes)(t) + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
+        typeName(quotes)(t).toString + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
       case AndType(left, right) => INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case OrType(left, right) => UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case _: dotty.tools.dotc.core.Types.WildcardType => "unmapped"
-      case _ => aType.classSymbol.get.fullName
-    }
-    name match {
-      case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
-      case tn => tn
+      case _ => aType.classSymbol.get.fullName match {
+        case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
+        case tn => tn
+      }
     }

@@ -3,9 +3,9 @@ package rtypes
 
 trait ClassRType[R] extends RType[R] with AppliedRType: 
   val name:                       String
-  lazy val fields:                List[FieldInfo[_]]
+  lazy val fields:                List[FieldInfo]
   val paramSymbols:               List[TypeSymbol]
-  lazy val typeMembers:           List[TypeMemberRType[_]]
+  lazy val typeMembers:           List[TypeMemberRType]
   lazy val annotations:           Map[String, Map[String,String]]
   lazy val mixins:                List[String]
 
@@ -18,9 +18,10 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
 
 case class ScalaClassRType[R] protected[scala_reflection] (
     name:                   String,
+    // typedName:              TypedName,
     paramSymbols:           List[TypeSymbol],
-    _typeMembers:           List[TypeMemberRType[_]],
-    _fields:                List[FieldInfo[_]],
+    _typeMembers:           List[TypeMemberRType],
+    _fields:                List[FieldInfo],
     _annotations:           Map[String, Map[String,String]],
     paths:                  Map[String, Map[String,List[Int]]],
     _mixins:                List[String],
@@ -28,6 +29,8 @@ case class ScalaClassRType[R] protected[scala_reflection] (
     isValueClass:           Boolean,
     isCaseClass:            Boolean
 ) extends ClassRType[R]:
+
+  val typedName: TypedName = "foo"
 
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] =
     this

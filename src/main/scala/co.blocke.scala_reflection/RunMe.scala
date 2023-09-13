@@ -12,5 +12,7 @@ object RunMe extends App:
 
     println(">> "+RType.of[Person])
 
+//   println(RType.boo[Int])
+
 //   println(RType.of(Class.forName("co.blocke.scala_reflection.Foom")))
 //   println(RType.of(Class.forName("co.blocke.scala_reflection.Blather")))
