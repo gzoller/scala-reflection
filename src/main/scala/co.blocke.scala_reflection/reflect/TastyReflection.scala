@@ -361,7 +361,7 @@ object TastyReflection: // extends NonCaseClassReflection:
 
           var returnedRType = ScalaClassRType(
             className,
-            // typedName,
+            typedName,
             // {if typeSymbols.nonEmpty then className + actualParamTypes.map(t => t.name).mkString("[",",","]") else fullName},
             typeSymbols,
             typeMembers,
@@ -444,14 +444,14 @@ object TastyReflection: // extends NonCaseClassReflection:
     val isTypeParam = valTypeRef.typeSymbol.flags.is(quotes.reflect.Flags.Param)
     val originalTypeSymbol = if isTypeParam then Some(valTypeRef.name.asInstanceOf[TypeSymbol]) else None
 
-    RType.quotedTypeCache.put(fieldType.typedName, valDef.tpt.tpe.asType) // register the quoted.Type into the cache
-    // RType.quotedTypeCache.put(fieldType.typedName, RType.toType( fieldType, quotes )) // register the quoted.Type into the cache
+    RType.quotedTypeCache.put(fieldType.typedName, valDef.tpt.tpe.asType)
 
-    // ScalaFieldInfo(index, valDef.name)
     ScalaFieldInfo(
       index, 
       valDef.name, 
       fieldType, 
-      fieldAnnos
+      fieldAnnos,
+      fieldDefaultMethods.get(index),
+      originalTypeSymbol,
+      isNonValConstructorField
       )
-    // ScalaFieldInfo(index, valDef.name, fieldType, fieldAnnos, fieldDefaultMethods.get(index), originalTypeSymbol, isNonValConstructorField)

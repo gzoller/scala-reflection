@@ -19993,3 +19993,722 @@ java.nio.file.NoSuchFileException: /Users/gzoller/me/git/scala-reflection/src/ma
 2023.09.13 16:15:02 INFO  time: compiled root in 0.33s[0m
 2023.09.13 16:15:24 INFO  compiling root (1 scala source)[0m
 2023.09.13 16:15:24 INFO  time: compiled root in 0.11s[0m
+2023.09.13 22:16:19 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:16:19 INFO  time: compiled root in 48ms[0m
+2023.09.13 22:16:26 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:16:26 INFO  time: compiled root in 85ms[0m
+2023.09.13 22:16:26 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:16:26 INFO  time: compiled root in 97ms[0m
+2023.09.13 22:17:08 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:17:08 INFO  time: compiled root in 0.2s[0m
+2023.09.13 22:17:08 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:17:08 INFO  time: compiled root in 0.2s[0m
+2023.09.13 22:17:09 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:17:09 INFO  time: compiled root in 0.21s[0m
+2023.09.13 22:17:21 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:17:21 INFO  time: compiled root in 0.21s[0m
+2023.09.13 22:17:27 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:17:27 INFO  time: compiled root in 0.21s[0m
+Sep 13, 2023 10:19:16 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 8962
+2023.09.13 22:19:17 WARN  Using indexes to guess the definition of ScalaFieldInfo[0m
+2023.09.13 22:20:03 WARN  Using indexes to guess the definition of ScalaFieldInfo[0m
+2023.09.13 22:20:08 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:20:09 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/exprs/Classes.scala[0m
+2023.09.13 22:20:08 INFO  time: compiled root in 0.18s[0m
+2023.09.13 22:21:35 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:21:35 INFO  time: compiled root in 86ms[0m
+2023.09.13 22:22:05 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:22:05 INFO  time: compiled root in 0.2s[0m
+2023.09.13 22:22:05 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:22:06 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/FieldInfo.scala[0m
+2023.09.13 22:22:05 INFO  time: compiled root in 0.28s[0m
+2023.09.13 22:22:06 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/FieldInfo.scala[0m
+2023.09.13 22:22:08 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/FieldInfo.scala[0m
+2023.09.13 22:22:09 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:22:09 INFO  time: compiled root in 76ms[0m
+2023.09.13 22:22:09 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:22:09 INFO  time: compiled root in 0.27s[0m
+2023.09.13 22:22:09 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/FieldInfo.scala[0m
+2023.09.13 22:22:17 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:22:17 INFO  time: compiled root in 0.22s[0m
+2023.09.13 22:22:17 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:22:17 INFO  time: compiled root in 0.22s[0m
+2023.09.13 22:22:22 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:22:22 INFO  time: compiled root in 0.25s[0m
+2023.09.13 22:23:07 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:23:07 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/reflect/TastyReflection.scala[0m
+2023.09.13 22:23:07 INFO  time: compiled root in 0.21s[0m
+2023.09.13 22:23:07 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/reflect/TastyReflection.scala[0m
+2023.09.13 22:23:24 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:23:24 INFO  time: compiled root in 0.22s[0m
+2023.09.13 22:23:24 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:23:24 INFO  time: compiled root in 0.17s[0m
+2023.09.13 22:24:19 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:24:19 INFO  time: compiled root in 85ms[0m
+2023.09.13 22:31:07 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:31:07 INFO  time: compiled root in 53ms[0m
+2023.09.13 22:31:07 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:31:16 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:31:16 INFO  time: compiled root in 59ms[0m
+2023.09.13 22:31:30 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:31:30 INFO  time: compiled root in 52ms[0m
+2023.09.13 22:31:30 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:31:30 INFO  time: compiled root in 50ms[0m
+2023.09.13 22:31:35 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:31:35 INFO  time: compiled root in 0.48s[0m
+2023.09.13 22:31:55 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:31:55 INFO  time: compiled root in 79ms[0m
+2023.09.13 22:32:11 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:32:12 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:32:14 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:32:14 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:32:15 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:32:15 INFO  time: compiled root in 0.22s[0m
+2023.09.13 22:32:15 INFO  compiling root (4 scala sources)[0m
+2023.09.13 22:32:15 INFO  time: compiled root in 0.19s[0m
+2023.09.13 22:33:14 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:33:14 INFO  time: compiled root in 0.18s[0m
+2023.09.13 22:33:41 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:33:41 INFO  time: compiled root in 82ms[0m
+2023.09.13 22:34:34 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:34:34 INFO  time: compiled root in 0.17s[0m
+2023.09.13 22:40:26 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:40:26 INFO  time: compiled root in 59ms[0m
+2023.09.13 22:40:32 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:40:32 INFO  time: compiled root in 60ms[0m
+2023.09.13 22:40:38 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:40:38 INFO  time: compiled root in 91ms[0m
+2023.09.13 22:40:55 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:40:55 INFO  time: compiled root in 59ms[0m
+2023.09.13 22:41:04 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:41:04 INFO  time: compiled root in 75ms[0m
+2023.09.13 22:44:42 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:44:42 INFO  time: compiled root in 0.17s[0m
+2023.09.13 22:44:57 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:44:57 INFO  time: compiled root in 72ms[0m
+2023.09.13 22:45:03 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:45:03 INFO  time: compiled root in 46ms[0m
+2023.09.13 22:45:13 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:45:13 INFO  time: compiled root in 54ms[0m
+2023.09.13 22:45:21 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:45:21 INFO  time: compiled root in 91ms[0m
+2023.09.13 22:45:21 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:45:21 INFO  time: compiled root in 0.46s[0m
+2023.09.13 22:45:30 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:45:30 INFO  time: compiled root in 0.21s[0m
+2023.09.13 22:45:30 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:45:30 INFO  time: compiled root in 0.17s[0m
+2023.09.13 22:46:24 INFO  compiling root (1 scala source)[0m
+2023.09.13 22:46:24 INFO  time: compiled root in 84ms[0m
+2023.09.13 22:46:24 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:46:25 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Package.scala[0m
+2023.09.13 22:46:24 INFO  time: compiled root in 0.46s[0m
+2023.09.13 22:46:25 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Package.scala[0m
+2023.09.13 22:46:57 INFO  compiling root (2 scala sources)[0m
+2023.09.13 22:46:57 INFO  time: compiled root in 0.1s[0m
+2023.09.13 22:46:57 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:46:57 INFO  time: compiled root in 0.47s[0m
+2023.09.13 22:46:58 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:47:01 INFO  compiling root (3 scala sources)[0m
+2023.09.13 22:47:01 INFO  time: compiled root in 0.12s[0m
+2023.09.13 22:47:01 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:47:06 INFO  compiling root (4 scala sources)[0m
+2023.09.13 22:47:06 INFO  time: compiled root in 0.2s[0m
+2023.09.13 22:47:10 INFO  compiling root (5 scala sources)[0m
+2023.09.13 22:47:10 INFO  time: compiled root in 0.22s[0m
+2023.09.13 22:47:11 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/reflect/TastyReflection.scala[0m
+2023.09.13 22:47:51 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:47:56 INFO  compiling root (5 scala sources)[0m
+2023.09.13 22:47:56 INFO  time: compiled root in 0.11s[0m
+2023.09.13 22:47:56 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:05 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:05 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:06 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:06 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:07 INFO  compiling root (5 scala sources)[0m
+2023.09.13 22:48:07 INFO  time: compiled root in 0.26s[0m
+2023.09.13 22:48:07 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:48:07 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:07 INFO  time: compiled root in 0.44s[0m
+2023.09.13 22:48:08 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/ClassRTypes.scala[0m
+2023.09.13 22:48:09 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:48:21 INFO  compiling root (5 scala sources)[0m
+2023.09.13 22:48:21 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:48:21 INFO  time: compiled root in 0.26s[0m
+2023.09.13 22:48:21 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:48:21 INFO  time: compiled root in 0.46s[0m
+2023.09.13 22:48:22 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:48:24 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Package.scala[0m
+2023.09.13 22:48:45 INFO  compiling root (6 scala sources)[0m
+2023.09.13 22:48:45 INFO  time: compiled root in 0.26s[0m
+2023.09.13 22:48:45 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:48:45 INFO  time: compiled root in 0.26s[0m
+2023.09.13 22:48:45 ERROR Unexpected error when compiling root: '/Users/gzoller/me/git/scala-reflection/.bloop/root/bloop-internal-classes/classes-Metals-WsdMHQf9SpWbyHCPNjbHqA==-CWn6-kMtSSWR6AzkSpq_wA==/co/blocke/scala_reflection/exprs/Thing.tasty'[0m
+2023.09.13 22:48:59 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:49:00 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Package.scala[0m
+2023.09.13 22:49:05 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:49:05 INFO  time: compiled root in 0.47s[0m
+2023.09.13 22:49:48 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:49:48 INFO  time: compiled root in 0.48s[0m
+2023.09.13 22:50:26 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:50:26 INFO  time: compiled root in 0.35s[0m
+2023.09.13 22:50:30 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:50:30 INFO  time: compiled root in 0.22s[0m
+2023.09.13 22:50:40 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:50:40 INFO  time: compiled root in 0.28s[0m
+2023.09.13 22:51:16 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:51:16 INFO  time: compiled root in 0.45s[0m
+2023.09.13 22:51:19 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Package.scala[0m
+2023.09.13 22:51:20 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:51:20 INFO  time: compiled root in 0.29s[0m
+2023.09.13 22:51:24 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:54:16 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:54:16 INFO  time: compiled root in 0.3s[0m
+2023.09.13 22:55:09 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:55:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:13 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:13 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:16 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:17 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:17 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[TypedName])
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:19 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[Typed])
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:20 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[T])
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:21 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[St])
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:21 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[String])
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:21 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:23 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:23 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[String)
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:23 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInstanceOf[)
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:23 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.asInsta)
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:24 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString.a)
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:25 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed quoted identifier
+    def apply(x: TypedName)(using Quotes): Expr[String`] = Expr(x.toString)
+                                                      ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.getBackquotedIdent(LegacyScanner.scala:522)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:370)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 22:56:24 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:56:28 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:56:28 INFO  time: compiled root in 0.18s[0m
+2023.09.13 22:56:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:57:17 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:57:20 INFO  compiling root (16 scala sources)[0m
+2023.09.13 22:57:20 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 22:57:20 INFO  time: compiled root in 0.31s[0m
+2023.09.13 22:57:21 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:07 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:13 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:14 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:16 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:19 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:19 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:21 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:23 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:23 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+Sep 13, 2023 11:07:23 PM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/gzoller/me/git/scala-reflection/.metals/.reports/metals-full/2023-09-13/r_compiler-error_23-07-23-735
+2023.09.13 23:07:23 WARN  Using indexes to guess the definition of TypedName[0m
+2023.09.13 23:07:23 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:23 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:24 WARN  Using indexes to guess the definition of Quotes[0m
+2023.09.13 23:07:25 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:25 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:25 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:28 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:07:28 INFO  time: compiled root in 0.21s[0m
+2023.09.13 23:07:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:35 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:37 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:39 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:07:39 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:07:39 INFO  time: compiled root in 0.56s[0m
+2023.09.13 23:07:39 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:08 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:30 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:32 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:34 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:34 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:38 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:38 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:38 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:41 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:41 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:08:41 INFO  time: compiled root in 0.18s[0m
+2023.09.13 23:08:41 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:51 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:52 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:08:52 INFO  time: compiled root in 0.15s[0m
+2023.09.13 23:08:53 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Using indexes to guess the definition of T[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:08:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:08:55 INFO  time: compiled root in 0.41s[0m
+2023.09.13 23:08:56 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:09:03 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:09:08 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:09:10 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:09:12 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:09:12 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:09:12 INFO  time: compiled root in 0.31s[0m
+2023.09.13 23:09:12 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:22 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:26 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:27 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:27 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed character literal
+    ''
+    ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchSingleQuote$1(LegacyScanner.scala:440)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:445)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 23:10:27 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: can't use unescaped LF in character literals
+    '{}'
+        ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchSingleQuote$1(LegacyScanner.scala:418)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:445)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 23:10:28 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:28 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:30 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:31 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:33 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:36 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:36 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:10:36 INFO  time: compiled root in 0.18s[0m
+2023.09.13 23:10:37 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:39 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:10:39 INFO  time: compiled root in 0.2s[0m
+2023.09.13 23:10:40 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:52 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:52 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:54 ERROR Failed to tokenize input for semantic tokens for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala
+scala.meta.tokenizers.TokenizeException: <input>:17: error: unclosed character literal
+    ''
+    ^
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:23)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter.syntaxError$(Reporter.scala:25)
+	at scala.meta.internal.tokenizers.Reporter$$anon$1.syntaxError(Reporter.scala:33)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchSingleQuote$1(LegacyScanner.scala:440)
+	at scala.meta.internal.tokenizers.LegacyScanner.fetchToken(LegacyScanner.scala:445)
+	at scala.meta.internal.tokenizers.LegacyScanner.nextToken(LegacyScanner.scala:246)
+	at scala.meta.internal.tokenizers.LegacyScanner.foreach(LegacyScanner.scala:1047)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.metals.SemanticTokensProvider$.getTokens(SemanticTokensProvider.scala:28)
+	at scala.meta.internal.metals.SemanticTokensProvider$.provide(SemanticTokensProvider.scala:89)
+	at scala.meta.internal.metals.Compilers.$anonfun$semanticTokens$3(Compilers.scala:511)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.lang.Thread.run(Thread.java:1589)
+[0m
+2023.09.13 23:10:55 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:59 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:10:59 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:10:59 INFO  time: compiled root in 0.13s[0m
+2023.09.13 23:11:00 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:01 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:11:01 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:01 INFO  time: compiled root in 0.17s[0m
+2023.09.13 23:11:02 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:11 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:12 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:11:12 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:12 INFO  time: compiled root in 0.21s[0m
+2023.09.13 23:11:13 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:15 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:16 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:11:16 INFO  time: compiled root in 0.17s[0m
+2023.09.13 23:11:17 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:24 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:28 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:29 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:30 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:31 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:32 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:34 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:37 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:42 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:44 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:47 INFO  compiling root (16 scala sources)[0m
+2023.09.13 23:11:47 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/Liftables.scala[0m
+2023.09.13 23:11:47 INFO  time: compiled root in 0.37s[0m
+2023.09.13 23:13:58 INFO  compiling root (1 scala source)[0m
+2023.09.13 23:13:58 INFO  time: compiled root in 0.24s[0m
+2023.09.13 23:14:06 INFO  compiling root (1 scala source)[0m
+2023.09.13 23:14:06 INFO  time: compiled root in 0.18s[0m
+2023.09.13 23:14:07 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/exprs/Classes.scala[0m
+2023.09.13 23:14:12 INFO  compiling root (2 scala sources)[0m
+2023.09.13 23:14:12 INFO  time: compiled root in 0.17s[0m
+2023.09.13 23:14:12 INFO  compiling root (3 scala sources)[0m
+2023.09.13 23:14:12 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/FieldInfo.scala[0m
+2023.09.13 23:14:12 INFO  time: compiled root in 0.22s[0m
+2023.09.13 23:14:12 WARN  Could not load snapshot text for /Users/gzoller/me/git/scala-reflection/src/main/scala/co.blocke.scala_reflection/rtypes/FieldInfo.scala[0m
+2023.09.13 23:14:19 INFO  compiling root (3 scala sources)[0m
+2023.09.13 23:14:19 INFO  time: compiled root in 0.25s[0m
+2023.09.13 23:15:05 INFO  compiling root (1 scala source)[0m
+2023.09.13 23:15:05 INFO  time: compiled root in 0.12s[0m
+Sep 13, 2023 11:15:10 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 11489
+2023.09.13 23:15:18 INFO  compiling root (1 scala source)[0m
+2023.09.13 23:15:18 INFO  time: compiled root in 0.11s[0m
+2023.09.13 23:15:36 INFO  compiling root (1 scala source)[0m
+2023.09.13 23:15:36 INFO  time: compiled root in 0.1s[0m

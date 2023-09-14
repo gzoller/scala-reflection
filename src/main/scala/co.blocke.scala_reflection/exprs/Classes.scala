@@ -36,7 +36,7 @@ object Classes:
             ),
             List(
                 Expr(sc.name).asTerm,
-                // Expr(sc.typedName).asTerm,
+                Expr(sc.typedName).asTerm,
                 Expr(sc.paramSymbols).asTerm,
                 typeMembers.asTerm,
                 caseFields.asTerm,
@@ -54,11 +54,8 @@ object Classes:
     import q.reflect.*
     import Liftables.OptTypeSymbolToExpr
 
-    println("Making field: "+fieldInfo.name)
     val fi = fieldInfo.asInstanceOf[ScalaFieldInfo]
-    // using RType.quotedTypeCache(fieldInfo.fieldType.typedName)
     val fieldTypeExpr = ExprMaster.makeExpr(fieldInfo.fieldType)(using q)(using tt.asInstanceOf[Type[fieldInfo.fieldType.T]]).asInstanceOf[Expr[RType[fieldInfo.fieldType.T]]]
-    println("Ready field: "+fieldInfo.name)
 
     Apply(
       Select.unique(New(TypeTree.of[ScalaFieldInfo]),"<init>"),
@@ -66,21 +63,13 @@ object Classes:
         Expr(fi.index).asTerm, 
         Expr(fi.name).asTerm,
         fieldTypeExpr.asTerm, 
-        Expr(fi.annotations).asTerm, 
+        Expr(fi.annotations).asTerm,
+        Expr(fi.defaultValueAccessorName).asTerm,
+        Expr(fi.originalSymbol).asTerm,
+        Expr(fi.isNonValConstructorField).asTerm, 
       )
     ).asExprOf[FieldInfo]
  
-    // '{ 
-    //   ScalaFieldInfo(
-    //     ${Expr(fi.index)}, 
-    //     ${Expr(fi.name)},
-    //     ${ fieldTypeExpr }, 
-    //     ${Expr(fi.annotations)}, 
-        // ${Expr(fi.defaultValueAccessorName)}, 
-        // ${Expr(fi.originalSymbol)},
-        // ${Expr(fi.isNonValConstructorField)}
-    //  ).asInstanceOf[FieldInfo]
-    // }
 
 //===========================================================================================
         // '{ 
@@ -176,4 +165,9 @@ object Macro {
     ast.asExprOf[Thing[Int]]
   }
 }
+
+
+Class.forName() replacement:
+I can't reproduce any error with putting Class.forName in a macro. I'm curious what's happening.
+Anyway, you probably want either a quoted.Type (companion object method of) or a quoted.quotes.reflect.Symbol (companion object method classSymbol)
 */

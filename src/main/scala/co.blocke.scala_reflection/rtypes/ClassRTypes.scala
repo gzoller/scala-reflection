@@ -18,7 +18,7 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
 
 case class ScalaClassRType[R] protected[scala_reflection] (
     name:                   String,
-    // typedName:              TypedName,
+    typedName:              TypedName,
     paramSymbols:           List[TypeSymbol],
     _typeMembers:           List[TypeMemberRType],
     _fields:                List[FieldInfo],
@@ -30,7 +30,7 @@ case class ScalaClassRType[R] protected[scala_reflection] (
     isCaseClass:            Boolean
 ) extends ClassRType[R]:
 
-  val typedName: TypedName = "foo"
+  // val typedName: TypedName = "foo".asInstanceOf[TypedName]
 
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] =
     this

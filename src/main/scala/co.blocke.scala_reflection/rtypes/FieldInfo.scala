@@ -24,12 +24,10 @@ case class ScalaFieldInfo(
   name:                     String,
   fieldType:                RType[_],
   annotations:              Map[String,Map[String,String]],
-  // defaultValueAccessorName: Option[(String,String)], // (companion class name, method) 
-  // originalSymbol:           Option[TypeSymbol],
-  // isNonValConstructorField: Boolean = false,
+  defaultValueAccessorName: Option[(String,String)], // (companion class name, method) 
+  originalSymbol:           Option[TypeSymbol],
+  isNonValConstructorField: Boolean = false,
 ) extends FieldInfo:
-
-  val defaultValueAccessorName: Option[(String,String)] = None
 
   def reIndex(i: Int): FieldInfo = this.copy(index = i)
 
