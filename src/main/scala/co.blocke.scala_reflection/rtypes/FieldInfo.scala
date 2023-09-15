@@ -1,9 +1,7 @@
 package co.blocke.scala_reflection
 package rtypes
 
-import java.lang.reflect.Method
-import java.nio.ByteBuffer
-
+import scala.reflect.ClassTag
 
 trait FieldInfo extends Serializable:
   val index:                     Int
@@ -26,7 +24,7 @@ case class ScalaFieldInfo(
   annotations:              Map[String,Map[String,String]],
   defaultValueAccessorName: Option[(String,String)], // (companion class name, method) 
   originalSymbol:           Option[TypeSymbol],
-  isNonValConstructorField: Boolean = false,
+  isNonValConstructorField: Boolean = false
 ) extends FieldInfo:
 
   def reIndex(i: Int): FieldInfo = this.copy(index = i)

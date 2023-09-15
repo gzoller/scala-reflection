@@ -373,11 +373,7 @@ object TastyReflection: // extends NonCaseClassReflection:
             isValueClass,
             true)
 
-            print("caching class type: "+returnedRType.typedName)
-            RType.quotedTypeCache.put(returnedRType.typedName, classDef.symbol.typeRef.asType) // register the quoted.Type into the cache
-            // RType.quotedTypeCache.put(returnedRType.typedName, RType.toType( returnedRType, quotes )) // register the quoted.Type into the cache
-            println("  (worked)")
-
+            // RType.quotedTypeCache.put(returnedRType.typedName, classDef.symbol.typeRef.asType) // register the quoted.Type into the cache
             returnedRType
 
         else
@@ -444,7 +440,7 @@ object TastyReflection: // extends NonCaseClassReflection:
     val isTypeParam = valTypeRef.typeSymbol.flags.is(quotes.reflect.Flags.Param)
     val originalTypeSymbol = if isTypeParam then Some(valTypeRef.name.asInstanceOf[TypeSymbol]) else None
 
-    RType.quotedTypeCache.put(fieldType.typedName, valDef.tpt.tpe.asType)
+    //RType.quotedTypeCache.put(fieldType.typedName, valDef.tpt.tpe.asType)
 
     ScalaFieldInfo(
       index, 

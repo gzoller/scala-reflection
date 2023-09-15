@@ -1,13 +1,16 @@
 package co.blocke.scala_reflection
 
 import scala.quoted.*
+import scala.reflect.ClassTag
 
 trait RType[R]:
   type T = R                // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
   val name: String          // fully-qualified class name of this type
   val typedName: TypedName  // fully-qualified class name w/type parameters, if any, otherwise a copy of name
+  lazy val clazz: Class[_]
   override def hashCode: Int = name.hashCode
   override def equals(obj: Any) = this.hashCode == obj.hashCode
+  def toType(quotes: Quotes): quoted.Type[T]  = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[Type[T]]
 //   def show(
 //     tab: Int = 0,
 //     seenBefore: List[String] = Nil,
@@ -43,37 +46,33 @@ object RType:
   // pre-loaded cache with known language types including primitives
   protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]] ++= rtypes.PrimitiveRTypes.loadCache()
 
-  protected[scala_reflection] val quotedTypeCache = scala.collection.mutable.Map.empty[TypedName, quoted.Type[_]]
+  // protected[scala_reflection] val quotedTypeCache = scala.collection.mutable.Map.empty[TypedName, quoted.Type[_]]
 
-  protected[scala_reflection] def toType[R](rtype: RType[R], quotes: Quotes): quoted.Type[R] = 
-    quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(rtype.name)).asType.asInstanceOf[Type[R]]
+  // protected[scala_reflection] def toType[R](rtype: RType[R], quotes: Quotes): quoted.Type[R] = 
+  //   quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(rtype.name)).asType.asInstanceOf[Type[R]]
 
+  // def getTypeFor[R](rtype: RType[R]): quoted.Type[R] = quotedTypeCache(rtype.typedName).asInstanceOf[quoted.Type[R]]
 
-  //------------------------
+  inline def foo[T]: String = ${ fooImpl[T]() }
+  def fooImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[String] =
+    import quotes.reflect.*
+    val a = TypeRepr.of[T].asInstanceOf[TypeRef].typeSymbol.fullName
+    println("Full name: "+a)
+    val c = Class.forName(a)
+    println(c)
+    '{"ok"}
+
+  //------------------------0
   //  <<  MACRO ENTRY >>
   //------------------------
   inline def of[T]: RType[T] = ${ ofImpl[T]() }
 
-  def ofImpl[T]()(using quotes: Quotes, ttype: scala.quoted.Type[T]): Expr[RType[T]] =
+  def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
+  // def ofImpl[T]()(using quotes: Quotes, ttype: scala.quoted.Type[T]): Expr[RType[T]] =
     import quotes.reflect.*
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
     exprs.ExprMaster.makeExpr(rtype)
 
-   
-    /*
-
-No given instance of type quoted.ToExpr[co.blocke.scala_reflection.RType[T]] was found for parameter x$2 of method apply in object Expr.
-I found:
-
-    co.blocke.scala_reflection.Liftables.RTypeToExpr[T](ttype,
-      quoted.ToExpr.ByteToExpr[T²])
-
-But given instance ByteToExpr in object ToExpr does not match type quoted.ToExpr[T]
-
-where:    T  is a type in method ofImpl
-          T² is a type variable with constraint <: Byte
-.bloop(172)
-    */
     
   //------------------------
   //  <<  NON-MACRO ENTRY >>
@@ -93,6 +92,7 @@ where:    T  is a type in method ofImpl
 
     this.synchronized {
       val tName = typeName(quotes)(aType)
+      println(s"Is ($tName) in cache? "+rtypeCache.contains(tName))
       rtypeCache.getOrElse(tName, {
         val reflectedRType = reflect.TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
         rtypeCache.put(tName, reflectedRType)

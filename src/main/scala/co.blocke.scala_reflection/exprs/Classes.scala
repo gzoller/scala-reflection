@@ -1,6 +1,7 @@
 package co.blocke.scala_reflection
 package exprs
 
+import scala.reflect.ClassTag
 import scala.quoted.*
 import rtypes.*
 
@@ -16,18 +17,17 @@ object Classes:
     crt match {
 
       case sc: ScalaClassRType[T] => 
-
-        println("IN> "+sc.name)
-        val typeMembers = Expr.ofList(sc._typeMembers.map( tm =>
-          ExprMaster.makeExpr(tm)(using q)(using RType.quotedTypeCache(tm.typedName).asInstanceOf[Type[tm.T]]).asInstanceOf[Expr[TypeMemberRType]]
-        ))
-        val caseFields = Expr.ofList(sc._fields.map{ f =>
-          println("   Field "+f)
-          makeFieldExpr(f)(using q)(using RType.quotedTypeCache(f.fieldType.typedName).asInstanceOf[Type[f.fieldType.T]]).asInstanceOf[Expr[FieldInfo]]
-        })
+        val typeMembers = Expr.ofList{sc._typeMembers.map( tm =>
+          val tt = TypeRepr.of[tm.T].asType.asInstanceOf[Type[tm.T]]
+          ExprMaster.makeExpr(tm)(using q)(using tt).asInstanceOf[Expr[TypeMemberRType]]
+        )}
+        val caseFields = Expr.ofList{sc._fields.map( f =>
+          // val tt = TypeRepr.of[f.fieldType.T].asType.asInstanceOf[Type[f.fieldType.T]]
+          makeFieldExpr(f)(using q)(using f.fieldType.toType(quotes)).asInstanceOf[Expr[FieldInfo]]
+        )}
 
         //-------------------------------
-        // Recipe:  How to instantiate a parameterized class by applying type
+        // Recipe:  How to instantiate a parameterized class by applying type first like: case class Foo[T](arg: T)  We apply T to an actual type, then supply the args.
         //-------------------------------
         Apply(
             TypeApply(
@@ -66,26 +66,12 @@ object Classes:
         Expr(fi.annotations).asTerm,
         Expr(fi.defaultValueAccessorName).asTerm,
         Expr(fi.originalSymbol).asTerm,
-        Expr(fi.isNonValConstructorField).asTerm, 
+        Expr(fi.isNonValConstructorField).asTerm
       )
     ).asExprOf[FieldInfo]
  
 
 //===========================================================================================
-        // '{ 
-        //   ScalaClassRType[T](
-        //     ${Expr(sc.name)}, 
-        //     ${Expr(sc.paramSymbols)},
-        //     ${typeMembers},
-        //     ${caseFields},
-        //     ${Expr(sc._annotations)},
-        //     ${Expr(sc.paths)},
-        //     ${Expr(sc._mixins)},
-        //     ${Expr(sc.isAppliedType)}, 
-        //     ${Expr(sc.isValueClass)}, 
-        //     ${Expr(sc.isCaseClass)}
-        //   ) 
-        // }
 
     /*
 
@@ -170,4 +156,10 @@ object Macro {
 Class.forName() replacement:
 I can't reproduce any error with putting Class.forName in a macro. I'm curious what's happening.
 Anyway, you probably want either a quoted.Type (companion object method of) or a quoted.quotes.reflect.Symbol (companion object method classSymbol)
+
+
+// Convert Option[Expr[T]] --> Expr[Option[T]]
+def ofOption[T](xs: Option[Expr[T]])(using Type[T])(using Quotes): Expr[Option[T]] =
+  if (xs.isEmpty) Expr(None) else '{ Some(${xs.get}) }
+
 */

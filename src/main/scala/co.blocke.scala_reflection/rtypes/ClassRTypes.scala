@@ -16,7 +16,7 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
       throw new ReflectException(s"AppliedType select index $i out of range for ${name}") 
 
 
-case class ScalaClassRType[R] protected[scala_reflection] (
+case class ScalaClassRType[R] (
     name:                   String,
     typedName:              TypedName,
     paramSymbols:           List[TypeSymbol],
@@ -48,7 +48,7 @@ case class ScalaClassRType[R] protected[scala_reflection] (
   lazy val typeMembers = _typeMembers
   lazy val annotations = _annotations
   lazy val mixins = _mixins
-  lazy val infoClass: Class[_] = {
+  lazy val clazz: Class[_] = {
     try {
       Class.forName(name)
     } catch {
@@ -61,7 +61,7 @@ case class ScalaClassRType[R] protected[scala_reflection] (
       }
     }
   }
-  lazy val typeParams = infoClass.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
+  lazy val typeParams = clazz.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
   // Fields may be self-referencing, so we need to unwind this...
   lazy val fields = _fields.map( f => f.fieldType match {

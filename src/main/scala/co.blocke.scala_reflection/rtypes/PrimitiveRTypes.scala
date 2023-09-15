@@ -2,17 +2,67 @@ package co.blocke.scala_reflection
 package rtypes
 
 import scala.quoted.*
+import Clazzes.*
 
-case class BooleanRType() extends RType[Boolean] with PrimitiveRType {  val name = BOOLEAN_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class ByteRType() extends RType[Byte] with PrimitiveRType{ val name = BYTE_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class CharRType() extends RType[Char] with PrimitiveRType{ val name = CHAR_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class DoubleRType() extends RType[Double] with PrimitiveRType{ val name = DOUBLE_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class FloatRType() extends RType[Float] with PrimitiveRType{ val name = FLOAT_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class IntRType() extends RType[Int] with PrimitiveRType{ val name = INT_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class LongRType() extends RType[Long] with PrimitiveRType{ val name = LONG_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class ShortRType() extends RType[Short] with PrimitiveRType{ val name = SHORT_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class StringRType() extends RType[String] with PrimitiveRType{ val name = STRING_CLASS; val typedName = name.asInstanceOf[TypedName] }
-case class AnyRType() extends RType[Any] with PrimitiveRType{ val name = ANY_CLASS; val typedName = name.asInstanceOf[TypedName] }
+case class BooleanRType() extends RType[Boolean] with PrimitiveRType {  
+  val name = BOOLEAN_CLASS
+  val typedName = BOOLEAN_CLASS
+  lazy val clazz = BooleanClazz
+}
+
+case class ByteRType() extends RType[Byte] with PrimitiveRType{ 
+  val name = BYTE_CLASS
+  val typedName = BYTE_CLASS 
+  lazy val clazz = ByteClazz
+}
+
+case class CharRType() extends RType[Char] with PrimitiveRType{ 
+  val name = CHAR_CLASS
+  val typedName = CHAR_CLASS
+  lazy val clazz = CharClazz
+}
+
+case class DoubleRType() extends RType[Double] with PrimitiveRType{ 
+  val name = DOUBLE_CLASS
+  val typedName = DOUBLE_CLASS
+  lazy val clazz = DoubleClazz
+}
+
+case class FloatRType() extends RType[Float] with PrimitiveRType{ 
+  val name = FLOAT_CLASS
+  val typedName = FLOAT_CLASS
+  lazy val clazz = FloatClazz
+}
+
+case class IntRType() extends RType[Int] with PrimitiveRType{ 
+  val name = INT_CLASS
+  val typedName = INT_CLASS
+  lazy val clazz = IntClazz
+}
+
+case class LongRType() extends RType[Long] with PrimitiveRType{ 
+  val name = LONG_CLASS
+  val typedName = LONG_CLASS
+  lazy val clazz = LongClazz
+}
+
+case class ShortRType() extends RType[Short] with PrimitiveRType{ 
+  val name = SHORT_CLASS
+  val typedName = SHORT_CLASS
+  lazy val clazz = ShortClazz
+}
+
+case class StringRType() extends RType[String] with PrimitiveRType{ 
+  val name = STRING_CLASS
+  val typedName = STRING_CLASS
+  lazy val clazz = StringClazz
+}
+
+case class AnyRType() extends RType[Any] with PrimitiveRType{ 
+  val name = ANY_CLASS
+  val typedName = ANY_CLASS
+  lazy val clazz = AnyClazz
+}
 
 
 object PrimitiveRTypes:
