@@ -3,6 +3,27 @@ package rtypes
 
 
 object Clazzes {
+
+  // ======= Class Names ======= 
+  val BOOLEAN_CLASS = "scala.Boolean"
+  val BYTE_CLASS = "scala.Byte"
+  val CHAR_CLASS = "scala.Char"
+  val DOUBLE_CLASS = "scala.Double"
+  val FLOAT_CLASS = "scala.Float"
+  val INT_CLASS = "scala.Int"
+  val LONG_CLASS = "scala.Long"
+  val SHORT_CLASS = "scala.SHORT"
+  val STRING_CLASS = "java.lang.String"
+  val ANY_CLASS = "scala.Any"
+  val ENUM_CLASS = "scala.Enumeration.Value"
+
+  /** A union type is resolved to AnyRef, which isn't helpful.  This is a marker class name to differentiate a union type */
+  val UNION_CLASS = "Union"
+
+  /** An intersection type is resolved to AnyRef, which isn't helpful.  This is a marker class name to differentiate a union type */
+  val INTERSECTION_CLASS = "Intersection"
+
+  // ======= Class Instances ======= 
   // val EnumClazz        = classOf[Enum]
   val TryClazz         = Class.forName("scala.util.Try")
   val MapClazz         = Class.forName("scala.collection.Map")

@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 
 import scala.quoted.*
 import scala.reflect.ClassTag
+import rtypes.*
 
 trait RType[R]:
   type T = R                // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
@@ -11,6 +12,8 @@ trait RType[R]:
   override def hashCode: Int = name.hashCode
   override def equals(obj: Any) = this.hashCode == obj.hashCode
   def toType(quotes: Quotes): quoted.Type[T]  = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[Type[T]]
+  def prettyPrint(): String = Show.show(this)
+
 //   def show(
 //     tab: Int = 0,
 //     seenBefore: List[String] = Nil,
@@ -37,30 +40,11 @@ trait PrimitiveRType:
   self: RType[_] =>
 
 
-// Poked this here for now.  Used for show()
-final inline def tabs(t:Int) = "   "*t
-
-
 object RType:
 
   // pre-loaded cache with known language types including primitives
-  protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]] ++= rtypes.PrimitiveRTypes.loadCache()
+  protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]] ++= PrimitiveRTypes.loadCache()
 
-  // protected[scala_reflection] val quotedTypeCache = scala.collection.mutable.Map.empty[TypedName, quoted.Type[_]]
-
-  // protected[scala_reflection] def toType[R](rtype: RType[R], quotes: Quotes): quoted.Type[R] = 
-  //   quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(rtype.name)).asType.asInstanceOf[Type[R]]
-
-  // def getTypeFor[R](rtype: RType[R]): quoted.Type[R] = quotedTypeCache(rtype.typedName).asInstanceOf[quoted.Type[R]]
-
-  inline def foo[T]: String = ${ fooImpl[T]() }
-  def fooImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[String] =
-    import quotes.reflect.*
-    val a = TypeRepr.of[T].asInstanceOf[TypeRef].typeSymbol.fullName
-    println("Full name: "+a)
-    val c = Class.forName(a)
-    println(c)
-    '{"ok"}
 
   //------------------------0
   //  <<  MACRO ENTRY >>
@@ -68,12 +52,11 @@ object RType:
   inline def of[T]: RType[T] = ${ ofImpl[T]() }
 
   def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
-  // def ofImpl[T]()(using quotes: Quotes, ttype: scala.quoted.Type[T]): Expr[RType[T]] =
     import quotes.reflect.*
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
     exprs.ExprMaster.makeExpr(rtype)
 
-    
+   
   //------------------------
   //  <<  NON-MACRO ENTRY >>
   //------------------------
@@ -84,15 +67,14 @@ object RType:
     import quotes.reflect.*
 
     val className = aType.asInstanceOf[TypeRef] match {
-      case AndType(_,_) => INTERSECTION_CLASS
-      case OrType(_,_)  => UNION_CLASS
+      case AndType(_,_) => Clazzes.INTERSECTION_CLASS
+      case OrType(_,_)  => Clazzes.UNION_CLASS
       case _: dotty.tools.dotc.core.Types.WildcardType => "scala.Any"
       case normal       => normal.classSymbol.get.fullName
     }
 
     this.synchronized {
       val tName = typeName(quotes)(aType)
-      println(s"Is ($tName) in cache? "+rtypeCache.contains(tName))
       rtypeCache.getOrElse(tName, {
         val reflectedRType = reflect.TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
         rtypeCache.put(tName, reflectedRType)
@@ -120,11 +102,11 @@ object RType:
       case sym if aType.typeSymbol.flags.is(Flags.Param) => sym.name
       case AppliedType(t,tob) =>
         typeName(quotes)(t).toString + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
-      case AndType(left, right) => INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
-      case OrType(left, right) => UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
+      case AndType(left, right) => Clazzes.INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
+      case OrType(left, right) => Clazzes.UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case _: dotty.tools.dotc.core.Types.WildcardType => "unmapped"
       case _ => aType.classSymbol.get.fullName match {
-        case ENUM_CLASSNAME => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
+        case Clazzes.ENUM_CLASS => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
         case tn => tn
       }
     }

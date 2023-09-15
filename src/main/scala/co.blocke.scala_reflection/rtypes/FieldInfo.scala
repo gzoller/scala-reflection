@@ -3,20 +3,36 @@ package rtypes
 
 import scala.reflect.ClassTag
 
+
+/**
+  * Base information we keep for all class fields, regardless of whether Scala or Java
+  */
 trait FieldInfo extends Serializable:
   val index:                     Int
   val name:                      String
   val fieldType:                 RType[_]
-  // val originalSymbol:            Option[TypeSymbol]
+  val originalSymbol:            Option[TypeSymbol]
   val annotations:               Map[String,Map[String,String]]
-  // lazy val defaultValue:         Option[Object]
+  lazy val defaultValue:         Option[Object]
 
   def reIndex(i: Int): FieldInfo
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): FieldInfo
-  // val fieldType = UnknownRType("java.lang.String")
+
 
 //------------------------------------------------------------
 
+
+/**
+  * Describes reflected information we gleen from a Scala class field
+  *
+  * @param index
+  * @param name
+  * @param fieldType
+  * @param annotations
+  * @param defaultValueAccessorName
+  * @param originalSymbol
+  * @param isNonValConstructorField
+  */
 case class ScalaFieldInfo(
   index:                    Int,
   name:                     String,
@@ -36,6 +52,10 @@ case class ScalaFieldInfo(
       case _ => this
     }
 
+  /** Default values of constructor fields, where present. This is a rare case where the clunky Java reflection way of getting
+   *  this information is better... we can get the default values and conveniently store them with the RType, vs some separate
+   *  macro call otherwise.
+  */
   lazy val defaultValue: Option[Object] = defaultValueAccessorName.map{ (companionClass, accessor) =>
     val companion = Class.forName(companionClass)
     val cons = companion.getDeclaredConstructors()

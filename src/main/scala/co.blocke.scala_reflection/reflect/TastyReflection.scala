@@ -60,9 +60,9 @@ object TastyReflection: // extends NonCaseClassReflection:
       // Handle gobbled non-class scala.Enumeration.Value (old 2.x Enumeration class values)
       val (is2xEnumeration, className) = classSymbol.fullName match { 
         /*
-        case raw if raw == ENUM_CLASSNAME => 
+        case raw if raw == ENUM_CLASS => 
           val enumerationClass = typeRef.typeSymbol.fullName
-          if( enumerationClass == ENUM_CLASSNAME ) then
+          if( enumerationClass == ENUM_CLASS ) then
             // If caller did NOT define a type member (type X = Value) inside their Enumeration class
             val enumClassName = typeRef.qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName.dropRight(1) // chop the '$' off the end!
             (true, enumClassName)
@@ -144,6 +144,7 @@ object TastyReflection: // extends NonCaseClassReflection:
     // The .replace here "fixes" wrong class name in the case where a class is defined inside an object
     val className = typeRef.classSymbol.get.fullName.replace("$.","$")
 
+    // Allow us to match on default value methods in companion object...
     object DefaultMethod {
       val reg: Regex = """\$lessinit\$greater\$default\$(\d+)""".r
       def unapply(s: quotes.reflect.Symbol): Option[Int] = reg.findFirstIn(s.toString) match {
@@ -292,6 +293,7 @@ object TastyReflection: // extends NonCaseClassReflection:
         }
 
         // Get any case field default value accessor method names (map by field index)
+        // Question: What does it take to get Expr[Any]?  If doable, we can go ahead and get the default value right here and poke into the FieldInfo!
         val fieldDefaultMethods = symbol.companionClass match {
           case dotty.tools.dotc.core.Symbols.NoSymbol => Map.empty[Int, (String,String)]
           case s: Symbol => symbol.companionClass.declaredMethods.collect {
@@ -439,8 +441,6 @@ object TastyReflection: // extends NonCaseClassReflection:
     val valTypeRef = valDef.tpt.tpe.asInstanceOf[quotes.reflect.TypeRef]
     val isTypeParam = valTypeRef.typeSymbol.flags.is(quotes.reflect.Flags.Param)
     val originalTypeSymbol = if isTypeParam then Some(valTypeRef.name.asInstanceOf[TypeSymbol]) else None
-
-    //RType.quotedTypeCache.put(fieldType.typedName, valDef.tpt.tpe.asType)
 
     ScalaFieldInfo(
       index, 

@@ -1,19 +1,19 @@
 package runnable
 
 import co.blocke.scala_reflection.*
-
-case class Foom( a: BigInt, b: BigDecimal )
-trait Thing[T]{ val name: T }
-case class Blather[T](val name: T) //extends Thing[T]
-case class Big(i: Int)
-
+import co.blocke.scala_reflection.rtypes.*
+import co.blocke.scala_reflection.run_util.*
 
 
 object RunMe extends App:
 
     // println(">> "+RType.foo[com.me.Foo[Boolean]])
-    println(">> "+RType.of[com.me.Person])
-    println(">> "+RType.of[com.me.Person])
+
+    val rt = RType.of[HasDefaults]
+    // rt.asInstanceOf[ScalaClassRType[_]].fields.map(f => println(s"Field ${f.name} has default: "+f.defaultValue))
+
+    println(rt)
+    println(rt.prettyPrint())
 
 //   println(RType.boo[Int])
 

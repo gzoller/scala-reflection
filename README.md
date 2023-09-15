@@ -4,8 +4,14 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.1.4/jar)
 
-Scala 3 introduced many exciting new language features, and broke an old one.  Scala 2's runtime reflection has been eliminated in favor of using compile-time macros to reflect on classes. This approach is a mixed blessing.  If the type you want to reflect on is known at compile-time then performance of this new mechanism is very fast. However if you only know the reflected type at run-time you're basically out of luck.  Well... not entirely out of luck.  Scala 3 offers something called Tasty Inspection that can reflect on a run-time type but at a severe performance penalty, as this approach involves file IO to read your class' .tasty file.  Tasty Inspection works, but it is *orders of magnitude* slower than Scala 2 run-time reflection.
- 
+The scala-reflection project seeks to replace the lost runtime reflection capability that Scala 2 had, but that was removed in Scala 3.  Those who have followed this project know that it accomplishes this by some cleaver use of Scala 3 macros--basically we dug around in the compiler internals, so you won't have to!
+
+This latest version of scala-reflection goes even further down the macro rabbit hole for greater performance, and we eliminated the need for the previous versions' compiler plug-in.
+
+One of the biggest changes for scala-reflection 2.0+ is that all the old "Info" classes are now RType classes, and are typed, for example ScalaCaseClassRType[Person].
+
+> **NOTE:** One interesting oddment from Scala macros is that your target class (the one you want an RType for) <u>must not be in the same package</u> as wherever you run RType.of[].  If you do, you will get cyclic dependency errors.  Not sure why--Scala internals? If you do get that error, just keep your target classes in separate packages from your controller code and you'll be fine--and it's a good practice anyway. 
+
 The scala-reflection project seeks to accomplish two goals:
 
 * Make Scala 3 reflection a more approachable by exposing higher-level abstractions for reflected things, vs using macros to dive through Scala 3 internals
@@ -30,9 +36,15 @@ libraryDependencies += "co.blocke" %% "scala-reflection" % CURRENT_VERSION
 This library defines a set of RType (reflected type) classes, which are high-level abstractions representing reflected information about various Scala classes and structures. Reflect on a class like this:
 
 ```scala
-import co.blocke.scala_reflection
+// Note package for target (model) classes is different than package for macro running!
+package com.me.models
 
 case class Thing(a: String)
+```
+```scala
+package com.me.controller // <-- different package from target classes!
+import co.blocke.scala_reflection.*
+import com.me.models.*
 
 // >> Compile-time reflection using square brackets for type
 val macroRType: RType = RType.of[Thing] // returns ScalaCaseClassRType
@@ -41,7 +53,7 @@ val macroRType: RType = RType.of[Thing] // returns ScalaCaseClassRType
 val className: String = getClassWeNeedFromSomewhere()
 val runtimeRType: RType = RType.of(Class.forName(className))
 ```
-In the second example you don't know the actual type of the class to reflect on until runtime.  The first time scala-reflection sees a particular class, file IO will read your class' .tasty file and reflect on the class, which is slow, but this information will be cached so subsequent accesses will be extremely fast--as fast as a cache lookup.
+The second example is for when you don't know the actual type of the class to reflect on until runtime.  The first time scala-reflection sees a particular class, file IO will read your class' .tasty file and reflect on the class, which is slow, but this information will be cached so subsequent accesses will be extremely fast--as fast as a cache lookup.
 
 ## Resolving Generic Classes using Traits
 The scala-reflection library was first envisioned to facilitate migrating ScalaJack serialization, which depends heavily on runtime reflection, to Scala 3. One of ScalaJack's key features is its trait handling ability.
@@ -121,9 +133,9 @@ case  class  Foo(name: String)
 val  fooRType = RType.of[Foo]
 ```
 
-In a non-macro implementation (e.g. Scala 2 runtime reflection) if you update Foo in File1.scala you naturally expect sbt to re-compile this file, and anything that depends on Foo, and the changes will be picked up in your program, and all will be well.
+In Scala 2 (non-macro runtime reflection) if you update Foo in File1.scala you would naturally expect sbt to re-compile this file, and anything that depends on Foo, and the changes will be picked up in your program, and all will be well, with no real thought or concern on your part. 
 
-That's **not** necessarily what happens with macros! Remember the macro code is run at compile-time. File2.scala needs to be re-compiled because the RType.of macro needs to be re-expanded to pick up your changes to Foo class in File1.scala. *Unfortunately sbt doesn't pick up this dependency!* If you don't know any better you'll just re-run your program after a change to File1.scala, like normal, and get a **spectacular exception with exotic errors** that won't mean much to you. The solution is you need to also recompile File2.scala.
+That's **not** necessarily what happens with macros! Remember the macro code is run at compile-time. File2.scala needs to be re-compiled because the RType.of macro needs to be re-expanded to pick up your changes to Foo class in File1.scala. *Unfortunately sbt doesn't pick up this dependency!* If you don't know any better you'll just re-compile and re-run your program after a change to File1.scala, as usual, and  you'll get a **spectacular exception with exotic errors** that won't mean much to you. The solution is you need to also recompile File2.scala.
 
 This means you will be doing more re-compiling with macro-based code than you would without the macros. It's an unfortunate cost of inconvenience and time, but the payoff is a *dramatic* gain in speed at runtime, and in the case of reflection in Scala 3, using macros is really the only way to accomplish reflection.
 
@@ -180,5 +192,4 @@ Nicolas Stucki (@nicolasstucki)
 * 1.0.0 - First GA release
 * 1.0.0-RC2 - Match compatibility with Scala 3 RC2
 * 1.0.0-M2 - Initial release for Scala 3.0.0-M2
-
 
