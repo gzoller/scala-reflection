@@ -19,6 +19,12 @@ object Show:
         else
             s
     }
+    final inline def showSimpleName(rt: RType[_]): String =
+        rt.name
+            .replaceAll("scala.","")
+            .replaceAll("java.lang.","")
+            .replaceAll("scala.util.","")
+            .replaceAll("java.util.","")
 
     private def _show(rt: RType[_], buf: StringBuilder, tabLevel: Int = 0): (StringBuilder, Boolean) = 
         rt match {
@@ -28,6 +34,10 @@ object Show:
                 (buf.append(t.name),false)
             case t: TypeMemberRType =>
                 (buf.append(t.name),false)
+            case t: OptionRType[_] =>
+                buf.append(showSimpleName(t)+" of ")
+                val (_, lastWasMultiLine) = _show(t.optionParamType, buf, tabLevel)
+                (buf,lastWasMultiLine)
             case t: ScalaClassRType[_] =>
                 buf.append(t.name + ":\n")
                 buf.append(tabs(tabLevel+1))
@@ -35,17 +45,17 @@ object Show:
                 t.fields.map{f =>
                     buf.append(tabs(tabLevel+2))
                     buf.append(f.name+": ")
-                    val (_, lastWasComplex) = _show(f.fieldType, buf, tabLevel+2)
+                    val (_, lastWasMultiLine) = _show(f.fieldType, buf, tabLevel+2)
                     f.defaultValue.map{ default => 
-                        if lastWasComplex then
+                        if lastWasMultiLine then
                             buf.append(tabs(tabLevel+3))
                         else
                             buf.append(" ")
                         buf.append("(default value: "+clipDefault(default)+")")
-                        if lastWasComplex then
+                        if lastWasMultiLine then
                             buf.append("\n")
                     }
-                    if !lastWasComplex then
+                    if !lastWasMultiLine then
                         buf.append("\n")
                 }
                 (buf,true)

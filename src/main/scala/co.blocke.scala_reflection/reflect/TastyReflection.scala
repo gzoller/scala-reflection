@@ -118,10 +118,9 @@ object TastyReflection: // extends NonCaseClassReflection:
       
         // Parameterized Types (classes, traits, & collections)
         //----------------------------------------
-        /*
         case a @ AppliedType(t,tob) => 
           // First see if we have some sort of collection or other "wrapped" type
-          val foundType: Option[RType] = extractors.ExtractorRegistry.extractors.collectFirst {
+          val foundType: Option[RType[_]] = ExtractorRegistry.extractors.collectFirst {
             case e if e.matches(quotes)(classSymbol) => 
               e.extractInfo(quotes)(t, tob, classSymbol)
           }
@@ -129,7 +128,6 @@ object TastyReflection: // extends NonCaseClassReflection:
             // Nope--we've got a parameterized class or trait here
             reflectOnClass(quotes)(a.asInstanceOf[TypeRef], RType.typeName(quotes)(a), resolveTypeSyms, tob)
           }
-          */
       
         case x => 
           // === No idea!  Unknown entity...
