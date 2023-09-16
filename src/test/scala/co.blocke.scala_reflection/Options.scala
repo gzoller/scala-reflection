@@ -61,14 +61,7 @@ class Options extends munit.FunSuite:
       |                  desc: String
       |            allDone: Boolean
       |         (default value: Some(Person(Mike,34,...)
-      |      b: Option of co.blocke.scala_reflection.models.Person:
-      |         fields ->
-      |            name: String
-      |            age: Int
-      |            item: co.blocke.scala_reflection.models.Item:
-      |               fields ->
-      |                  desc: String
-      |            allDone: Boolean
+      |      b: Option of co.blocke.scala_reflection.models.Person (seen before, details above)
       |         (default value: None)
       |      c: String
       |""".stripMargin)

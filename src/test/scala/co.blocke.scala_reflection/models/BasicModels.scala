@@ -17,3 +17,5 @@ case class Prim(
     i: String,
     j: Any
 )
+
+case class SelfReferencing( a: String, b: SelfReferencing, c: Int, d: Option[SelfReferencing])

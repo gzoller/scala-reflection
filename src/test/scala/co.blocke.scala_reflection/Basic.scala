@@ -51,3 +51,15 @@ class Basic extends munit.FunSuite:
         |""".stripMargin)
     assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.HasDefaults")    
   }
+
+  test("Class having self-referencing members") {
+    val result = RType.of[SelfReferencing]  
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.SelfReferencing:
+        |   fields ->
+        |      a: String
+        |      b: co.blocke.reflection.models.SelfReferencing (recursive self-reference)
+        |      c: Int
+        |      d: Option of co.blocke.reflection.models.SelfReferencing (recursive self-reference)
+        |""".stripMargin)
+    assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.SelfReferencing")    
+  }

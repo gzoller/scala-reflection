@@ -26,37 +26,49 @@ object Show:
             .replaceAll("scala.util.","")
             .replaceAll("java.util.","")
 
-    private def _show(rt: RType[_], buf: StringBuilder, tabLevel: Int = 0): (StringBuilder, Boolean) = 
+    private def _show(
+        rt: RType[_], 
+        buf: StringBuilder, 
+        tabLevel: Int = 0, 
+        seenBefore: List[String] = List.empty[String]  // classes we've seen before (not primitives)
+        ): (StringBuilder, Boolean, List[String]) = 
         rt match {
             case t: PrimitiveRType => 
-                (buf.append(lastPart(t.name)),false)
+                (buf.append(lastPart(t.name)), false, seenBefore)
             case t: TypeSymbolRType =>
-                (buf.append(t.name),false)
+                (buf.append(t.name), false, seenBefore)
             case t: TypeMemberRType =>
-                (buf.append(t.name),false)
+                (buf.append(t.name), false, seenBefore)
             case t: OptionRType[_] =>
                 buf.append(showSimpleName(t)+" of ")
-                val (_, lastWasMultiLine) = _show(t.optionParamType, buf, tabLevel)
-                (buf,lastWasMultiLine)
+                val (_, lastWasMultiLine, classesSeenBefore) = _show(t.optionParamType, buf, tabLevel, seenBefore)
+                (buf, lastWasMultiLine, classesSeenBefore)
+            case t: SelfRefRType[_] =>
+                (buf.append(showSimpleName(t)+ " (recursive self-reference)"), false, seenBefore)
             case t: ScalaClassRType[_] =>
-                buf.append(t.name + ":\n")
-                buf.append(tabs(tabLevel+1))
-                buf.append("fields ->\n")
-                t.fields.map{f =>
-                    buf.append(tabs(tabLevel+2))
-                    buf.append(f.name+": ")
-                    val (_, lastWasMultiLine) = _show(f.fieldType, buf, tabLevel+2)
-                    f.defaultValue.map{ default => 
-                        if lastWasMultiLine then
-                            buf.append(tabs(tabLevel+3))
-                        else
-                            buf.append(" ")
-                        buf.append("(default value: "+clipDefault(default)+")")
-                        if lastWasMultiLine then
+                if seenBefore.contains(t.typedName.toString) then
+                    buf.append(t.name + " (seen before, details above)\n")
+                    (buf, true, seenBefore)
+                else
+                    buf.append(t.name + ":\n")
+                    buf.append(tabs(tabLevel+1))
+                    buf.append("fields ->\n")
+                    val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) =>
+                        buf.append(tabs(tabLevel+2))
+                        buf.append(f.name+": ")
+                        val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
+                        f.defaultValue.map{ default => 
+                            if lastWasMultiLine then
+                                buf.append(tabs(tabLevel+3))
+                            else
+                                buf.append(" ")
+                            buf.append("(default value: "+clipDefault(default)+")")
+                            if lastWasMultiLine then
+                                buf.append("\n")
+                        }
+                        if !lastWasMultiLine then
                             buf.append("\n")
+                        classesSeenBefore
                     }
-                    if !lastWasMultiLine then
-                        buf.append("\n")
-                }
-                (buf,true)
+                    (buf, true, allClassesSeenUpToNow)
         }

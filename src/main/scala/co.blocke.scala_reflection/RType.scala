@@ -76,6 +76,7 @@ object RType:
     this.synchronized {
       val tName = typeName(quotes)(aType)
       rtypeCache.getOrElse(tName, {
+        rtypeCache.put(tName, SelfRefRType(tName.toString))
         val reflectedRType = reflect.TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
         rtypeCache.put(tName, reflectedRType)
         reflectedRType

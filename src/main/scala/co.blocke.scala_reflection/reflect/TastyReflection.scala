@@ -102,9 +102,7 @@ object TastyReflection: // extends NonCaseClassReflection:
               ScalaEnumerationInfo(enumerationClassSymbol.fullName.dropRight(1), enumerationClassSymbol.declaredFields.map( _.name ).toArray)  // get the values of the Enumeration
               */
             case cs => 
-              // Hit cache to be sure we haven't seen this type before we do a bunch of work...
-              val typedName = RType.typeName(quotes)(typeRef)
-              RType.rtypeCache.getOrElse(typedName, reflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms))
+              reflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
           }
 
         // Union Type
