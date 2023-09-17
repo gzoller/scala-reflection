@@ -23,8 +23,7 @@ trait RType[R]:
 //   override def toString(): String = show()
 
 
-/** This RType mixin needed because j
- * ust because something is an AppliedType doesn't mean it has parameters.  
+/** This RType mixin needed because just because something is an AppliedType doesn't mean it has parameters.  
  *  For examlpe a case class could be an applied type (isAppliedType=true) or not.  A collection is always applied.
  */
 trait AppliedRType:
@@ -77,7 +76,7 @@ object RType:
       val tName = typeName(quotes)(aType)
       rtypeCache.getOrElse(tName, {
         rtypeCache.put(tName, SelfRefRType(tName.toString))
-        val reflectedRType = reflect.TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
+        val reflectedRType = reflect.ReflectOnType(quotes)(aType, tName, resolveTypeSyms)
         rtypeCache.put(tName, reflectedRType)
         reflectedRType
       }).asInstanceOf[RType[T]]

@@ -9,22 +9,43 @@ case class Thing[T](stuff: T)
 
 object Classes:
 
-  def makeExpr[T](crt: ClassRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
+  def makeExpr[T](crt: ClassRType[T])(using q:Quotes)(using ct: Type[T]): Expr[RType[T]] = 
     import q.reflect.*
-    import Liftables.{TypeSymbolToExpr,TypedNameToExpr}
-    import dotty.tools.dotc.core.Contexts.* 
+    import Liftables.{TypeSymbolToExpr, TypedNameToExpr, ListTypeSymbolToExpr}
 
     crt match {
 
       case sc: ScalaClassRType[T] => 
+
         val typeMembers = Expr.ofList{sc._typeMembers.map( tm =>
           val tt = TypeRepr.of[tm.T].asType.asInstanceOf[Type[tm.T]]
           ExprMaster.makeExpr(tm)(using q)(using tt).asInstanceOf[Expr[TypeMemberRType]]
         )}
-        val caseFields = Expr.ofList{sc._fields.map( f =>
-          // val tt = TypeRepr.of[f.fieldType.T].asType.asInstanceOf[Type[f.fieldType.T]]
-          makeFieldExpr(f)(using q)(using f.fieldType.toType(quotes)).asInstanceOf[Expr[FieldInfo]]
-        )}
+
+        // This silly little piece of drama is sadly necessary to keep Scala's ADHD type-checkker happy.
+        // We need to take the incoming RType (z), which has some given type, and explicitly cast it to
+        // RType[_] to make Scala happy.  Sigh.  It works great when we do, so...
+        inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
+          '{ $z.asInstanceOf[RType[_]] }
+
+        // Created lifted (Expr) list of our class' fields (FieldInfo)
+        val caseFields: Expr[List[FieldInfo]] = 
+            Expr.ofList{sc._fields.map( f => 
+              val fieldtt = f.fieldType.toType(quotes)
+              val fieldTypeExpr = stripType( ExprMaster.makeExpr(f.fieldType)(using q:Quotes)(using fieldtt) )
+              Apply(
+                Select.unique(New(TypeTree.of[ScalaFieldInfo]),"<init>"),
+                List(
+                  Expr(f.index).asTerm, 
+                  Expr(f.name).asTerm,
+                  fieldTypeExpr.asTerm, 
+                  Expr(f.annotations).asTerm,
+                  Expr(f.asInstanceOf[ScalaFieldInfo].defaultValueAccessorName).asTerm,
+                  Expr(f.originalSymbol).asTerm,
+                  Expr(f.asInstanceOf[ScalaFieldInfo].isNonValConstructorField).asTerm
+                )
+              ).asExprOf[FieldInfo]              
+            )}
 
         //-------------------------------
         // Recipe:  How to instantiate a parameterized class by applying type first like: case class Foo[T](arg: T)  We apply T to an actual type, then supply the args.
@@ -50,26 +71,7 @@ object Classes:
         ).asExprOf[RType[T]]
     }
 
-  def makeFieldExpr[T]( fieldInfo: FieldInfo )(using q:Quotes)(using tt:Type[T]): Expr[FieldInfo] =
-    import q.reflect.*
-    import Liftables.OptTypeSymbolToExpr
 
-    val fi = fieldInfo.asInstanceOf[ScalaFieldInfo]
-    val fieldTypeExpr = ExprMaster.makeExpr(fieldInfo.fieldType)(using q)(using tt.asInstanceOf[Type[fieldInfo.fieldType.T]]).asInstanceOf[Expr[RType[fieldInfo.fieldType.T]]]
-
-    Apply(
-      Select.unique(New(TypeTree.of[ScalaFieldInfo]),"<init>"),
-      List(
-        Expr(fi.index).asTerm, 
-        Expr(fi.name).asTerm,
-        fieldTypeExpr.asTerm, 
-        Expr(fi.annotations).asTerm,
-        Expr(fi.defaultValueAccessorName).asTerm,
-        Expr(fi.originalSymbol).asTerm,
-        Expr(fi.isNonValConstructorField).asTerm
-      )
-    ).asExprOf[FieldInfo]
- 
 
 //===========================================================================================
 

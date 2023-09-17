@@ -4,18 +4,12 @@ import co.blocke.scala_reflection.*
 import co.blocke.scala_reflection.rtypes.*
 import co.blocke.scala_reflection.run_util.*
 
-
 object RunMe extends App:
-
-    // println(">> "+RType.foo[com.me.Foo[Boolean]])
-
-    val rt = RType.of[HasDefaults]
-    // rt.asInstanceOf[ScalaClassRType[_]].fields.map(f => println(s"Field ${f.name} has default: "+f.defaultValue))
-
+    val rt = RType.of[DuoHolder]
     println(rt)
-    println(rt.prettyPrint())
+    println(rt.typedName)
 
-//   println(RType.boo[Int])
+// case class DuoTypes[Q,U](a: U, b: Q)  // Note intentional reversal of order to test proper type symbol mapping!
+// case class DuoHolder( a: DuoTypes[Int,Float] )
 
-//   println(RType.of(Class.forName("co.blocke.scala_reflection.Foom")))
-//   println(RType.of(Class.forName("co.blocke.scala_reflection.Blather")))
+// co.blocke.scala_reflection.run_util.DuoTypes[scala.Int,scala.Float]

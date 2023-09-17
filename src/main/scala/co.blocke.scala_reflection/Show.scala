@@ -50,12 +50,16 @@ object Show:
                     buf.append(t.name + " (seen before, details above)\n")
                     (buf, true, seenBefore)
                 else
-                    buf.append(t.name + ":\n")
+                    buf.append(t.name)
+                    if t.paramSymbols.nonEmpty then
+                        buf.append( t.paramSymbols.map(_.toString).mkString("[",",","]"))
+                    buf.append(":\n")
                     buf.append(tabs(tabLevel+1))
                     buf.append("fields ->\n")
                     val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) =>
                         buf.append(tabs(tabLevel+2))
                         buf.append(f.name+": ")
+                        f.originalSymbol.map( os => buf.append("["+os+"] ") )
                         val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
                         f.defaultValue.map{ default => 
                             if lastWasMultiLine then

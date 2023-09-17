@@ -12,8 +12,14 @@ object Liftables:
 
   given OptTypeSymbolToExpr: ToExpr[Option[TypeSymbol]] with {
     def apply(x: Option[TypeSymbol])(using Quotes): Expr[Option[TypeSymbol]] = 
-      val opt= Expr(x.map(_.toString))
+      val opt = Expr(x.map(_.toString))
       '{ $opt.asInstanceOf[Option[TypeSymbol]] }
+  }
+
+  given ListTypeSymbolToExpr: ToExpr[List[TypeSymbol]] with {
+    def apply(x: List[TypeSymbol])(using Quotes): Expr[List[TypeSymbol]] = 
+      val syms = Expr(x.map(_.toString))
+      '{ $syms.asInstanceOf[List[TypeSymbol]] }
   }
 
   given TypedNameToExpr: ToExpr[TypedName] with {

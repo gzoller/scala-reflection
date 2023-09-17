@@ -23,14 +23,18 @@ case class ScalaClassRType[R] (
     _typeMembers:           List[TypeMemberRType],
     _fields:                List[FieldInfo],
     _annotations:           Map[String, Map[String,String]],
-    paths:                  Map[String, Map[String,List[Int]]],
+    paths:                  Map[String, Map[String,List[Int]]],  // <- TODO: Try to eliminate this and TypeLoom!  Replace w/AppliedType stuff...
     _mixins:                List[String],
     override val isAppliedType: Boolean,
     isValueClass:           Boolean,
     isCaseClass:            Boolean
 ) extends ClassRType[R]:
 
-  // val typedName: TypedName = "foo".asInstanceOf[TypedName]
+  // val _typeMembers = Nil
+  // val _annotations = Map.empty[String,Map[String,String]]
+  // val _fields = List.empty[FieldInfo]
+  // val _mixins = List.empty[String]
+  // val paramSymbols = List.empty[TypeSymbol]
 
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] =
     this
@@ -64,7 +68,8 @@ case class ScalaClassRType[R] (
   lazy val typeParams = clazz.getTypeParameters.toList.map(_.getName.asInstanceOf[TypeSymbol])
 
   // Fields may be self-referencing, so we need to unwind this...
-  lazy val fields = _fields.map( f => f.fieldType match {
-    // case s: SelfRefRType => f.asInstanceOf[ScalaFieldInfo].copy(fieldType = s.resolve)
-    case s => f
-  })
+  lazy val fields = _fields
+  // lazy val fields = _fields.map( f => f.fieldType match {
+  //   // case s: SelfRefRType => f.asInstanceOf[ScalaFieldInfo].copy(fieldType = s.resolve)
+  //   case s => f
+  // })

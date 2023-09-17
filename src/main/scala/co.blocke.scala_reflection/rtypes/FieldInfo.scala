@@ -47,8 +47,8 @@ case class ScalaFieldInfo(
 
   override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): FieldInfo = 
     fieldType match {
-    //   case ts: TypeSymbolInfo if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => this.copy(fieldType = paramMap(ts.name.asInstanceOf[TypeSymbol]))
-    //   case art: AppliedRType if art.isAppliedType => this.copy(fieldType = art.resolveTypeParams(paramMap))
+      // case ts: TypeSymbolRType if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => this.copy(fieldType = paramMap(ts.name.asInstanceOf[TypeSymbol]).asInstanceOf[RType[R]])
+      // case art: AppliedRType if art.isAppliedType => this.copy(fieldType = art.resolveTypeParams(paramMap).asInstanceOf[RType[R]])
       case _ => this
     }
 
