@@ -21,10 +21,10 @@ object Show:
     }
     final inline def showSimpleName(rt: RType[_]): String =
         rt.name
-            .replaceAll("scala.","")
             .replaceAll("java.lang.","")
-            .replaceAll("scala.util.","")
             .replaceAll("java.util.","")
+            .replaceAll("scala.util.","")
+            .replaceAll("scala.","")
 
     private def _show(
         rt: RType[_], 
@@ -35,16 +35,35 @@ object Show:
         rt match {
             case t: PrimitiveRType => 
                 (buf.append(lastPart(t.name)), false, seenBefore)
+
             case t: TypeSymbolRType =>
                 (buf.append(t.name), false, seenBefore)
+
             case t: TypeMemberRType =>
                 (buf.append(t.name), false, seenBefore)
+
             case t: OptionRType[_] =>
                 buf.append(showSimpleName(t)+" of ")
                 val (_, lastWasMultiLine, classesSeenBefore) = _show(t.optionParamType, buf, tabLevel, seenBefore)
                 (buf, lastWasMultiLine, classesSeenBefore)
+
+            case t: LeftRightRType[_] =>
+                buf.append(showSimpleName(t)+":\n")
+                buf.append(tabs(tabLevel+1))
+                buf.append("left--")
+                val (_, lastWasMultiLine, classesSeenBefore1) = _show(t.leftType, buf, tabLevel+2, seenBefore)
+                if !lastWasMultiLine then
+                    buf.append("\n")
+                buf.append(tabs(tabLevel+1))
+                buf.append("right--")
+                val (_, lastWasMultiLine2, classesSeenBefore2) = _show(t.rightType, buf, tabLevel+2, classesSeenBefore1)
+                if !lastWasMultiLine2 then
+                    buf.append("\n")
+                (buf, true, classesSeenBefore2)
+
             case t: SelfRefRType[_] =>
                 (buf.append(showSimpleName(t)+ " (recursive self-reference)"), false, seenBefore)
+
             case t: ScalaClassRType[_] =>
                 if seenBefore.contains(t.typedName.toString) then
                     buf.append(t.name + " (seen before, details above)\n")

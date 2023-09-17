@@ -48,8 +48,13 @@ object ReflectOnClass:
     if classAnnos.contains("co.blocke.scala_reflection.Skip_Reflection") then
       UnknownRType(symbol.fullName)
 
-    else // ...otherwise let's proceed with reflection...
+    else 
+      
+      //===
+      //===  Class Reflection begins...
+      //===
 
+      // === Scala 2 Classes ===
       if symbol.flags.is(quotes.reflect.Flags.Scala2x) then
         UnknownRType(symbol.fullName)
         // symbol.fullName match {
@@ -153,7 +158,7 @@ object ReflectOnClass:
         JavaClassInfo(symbol.fullName, symbol.fullName, typeSymbols.toArray, appliedTob.map( at => RType.unwindType(quotes)(at.asInstanceOf[TypeRef])).toArray )
         */
 
-      // === Scala Classes ===
+      // === Scala 3 Classes ===
       else if symbol.isClassDef then
         val classDef = symbol.tree.asInstanceOf[ClassDef]
 

@@ -11,3 +11,7 @@ case class DuoTypes[Q,U](a: U, b: Q)  // Note intentional reversal of order to t
 // 1st level type substitution
 // case class DuoHolder( a: DuoBogus )
 case class DuoHolder( x: DuoTypes[Int,Float] )
+
+// 2nd level type substitution
+case class Thingy[Z](name: String, payload: Z)
+//DuoTypes[Int,Thingy[Boolean]]

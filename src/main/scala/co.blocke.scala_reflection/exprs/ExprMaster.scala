@@ -19,6 +19,7 @@ object ExprMaster:
       case opt: OptionRType[T] => Options.makeExpr(opt)
       case typeMember: TypeMemberRType => TypeMember.makeExpr(typeMember)
       case typeSymbol: TypeSymbolRType => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
+      case scalaEither: EitherRType[T] => LeftRight.makeExpr(scalaEither)
       case selfRef: SelfRefRType[T] => SelfRef.makeExpr(selfRef)
       case unknown: UnknownRType => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }
     }

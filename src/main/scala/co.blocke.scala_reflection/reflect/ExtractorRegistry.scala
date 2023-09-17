@@ -7,8 +7,8 @@ object ExtractorRegistry:
 
   lazy val extractors: List[TypeExtractor[_]] = 
     List(
-      OptionExtractor()
-      // EitherExtractor(),
+      OptionExtractor(),
+      EitherExtractor(),
       // SeqExtractor(),
       // ScalaArrayExtractor(),
       // MapExtractor(),
