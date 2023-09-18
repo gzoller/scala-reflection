@@ -91,22 +91,22 @@ class Collections extends munit.FunSuite:
     |         SeqLikeInfo(scala.collection.immutable.List): Option of scala.Int
     |""".stripMargin)
   }
+  */
 
   test("Tuples") {
     val result = RType.of[TupleTurtle[Boolean]]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.TupleTurtle):
-    |   fields:
-    |      (0) t: (
-    |         scala.Int
-    |         scala.Boolean
-    |         SeqLikeInfo(scala.collection.immutable.List): java.lang.String
-    |         ScalaCaseClassInfo(co.blocke.scala_reflection.NormalOption):
-    |            fields:
-    |               (0) a: Option of scala.Int
-    |         )
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.TupleTurtle[Z]:
+      |   fields ->
+      |      t: Tuple of:
+      |         0: Int
+      |         1: Boolean
+      |         2: List of: String
+      |         3: co.blocke.scala_reflection.models.NormalOption:
+      |            fields ->
+      |               a: Option of Int
+      |               b: String
+      |""".stripMargin)
   }
-  */
 
   test("Scala Arrays") {
     val result = RType.of[WithScalaArray]

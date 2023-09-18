@@ -6,8 +6,7 @@ import co.blocke.scala_reflection.run_util.*
 
 object RunMe extends App:
     val rt = RType.of[Mixed]
-    println(rt)
-    println(rt.typedName)
+    println(rt.prettyPrint())
 
 // case class DuoTypes[Q,U](a: U, b: Q)  // Note intentional reversal of order to test proper type symbol mapping!
 // case class DuoHolder( a: DuoTypes[Int,Float] )

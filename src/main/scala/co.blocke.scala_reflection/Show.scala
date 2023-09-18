@@ -35,6 +35,11 @@ object Show:
             case mutableColl(c) => "mutable " + c
         }
 
+    inline def showOfType(buf: StringBuilder, seenBefore: List[String], tabLevel: Int, label: String, rt: RType[_]) =
+        buf.append(label)
+        val (_, lastWasMultiLine, classesSeenBefore) = _show(rt, buf, tabLevel, seenBefore)
+        (buf, lastWasMultiLine, classesSeenBefore)
+
     private def _show(
         rt: RType[_], 
         buf: StringBuilder, 
@@ -52,9 +57,28 @@ object Show:
                 (buf.append(t.name), false, seenBefore)
 
             case t: OptionRType[_] =>
-                buf.append(showSimpleName(t)+" of ")
-                val (_, lastWasMultiLine, classesSeenBefore) = _show(t.optionParamType, buf, tabLevel, seenBefore)
-                (buf, lastWasMultiLine, classesSeenBefore)
+                showOfType(buf, seenBefore, tabLevel, showSimpleName(t)+" of ", t.optionParamType)
+
+            case t: TryRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, "Try of ", t.tryType)
+
+            case t: SeqRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+
+            case t: ArrayRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, "Array of: ", t.elementType)
+
+            case t: TupleRType[_] =>
+                buf.append("Tuple of:\n")
+                val allClassesSeenUpToNow = t._tupleTypes.zipWithIndex.foldLeft(seenBefore){ case (classesSeen, (rt, i)) =>
+                    buf.append(tabs(tabLevel+1))
+                    buf.append(s"$i: ")
+                    val (_, lastWasMultiLine, classesSeenBefore) = _show(rt, buf, tabLevel+1, classesSeen)
+                    if !lastWasMultiLine then
+                        buf.append("\n")
+                    classesSeenBefore
+                }
+                (buf, true, allClassesSeenUpToNow)
 
             case t: LeftRightRType[_] =>
                 buf.append(showSimpleName(t)+" of:\n")
@@ -72,16 +96,6 @@ object Show:
 
             case t: SelfRefRType[_] =>
                 (buf.append(showSimpleName(t)+ " (recursive self-reference)"), false, seenBefore)
-
-            case t: SeqRType[_] =>
-                buf.append(cleanCollectionNames(t) + " of: ")
-                val (_, lastWasMultiLine, classesSeenBefore) = _show(t.elementType, buf, tabLevel, seenBefore)
-                (buf, lastWasMultiLine, classesSeenBefore)
-
-            case t: ArrayRType[_] =>
-                buf.append("Array of: ")
-                val (_, lastWasMultiLine, classesSeenBefore) = _show(t.elementType, buf, tabLevel, seenBefore)
-                (buf, lastWasMultiLine, classesSeenBefore)
 
             case t: ScalaClassRType[_] =>
                 if seenBefore.contains(t.typedName.toString) then

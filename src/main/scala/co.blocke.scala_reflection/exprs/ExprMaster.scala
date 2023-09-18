@@ -22,6 +22,8 @@ object ExprMaster:
       case typeMember: TypeMemberRType        => TypeMember.makeExpr(typeMember)
       case typeSymbol: TypeSymbolRType        => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
       case scalaEither: EitherRType[T]        => LeftRight.makeExpr(scalaEither)
+      case scalaTry: TryRType[T]              => ScalaTry.makeExpr(scalaTry)
+      case tuple: TupleRType[T]               => Tuple.makeExpr(tuple)
       case intersection: IntersectionRType[T] => LeftRight.makeExpr(intersection)
       case union: UnionRType[T]               => LeftRight.makeExpr(union)
       case selfRef: SelfRefRType[T]           => SelfRef.makeExpr(selfRef)

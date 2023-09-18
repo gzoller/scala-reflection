@@ -60,16 +60,16 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*
   test("0-level Try substitution") {
-    val result = RType.of[scala.util.Try[WithDefault]].asInstanceOf[TryInfo]
-    assertEquals( result.show(), """Try of ScalaCaseClassInfo(co.blocke.scala_reflection.WithDefault):
-    |   fields:
-    |      (0) a: scala.Int
-    |      (1) b: java.lang.String
-    |""".stripMargin)
+    val result = RType.of[scala.util.Try[WithDefault]]
+    assertEquals( result.prettyPrint(), """Try of co.blocke.scala_reflection.models.WithDefault:
+      |   fields ->
+      |      a: Int
+      |      b: String (default value: wow)
+      |""".stripMargin)
   }
 
+  /*
   test("0-level Trait substitution") {
     val result = RType.of[ParamThing[WithDefault]].asInstanceOf[TraitInfo]
     assertEquals( result.show(), """TraitInfo(co.blocke.scala_reflection.ParamThing) actualParamTypes: [
@@ -84,16 +84,15 @@ class Parameters extends munit.FunSuite:
     |      (1) b: java.lang.String
     |""".stripMargin)
   }
-  
+ */ 
+
   test("0-level Tuple substitution") {
-    val result = RType.of[(Int,Boolean)].asInstanceOf[TupleInfo]
-    assertEquals( result.show(), """(
-    |   scala.Int
-    |   scala.Boolean
-    |)
-    |""".stripMargin)
+    val result = RType.of[(Int,Boolean)].asInstanceOf[TupleRType[_]]
+    assertEquals( result.prettyPrint(), """Tuple of:
+      |   0: Int
+      |   1: Boolean
+      |""".stripMargin)
   }
-  */
 
   test("0-level Union substitution") {
     val result = RType.of[String | WithDefault]
@@ -240,18 +239,20 @@ class Parameters extends munit.FunSuite:
     |               (1)[U] b: scala.Short
     |""".stripMargin)
   }
+  */
 
   test("Try type substitution") {
     val result = RType.of[TryHolder]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.TryHolder):
-    |   fields:
-    |      (0) a: Try of ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |         fields:
-    |            (0)[Q] a: java.lang.String
-    |            (1)[U] b: scala.Int
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.TryHolder:
+      |   fields ->
+      |      a: Try of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |         fields ->
+      |            a: [U] Int
+      |            b: [Q] String
     |""".stripMargin)
   }
 
+  /*
   test("Trait type substitution") {
     val result = RType.of[TypeShellHolder]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.TypeShellHolder):

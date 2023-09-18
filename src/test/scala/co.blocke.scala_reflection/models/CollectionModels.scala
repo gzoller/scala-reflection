@@ -26,3 +26,6 @@ case class WithScalaArray(
   x8: Array[Short],
   x9: Array[String]
   )
+
+// Tuple
+case class TupleTurtle[Z]( t: (Int, Z, List[String], NormalOption))

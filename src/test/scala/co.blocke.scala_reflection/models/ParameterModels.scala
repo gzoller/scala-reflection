@@ -1,6 +1,8 @@
 package co.blocke.scala_reflection
 package models
 
+import scala.util.Try
+
 // Type substitution models
 //-------------------------
 // 0-level
@@ -25,3 +27,11 @@ case class EitherHolder( a: Either[DuoTypes[Int,Float], Option[DuoTypes[String,B
 
 // 1st and 2nd level substitution in class
 case class DuoClass( a: DuoTypes[Int,DuoTypes[Byte,Short]] )
+
+// Try with paramters
+trait TryIt[X,Y]{ val x: Try[X]; val y: Try[Option[Y]] }
+case class TryItC[A,B]( x: Try[A], y: Try[Option[B]]) extends TryIt[A,B]
+
+// Try substitution
+case class TryHolder( a: scala.util.Try[DuoTypes[String,Int]] )
+
