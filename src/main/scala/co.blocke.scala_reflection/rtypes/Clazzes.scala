@@ -12,16 +12,18 @@ object Clazzes {
   val FLOAT_CLASS = "scala.Float"
   val INT_CLASS = "scala.Int"
   val LONG_CLASS = "scala.Long"
-  val SHORT_CLASS = "scala.SHORT"
+  val SHORT_CLASS = "scala.Short"
   val STRING_CLASS = "java.lang.String"
   val ANY_CLASS = "scala.Any"
   val ENUM_CLASS = "scala.Enumeration.Value"
 
-  /** A union type is resolved to AnyRef, which isn't helpful.  This is a marker class name to differentiate a union type */
-  val UNION_CLASS = "Union"
-
-  /** An intersection type is resolved to AnyRef, which isn't helpful.  This is a marker class name to differentiate a union type */
-  val INTERSECTION_CLASS = "Intersection"
+  /** Union and intersection types are only denoted internally as scala.Matchable, which is so generic it isn't helpful
+   *  These are marker class names to differentiate a union type.  Following Scala naming conventions, but be clear--there
+   *  is (currently) no such class as "scala.Union" or "scala.Intersection" and bad things will happen if you try to 
+   *  instantiate one!
+   */
+  val UNION_CLASS = "scala.Union"
+  val INTERSECTION_CLASS = "scala.Intersection"
 
   // ======= Class Instances ======= 
   // val EnumClazz        = classOf[Enum]

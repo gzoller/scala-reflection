@@ -14,13 +14,15 @@ object ExprMaster:
 
   def makeExpr[T](rt: RType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     rt match {
-      case primitive: PrimitiveRType => Primitives.makeExpr(primitive) // primitive types already preloaded in exprCache
-      case clazz: ClassRType[T] => Classes.makeExpr(clazz)
-      case opt: OptionRType[T] => Options.makeExpr(opt)
-      case typeMember: TypeMemberRType => TypeMember.makeExpr(typeMember)
-      case typeSymbol: TypeSymbolRType => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
-      case scalaEither: EitherRType[T] => LeftRight.makeExpr(scalaEither)
-      case selfRef: SelfRefRType[T] => SelfRef.makeExpr(selfRef)
-      case unknown: UnknownRType => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }
+      case primitive: PrimitiveRType          => Primitives.makeExpr(primitive) // primitive types already preloaded in exprCache
+      case clazz: ClassRType[T]               => Classes.makeExpr(clazz)
+      case opt: OptionRType[T]                => Options.makeExpr(opt)
+      case typeMember: TypeMemberRType        => TypeMember.makeExpr(typeMember)
+      case typeSymbol: TypeSymbolRType        => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
+      case scalaEither: EitherRType[T]        => LeftRight.makeExpr(scalaEither)
+      case intersection: IntersectionRType[T] => LeftRight.makeExpr(intersection)
+      case union: UnionRType[T]               => LeftRight.makeExpr(union)
+      case selfRef: SelfRefRType[T]           => SelfRef.makeExpr(selfRef)
+      case unknown: UnknownRType              => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }
     }
 

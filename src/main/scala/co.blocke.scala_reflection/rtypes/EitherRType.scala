@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package rtypes
 
-case class EitherRType[R] protected[scala_reflection](
+case class EitherRType[R](
   name: String,
   _leftType: RType[_],
   _rightType: RType[_]

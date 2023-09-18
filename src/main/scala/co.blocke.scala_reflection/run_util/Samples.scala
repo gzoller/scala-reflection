@@ -16,3 +16,5 @@ case class DuoTypes[Q,U](x: U, y: Q)  // Note intentional reversal of order to t
 case class DuoHolder( a: DuoTypes[Int,Float] )
 
 case class NestedOption(a: Option[Option[Int]], b: String)
+
+case class Mixed(a: String & Int)  // OR

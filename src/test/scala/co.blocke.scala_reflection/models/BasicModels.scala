@@ -4,6 +4,7 @@ case class Item(desc:String)
 case class Person(name:String, age:Int, item:Item, allDone: Boolean)
 
 case class HasDefaults( a: String = "wow", item: Item = Item("none"), c: Int = 5 )
+case class WithDefault(a: Int, b: String = "wow")
 
 case class Prim(
     a: Boolean,

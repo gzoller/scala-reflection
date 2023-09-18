@@ -17,7 +17,7 @@ class Basic extends munit.FunSuite:
         |      e: Float
         |      f: Int
         |      g: Long
-        |      h: SHORT
+        |      h: Short
         |      i: String
         |      j: Any
         |""".stripMargin)

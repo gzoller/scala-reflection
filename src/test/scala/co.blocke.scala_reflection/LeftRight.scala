@@ -6,13 +6,13 @@ import rtypes.PrimitiveRTypes.*
 import models.*
 import scala.util.{Left,Right}
 
-class Eithers extends munit.FunSuite:
+class LeftRight extends munit.FunSuite:
 
   test("Scala simple Either field") {
     val result = RType.of[BothSides]
     assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSides:
       |   fields ->
-      |      a: Either:
+      |      a: Either of:
       |         left--Int
       |         right--String
       |""".stripMargin)
@@ -31,7 +31,7 @@ class Eithers extends munit.FunSuite:
       |                  desc: String
       |            allDone: Boolean
       |      b: co.blocke.scala_reflection.models.Item (seen before, details above)
-      |      c: Either:
+      |      c: Either of:
       |         left--co.blocke.scala_reflection.models.Person (seen before, details above)
       |         right--co.blocke.scala_reflection.models.Item (seen before, details above)
       |""".stripMargin)
@@ -53,7 +53,7 @@ class Eithers extends munit.FunSuite:
     val result = RType.of[BothSidesWithOption]
     assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSidesWithOption:
       |   fields ->
-      |      a: Either:
+      |      a: Either of:
       |         left--Int
       |         right--Option of String
       |""".stripMargin)
@@ -69,19 +69,21 @@ class Eithers extends munit.FunSuite:
       r.constructWith[BothSidesWithOption](List(Right(Some("x")))) == BothSidesWithOption(Right(Some("x")))
     )
   }
+  */
 
   test("Scala Either with Union type") {
     val result = RType.of[BothSidesWithUnion]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.BothSidesWithUnion):
-    |   fields:
-    |      (0) a: Either:
-    |         left--scala.Int
-    |         right--Union:
-    |            left--java.lang.String
-    |            right--scala.Boolean
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSidesWithUnion:
+      |   fields ->
+      |      a: Either of:
+      |         left--Int
+      |         right--Union of:
+      |               left--String
+      |               right--Boolean
+      |""".stripMargin)
   }
 
+  /*
   test("Scala Either with Union type assignment") {
     val r = RType.of[BothSidesWithUnion].asInstanceOf[ScalaCaseClassInfo]
     assert(
@@ -97,10 +99,57 @@ class Eithers extends munit.FunSuite:
     val result = RType.of[BothSidesParam[String,Double]]
     assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSidesParam[Y,Z]:
       |   fields ->
-      |      a: Either:
+      |      a: Either of:
       |         left--String
       |         right--Option of co.blocke.scala_reflection.models.ParamOption[T]:
       |               fields ->
       |                  a: Option of Double
+      |""".stripMargin)
+  }
+
+  test("Scala Union type") {
+    val result = RType.of[Together]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Together:
+      |   fields ->
+      |      a: Intersection of:
+      |         left--Int
+      |         right--co.blocke.scala_reflection.models.Person:
+      |               fields ->
+      |                  name: String
+      |                  age: Int
+      |                  item: co.blocke.scala_reflection.models.Item:
+      |                     fields ->
+      |                        desc: String
+      |                  allDone: Boolean
+      |""".stripMargin)
+  }
+
+  test("Scala Intersection type with Option") {
+    val result = RType.of[Apart]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Apart:
+      |   fields ->
+      |      a: Union of:
+      |         left--Option of co.blocke.scala_reflection.models.Person:
+      |               fields ->
+      |                  name: String
+      |                  age: Int
+      |                  item: co.blocke.scala_reflection.models.Item:
+      |                     fields ->
+      |                        desc: String
+      |                  allDone: Boolean
+      |         right--String
+      |""".stripMargin)
+  }
+
+  test("Scala Intersection type with type parameters") {
+    val result = RType.of[ApartWithType[Int,Boolean]]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.ApartWithType[T,U]:
+      |   fields ->
+      |      a: Union of:
+      |         left--Option of co.blocke.scala_reflection.models.Thingy[Z]:
+      |               fields ->
+      |                  name: String
+      |                  payload: [Z] Int
+      |         right--Boolean
       |""".stripMargin)
   }

@@ -263,7 +263,7 @@ object ReflectOnClass:
             returnedRType
 
         else
-          UnknownRType("foom")
+          UnknownRType(className)
 
             /*
         else

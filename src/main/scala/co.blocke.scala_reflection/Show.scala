@@ -48,7 +48,7 @@ object Show:
                 (buf, lastWasMultiLine, classesSeenBefore)
 
             case t: LeftRightRType[_] =>
-                buf.append(showSimpleName(t)+":\n")
+                buf.append(showSimpleName(t)+" of:\n")
                 buf.append(tabs(tabLevel+1))
                 buf.append("left--")
                 val (_, lastWasMultiLine, classesSeenBefore1) = _show(t.leftType, buf, tabLevel+2, seenBefore)

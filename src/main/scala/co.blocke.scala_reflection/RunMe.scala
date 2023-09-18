@@ -5,7 +5,7 @@ import co.blocke.scala_reflection.rtypes.*
 import co.blocke.scala_reflection.run_util.*
 
 object RunMe extends App:
-    val rt = RType.of[DuoHolder]
+    val rt = RType.of[Mixed]
     println(rt)
     println(rt.typedName)
 

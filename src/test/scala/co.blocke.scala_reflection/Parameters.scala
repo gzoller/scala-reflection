@@ -18,27 +18,27 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*  TODO: Let's try to kill these... They should be tested in Option, Either, ... respectively!
   test("0-level Option substitution") {
-    val result = RType.of[Option[WithDefault]].asInstanceOf[ScalaOptionInfo]
-    assertEquals( result.show(), """Option of ScalaCaseClassInfo(co.blocke.scala_reflection.WithDefault):
-    |   fields:
-    |      (0) a: scala.Int
-    |      (1) b: java.lang.String
-    |""".stripMargin)
+    val result = RType.of[Option[WithDefault]]
+    assertEquals( result.prettyPrint(), """Option of co.blocke.scala_reflection.models.WithDefault:
+      |   fields ->
+      |      a: Int
+      |      b: String (default value: wow)
+      |""".stripMargin)
   }
 
   test("0-level Either substitution") {
-    val result = RType.of[Either[Int,WithDefault]].asInstanceOf[EitherInfo]
-    assertEquals( result.show(), """Either:
-    |   left--scala.Int
-    |   right--ScalaCaseClassInfo(co.blocke.scala_reflection.WithDefault):
-    |      fields:
-    |         (0) a: scala.Int
-    |         (1) b: java.lang.String
-    |""".stripMargin)
+    val result = RType.of[Either[Int,WithDefault]]
+    assertEquals( result.prettyPrint(), """Either of:
+      |   left--Int
+      |   right--co.blocke.scala_reflection.models.WithDefault:
+      |         fields ->
+      |            a: Int
+      |            b: String (default value: wow)
+      |""".stripMargin)
   }
 
+  /*  TODO: Let's try to kill these... They should be tested in Option, Either, ... respectively!
   test("0-level Map substitution") {
     val result = RType.of[Map[Int,WithDefault]].asInstanceOf[MapLikeInfo]
     assertEquals( result.show(), """MapLikeInfo(scala.collection.immutable.Map):
@@ -91,21 +91,23 @@ class Parameters extends munit.FunSuite:
     |)
     |""".stripMargin)
   }
+  */
 
   test("0-level Union substitution") {
-    val result = RType.of[String | WithDefault].asInstanceOf[UnionInfo]
-    assertEquals( result.show(), """Union:
-    |   left--java.lang.String
-    |   right--ScalaCaseClassInfo(co.blocke.scala_reflection.WithDefault):
-    |      fields:
-    |         (0) a: scala.Int
-    |         (1) b: java.lang.String
-    |""".stripMargin)
+    val result = RType.of[String | WithDefault]
+    assertEquals( result.prettyPrint(), """Union of:
+      |   left--String
+      |   right--co.blocke.scala_reflection.models.WithDefault:
+      |         fields ->
+      |            a: Int
+      |            b: String (default value: wow)
+      |""".stripMargin)
   }
 
+/* need trait support for this test
   test("0-level Intersection substitution") {    
-    val result = RType.of[Stackable[Int] & Floatable[String]].asInstanceOf[IntersectionInfo]
-    assertEquals( result.show(), """Intersection:
+    val result = RType.of[Stackable[Int] & Floatable[String]]
+    assertEquals( result.prettyPrint(), """Intersection:
     |   left--TraitInfo(co.blocke.scala_reflection.Stackable) actualParamTypes: [
     |         T: scala.Int
     |      ] with fields:
@@ -154,45 +156,45 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*
   test("2nd level param substitution - Option") {
-    val result = RType.of[OptHolder].asInstanceOf[ScalaCaseClassInfo]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.OptHolder):
-    |   fields:
-    |      (0) a: Option of ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |         fields:
-    |            (0)[Q] a: java.lang.String
-    |            (1)[U] b: scala.Boolean
-    |""".stripMargin)
+    val result = RType.of[OptHolder]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptHolder:
+      |   fields ->
+      |      a: Option of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |         fields ->
+      |            a: [U] Boolean
+      |            b: [Q] String
+      |""".stripMargin)
   }
 
   test("3rd level param substitution - Option") {
-    val result = RType.of[OptHolder2].asInstanceOf[ScalaCaseClassInfo]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.OptHolder2):
-    |   fields:
-    |      (0) a: Option of Option of ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |         fields:
-    |            (0)[Q] a: java.lang.String
-    |            (1)[U] b: scala.Boolean
-    |""".stripMargin)
+    val result = RType.of[OptHolder2]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptHolder2:
+      |   fields ->
+      |      a: Option of Option of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |         fields ->
+      |            a: [U] Boolean
+      |            b: [Q] String
+      |""".stripMargin)
   }
 
   test("2nd and 3rd level param substitution - Either") {
-    val result = RType.of[EitherHolder].asInstanceOf[ScalaCaseClassInfo]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.EitherHolder):
-    |   fields:
-    |      (0) a: Either:
-    |         left--ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |            fields:
-    |               (0)[Q] a: scala.Int
-    |               (1)[U] b: scala.Float
-    |         right--Option of ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |            fields:
-    |               (0)[Q] a: java.lang.String
-    |               (1)[U] b: scala.Boolean
-    |""".stripMargin)
+    val result = RType.of[EitherHolder]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.EitherHolder:
+      |   fields ->
+      |      a: Either of:
+      |         left--co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |               fields ->
+      |                  a: [U] Float
+      |                  b: [Q] Int
+      |         right--Option of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |               fields ->
+      |                  a: [U] Boolean
+      |                  b: [Q] String
+      |""".stripMargin)
   }
 
+  /*
   test("Opaque type alias type substitution (rare)") {
     val result = RType.of[AliasTypeSub].asInstanceOf[ScalaCaseClassInfo]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.AliasTypeSub):
@@ -203,18 +205,23 @@ class Parameters extends munit.FunSuite:
     |            (1)[U] b: scala.Short
     |""".stripMargin)
   }
+  */
 
   test("2nd level subsitution in a class field") {
-    val result = RType.of[DuoClass].asInstanceOf[ScalaCaseClassInfo]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.DuoClass):
-    |   fields:
-    |      (0) a: ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |         fields:
-    |            (0)[Q] a: scala.Int
-    |            (1)[U] b: ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes) (self-ref recursion)
-    |""".stripMargin)
+    val result = RType.of[DuoClass]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.DuoClass:
+      |   fields ->
+      |      a: co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |         fields ->
+      |            a: [U] co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |               fields ->
+      |                  a: [U] Short
+      |                  b: [Q] Byte
+      |            b: [Q] Int
+      |""".stripMargin)
   }
 
+  /*
   test("List and Map subsitituion") {
     val result = RType.of[ListMapSub].asInstanceOf[ScalaCaseClassInfo]
     assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.ListMapSub):

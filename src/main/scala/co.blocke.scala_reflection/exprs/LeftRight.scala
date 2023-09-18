@@ -30,4 +30,28 @@ object LeftRight:
                     rightTypeExpr.asTerm
                 )
             ).asExprOf[RType[T]]
+        case union: UnionRType[_] =>
+            Apply(
+                TypeApply(
+                    Select.unique(New(TypeTree.of[UnionRType[T]]),"<init>"), 
+                    List(TypeTree.of[T])
+                ),
+                List(
+                    Expr(union.name).asTerm,
+                    leftTypeExpr.asTerm,
+                    rightTypeExpr.asTerm
+                )
+            ).asExprOf[RType[T]]
+        case intersection: IntersectionRType[_] =>
+            Apply(
+                TypeApply(
+                    Select.unique(New(TypeTree.of[IntersectionRType[T]]),"<init>"), 
+                    List(TypeTree.of[T])
+                ),
+                List(
+                    Expr(intersection.name).asTerm,
+                    leftTypeExpr.asTerm,
+                    rightTypeExpr.asTerm
+                )
+            ).asExprOf[RType[T]]
     }
