@@ -49,16 +49,18 @@ class Parameters extends munit.FunSuite:
     |         (1) b: java.lang.String
     |""".stripMargin)
   }
+  */
 
   test("0-level List (Seq) substitution") {
-    val result = RType.of[List[WithDefault]].asInstanceOf[SeqLikeInfo]
-    assertEquals( result.show(), """SeqLikeInfo(scala.collection.immutable.List): ScalaCaseClassInfo(co.blocke.scala_reflection.WithDefault):
-    |   fields:
-    |      (0) a: scala.Int
-    |      (1) b: java.lang.String
-    |""".stripMargin)
+    val result = RType.of[List[WithDefault]]
+    assertEquals( result.prettyPrint(), """List of: co.blocke.scala_reflection.models.WithDefault:
+      |   fields ->
+      |      a: Int
+      |      b: String (default value: wow)
+      |""".stripMargin)
   }
 
+  /*
   test("0-level Try substitution") {
     val result = RType.of[scala.util.Try[WithDefault]].asInstanceOf[TryInfo]
     assertEquals( result.show(), """Try of ScalaCaseClassInfo(co.blocke.scala_reflection.WithDefault):

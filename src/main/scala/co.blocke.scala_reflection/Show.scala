@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 
 import rtypes.*
 import java.lang.StringBuilder
+import scala.util.matching.Regex
 
 // Pretty-print complex structures of RTypes
 object Show:
@@ -25,6 +26,14 @@ object Show:
             .replaceAll("java.util.","")
             .replaceAll("scala.util.","")
             .replaceAll("scala.","")
+
+    val normalColl: Regex = """^scala.collection.immutable.(\w+)$""".r
+    val mutableColl: Regex = """^scala.collection.mutable.(\w+)$""".r
+    final inline def cleanCollectionNames(rt: RType[_]): String =
+        rt.name match {
+            case normalColl(c) => c
+            case mutableColl(c) => "mutable " + c
+        }
 
     private def _show(
         rt: RType[_], 
@@ -63,6 +72,16 @@ object Show:
 
             case t: SelfRefRType[_] =>
                 (buf.append(showSimpleName(t)+ " (recursive self-reference)"), false, seenBefore)
+
+            case t: SeqRType[_] =>
+                buf.append(cleanCollectionNames(t) + " of: ")
+                val (_, lastWasMultiLine, classesSeenBefore) = _show(t.elementType, buf, tabLevel, seenBefore)
+                (buf, lastWasMultiLine, classesSeenBefore)
+
+            case t: ArrayRType[_] =>
+                buf.append("Array of: ")
+                val (_, lastWasMultiLine, classesSeenBefore) = _show(t.elementType, buf, tabLevel, seenBefore)
+                (buf, lastWasMultiLine, classesSeenBefore)
 
             case t: ScalaClassRType[_] =>
                 if seenBefore.contains(t.typedName.toString) then

@@ -7,7 +7,6 @@ class Basic extends munit.FunSuite:
 
   test("Class of all primitives") {
     val result = RType.of[Prim]
-    println(result.prettyPrint().replaceAll("\n",">"))
     assertEquals(result.prettyPrint(), """co.blocke.scala_reflection.models.Prim:
         |   fields ->
         |      a: Boolean

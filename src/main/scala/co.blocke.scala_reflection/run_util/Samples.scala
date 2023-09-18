@@ -17,4 +17,4 @@ case class DuoHolder( a: DuoTypes[Int,Float] )
 
 case class NestedOption(a: Option[Option[Int]], b: String)
 
-case class Mixed(a: String & Int)  // OR
+case class Mixed(a: Array[String], b: Array[Int])  // OR

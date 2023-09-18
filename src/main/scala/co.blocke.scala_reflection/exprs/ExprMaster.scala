@@ -17,6 +17,8 @@ object ExprMaster:
       case primitive: PrimitiveRType          => Primitives.makeExpr(primitive) // primitive types already preloaded in exprCache
       case clazz: ClassRType[T]               => Classes.makeExpr(clazz)
       case opt: OptionRType[T]                => Options.makeExpr(opt)
+      case seq: SeqRType[T]                   => Seq.makeExpr(seq)
+      case arr: ArrayRType[T]                 => Array.makeExpr(arr)
       case typeMember: TypeMemberRType        => TypeMember.makeExpr(typeMember)
       case typeSymbol: TypeSymbolRType        => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
       case scalaEither: EitherRType[T]        => LeftRight.makeExpr(scalaEither)

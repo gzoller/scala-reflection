@@ -75,15 +75,17 @@ class Options extends munit.FunSuite:
     |      (0) fld: Optional of Optional of java.lang.Integer
     |""".stripMargin)
   }
+  */
 
   test("Scala optional parameterized field") {
     val result = RType.of[ParamOption[Char]]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.ParamOption):
-    |   fields:
-    |      (0) a: Option of scala.Char
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.ParamOption[T]:
+      |   fields ->
+      |      a: Option of Char
+      |""".stripMargin)
   }
 
+  /*
   test("Java optional parameterized field") {
     val result = RType.of[co.blocke.reflect.JavaOption3[Char]]
     assertEquals( result.show(), """JavaClassInfo(co.blocke.reflect.JavaOption3):
@@ -93,7 +95,7 @@ class Options extends munit.FunSuite:
   }
 
   test("Option assignments in union type") {
-    val r = RType.of[UnionHavingOption].asInstanceOf[ScalaCaseClassInfo]
+    val r = RType.of[UnionHavingOption]
     assert(
       r.constructWith[UnionHavingOption](List(None,Optional.empty())) == UnionHavingOption(None,Optional.empty())
     )
@@ -101,19 +103,21 @@ class Options extends munit.FunSuite:
       r.constructWith[UnionHavingOption](List(Some(3),Optional.of(3))) == UnionHavingOption(Some(3),Optional.of(3))
     )
   }
+  */
 
   test("Option of a union") {    
     val result = RType.of[OptionHavingUnion]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.OptionHavingUnion):
-    |   fields:
-    |      (0) a: Option of Union:
-    |         left--scala.Boolean
-    |         right--java.lang.String
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptionHavingUnion:
+      |   fields ->
+      |      a: Option of Union of:
+      |         left--Boolean
+      |         right--String
+      |""".stripMargin)
   }
 
+  /*
   test("Option of a union assignment") {    
-    val r = RType.of[OptionHavingUnion].asInstanceOf[ScalaCaseClassInfo]
+    val r = RType.of[OptionHavingUnion]
     assert(
       r.constructWith[OptionHavingUnion](List(None)) == OptionHavingUnion(None)
     )
