@@ -35,3 +35,16 @@ case class TryItC[A,B]( x: Try[A], y: Try[Option[B]]) extends TryIt[A,B]
 // Try substitution
 case class TryHolder( a: scala.util.Try[DuoTypes[String,Int]] )
 
+// List and Map substitution
+case class ListMapSub( a: List[DuoTypes[Int,Byte]], b: Map[String, DuoTypes[Float,Short]])
+
+// Type member (type symbol) substitution
+/*
+trait Body
+case class FancyBody(message: String) extends Body
+
+case class Envelope[T <: Body, U](id: String, body: T) {
+  type Giraffe = T
+  type Foo = Int
+}
+*/

@@ -23,27 +23,25 @@ class Collections extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*
   test("Scala Map 1") {
     val result = RType.of[Coll3]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Coll3):
-    |   fields:
-    |      (0) a: MapLikeInfo(scala.collection.immutable.Map):
-    |         java.lang.String
-    |         scala.Float
-    |""".stripMargin)  
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll3:
+      |   fields ->
+      |      a: Map of:
+      |         key: String
+      |         value: Float
+      |""".stripMargin)  
   }
 
   test("Scala Map 2") {
     val result = RType.of[Coll4]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Coll4):
-    |   fields:
-    |      (0) a: MapLikeInfo(scala.collection.immutable.ListMap):
-    |         java.lang.String
-    |         scala.Boolean
-    |""".stripMargin)  
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll4:
+      |   fields ->
+      |      a: ListMap of:
+      |         key: String
+      |         value: Boolean
+      |""".stripMargin)  
   }
-  */
 
   test("Scala mutable List") {
     val result = RType.of[Coll1m]
@@ -61,37 +59,35 @@ class Collections extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*
   test("Scala mutable Map 1") {
     val result = RType.of[Coll3m]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Coll3m):
-    |   fields:
-    |      (0) a: MapLikeInfo(scala.collection.mutable.Map):
-    |         java.lang.String
-    |         scala.Float
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll3m:
+      |   fields ->
+      |      a: mutable Map of:
+      |         key: String
+      |         value: Float
+      |""".stripMargin)
   }
 
   test("Scala mutable Map 2") {
     val result = RType.of[Coll4m]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Coll4m):
-    |   fields:
-    |      (0) a: MapLikeInfo(scala.collection.mutable.HashMap):
-    |         java.lang.String
-    |         scala.Boolean
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll4m:
+      |   fields ->
+      |      a: mutable HashMap of:
+      |         key: String
+      |         value: Boolean
+      |""".stripMargin)
   }
 
   test("Nested Collections") {
     val result = RType.of[NestedColl]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.NestedColl):
-    |   fields:
-    |      (0) a: MapLikeInfo(scala.collection.immutable.Map):
-    |         java.lang.String
-    |         SeqLikeInfo(scala.collection.immutable.List): Option of scala.Int
-    |""".stripMargin)
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.NestedColl:
+      |   fields ->
+      |      a: Map of:
+      |         key: String
+      |         value: List of: Option of Int
+      |""".stripMargin)
   }
-  */
 
   test("Tuples") {
     val result = RType.of[TupleTurtle[Boolean]]

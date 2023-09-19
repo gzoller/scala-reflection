@@ -30,12 +30,6 @@ case class ScalaClassRType[R] (
     isCaseClass:            Boolean
 ) extends ClassRType[R]:
 
-  // val _typeMembers = Nil
-  // val _annotations = Map.empty[String,Map[String,String]]
-  // val _fields = List.empty[FieldInfo]
-  // val _mixins = List.empty[String]
-  // val paramSymbols = List.empty[TypeSymbol]
-
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] =
     this
     // this.copy( 

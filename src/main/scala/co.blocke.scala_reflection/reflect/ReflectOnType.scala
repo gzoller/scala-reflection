@@ -74,9 +74,9 @@ object ReflectOnType: // extends NonCaseClassReflection:
           case named: dotty.tools.dotc.core.Types.NamedType => 
             val isTypeParam = typeRef.typeSymbol.flags.is(Flags.Param)   // Is 'T' or a "real" type?  (true if T)
             classSymbol match {
-              /*
               case cs if isTypeParam => 
-                TypeSymbolInfo(typeRef.name)  // TypeSymbols Foo[T] have typeRef of Any
+                TypeSymbolRType(typeRef.name)  // TypeSymbols Foo[T] have typeRef of Any
+              /*
               case cs if is2xEnumeration => 
                 val enumerationClassSymbol = typeRef.qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass
                 ScalaEnumerationInfo(enumerationClassSymbol.fullName.dropRight(1), enumerationClassSymbol.declaredFields.map( _.name ).toArray)  // get the values of the Enumeration
@@ -85,7 +85,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
             }
 
-          // Union Type (sometimes it pops up down here... hmm...)
+          // Union Type (sometimes it pops up down here for some reason... hmm...)
           //----------------------------------------
           case OrType(left,right) =>
             val resolvedLeft = RType.unwindType(quotes)(left.asInstanceOf[quotes.reflect.TypeRef])

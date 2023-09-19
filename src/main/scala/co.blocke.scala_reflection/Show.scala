@@ -4,7 +4,9 @@ import rtypes.*
 import java.lang.StringBuilder
 import scala.util.matching.Regex
 
-// Pretty-print complex structures of RTypes
+// Pretty-print complex structures of RTypes.
+// Have this all in one object vs in the RTypes, because this is a "luxery" add--not intrinsic to the operation of
+// the RType, and I wanted to keep the RType small.
 object Show:
 
     def show( rt: RType[_] ): String =
@@ -80,6 +82,20 @@ object Show:
                 }
                 (buf, true, allClassesSeenUpToNow)
 
+            case t: MapRType[_] =>
+                buf.append(cleanCollectionNames(t)+" of:\n")
+                buf.append(tabs(tabLevel+1))
+                buf.append("key: ")
+                val (_, lastWasMultiLine_1, classesSeen_1) = _show(t._elementType, buf, tabLevel+1, seenBefore)
+                if !lastWasMultiLine_1 then
+                    buf.append("\n")
+                buf.append(tabs(tabLevel+1))
+                buf.append("value: ")
+                val (_, lastWasMultiLine_2, classesSeen_2) = _show(t._elementType2, buf, tabLevel+1, classesSeen_1)
+                if !lastWasMultiLine_2 then
+                    buf.append("\n")
+                (buf, true, classesSeen_2)
+
             case t: LeftRightRType[_] =>
                 buf.append(showSimpleName(t)+" of:\n")
                 buf.append(tabs(tabLevel+1))
@@ -127,4 +143,50 @@ object Show:
                         classesSeenBefore
                     }
                     (buf, true, allClassesSeenUpToNow)
+
+
+            case t: TraitRType[_] =>
+                if seenBefore.contains(t.typedName.toString) then
+                    buf.append(showSimpleName(t) + " (seen before, details above)\n")
+                    (buf, true, seenBefore)
+                else
+                    buf.append(showSimpleName(t))
+                    // if t.paramSymbols.nonEmpty then
+                    //     buf.append( t.paramSymbols.map(_.toString).mkString("[",",","]"))
+                    buf.append(" (trait):\n")
+                    buf.append(tabs(tabLevel+1))
+                    buf.append("fields ->\n")
+                    val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) =>
+                        buf.append(tabs(tabLevel+2))
+                        buf.append(f.name+": ")
+                        f.originalSymbol.map( os => buf.append("["+os+"] ") )
+                        val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
+                        if !lastWasMultiLine then
+                            buf.append("\n")
+                        classesSeenBefore
+                    }
+                    (buf, true, allClassesSeenUpToNow)
+
+            case t: SealedTraitRType[_] =>
+                if seenBefore.contains(t.typedName.toString) then
+                    buf.append(showSimpleName(t) + " (seen before, details above)\n")
+                    (buf, true, seenBefore)
+                else
+                    buf.append(showSimpleName(t))
+                    buf.append(" (sealed trait):\n")
+                    buf.append(tabs(tabLevel+1))
+                    buf.append("children ->\n")
+                    val allClassesSeenUpToNow = t.children.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) =>
+                        buf.append(tabs(tabLevel+2))
+                        val (_, lastWasMultiLine, classesSeenBefore) = _show(f, buf, tabLevel+2, classesSeen)
+                        if !lastWasMultiLine then
+                            buf.append("\n")
+                        classesSeenBefore
+                    }
+                    (buf, true, allClassesSeenUpToNow)
+
+            case t: ObjectRType => 
+                buf.append(showSimpleName(t))
+                buf.append(" (object)")
+                (buf, false, seenBefore)
         }

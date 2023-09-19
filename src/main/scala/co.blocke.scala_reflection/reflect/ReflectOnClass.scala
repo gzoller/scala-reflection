@@ -62,7 +62,6 @@ object ReflectOnClass:
         //   case s => Scala2Info(s)
         // }
 
-        /*
       else if symbol.flags.is(quotes.reflect.Flags.Trait) then
         // === Trait ===
         //     >> Sealed Traits
@@ -71,15 +70,13 @@ object ReflectOnClass:
             c.tree match {
               case vd: ValDef =>
                 RType.unwindType(quotes)(vd.tpt.tpe)
-                ObjectInfo(vd.symbol.fullName)  // sealed object implementation
+                ObjectRType(vd.symbol.fullName)  // sealed object implementation
               case _ =>   // sealed case class implementation
                 val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
                 RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
             }
           }
-          SealedTraitInfo(
-            className,
-            kidsRTypes.toArray)
+          SealedTraitRType(className, kidsRTypes)
         else
           //  >> Normal (unsealed) traits
           typeRef match {
@@ -89,14 +86,14 @@ object ReflectOnClass:
                   if resolveTypeSyms then
                     RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef])
                   else if oneTob.asInstanceOf[quotes.reflect.TypeRef].typeSymbol.flags.is(Flags.Param) then
-                    TypeSymbolInfo(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
+                    TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
                   else
                     RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef], false)
                 }.toOption.getOrElse{
-                  TypeSymbolInfo(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
+                  TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
                 }
               }
-              val paramMap: Map[TypeSymbol, RType] = typeSymbols.zip(actualParamTypes).toMap
+              val paramMap: Map[TypeSymbol, RType[_]] = typeSymbols.zip(actualParamTypes).toMap
 
               val traitFields = symbol.declaredFields.zipWithIndex.map { (f,index) =>
                 val fieldType =
@@ -128,11 +125,11 @@ object ReflectOnClass:
                   }
                 ScalaFieldInfo(index, f.name, fieldType, Map.empty[String,Map[String,String]], None, typeSym, true)
               }
-              TraitInfo(
+              TraitRType(
                 className,
-                traitFields.toArray,
-                actualParamTypes.toArray,
-                typeSymbols.toArray
+                traitFields,
+                actualParamTypes,
+                typeSymbols
               )
             case _ =>
               // non-parameterized trait
@@ -141,9 +138,10 @@ object ReflectOnClass:
                   val fieldType = RType.unwindType(quotes)(typeRef.memberType(valDef.symbol))
                   ScalaFieldInfo(-1, valDef.name, fieldType, Map.empty[String,Map[String,String]], None, None, true)
               }
-              TraitInfo(className, traitFields.toArray)
+              TraitRType(className, traitFields)
           }
 
+          /*
       else if symbol.flags.is(quotes.reflect.Flags.Enum) then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
         val enumClassSymbol = typeRef.classSymbol.get
         enumClassSymbol.companionClass.declaredMethods // <-- This shouldn't "do" anything!  For some reason it is needed or Enums test explodes.

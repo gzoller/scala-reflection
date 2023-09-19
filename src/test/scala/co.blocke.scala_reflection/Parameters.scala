@@ -222,24 +222,22 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*
   test("List and Map subsitituion") {
-    val result = RType.of[ListMapSub].asInstanceOf[ScalaCaseClassInfo]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.ListMapSub):
-    |   fields:
-    |      (0) a: SeqLikeInfo(scala.collection.immutable.List): ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |         fields:
-    |            (0)[Q] a: scala.Int
-    |            (1)[U] b: scala.Byte
-    |      (1) b: MapLikeInfo(scala.collection.immutable.Map):
-    |         java.lang.String
-    |         ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |            fields:
-    |               (0)[Q] a: scala.Float
-    |               (1)[U] b: scala.Short
-    |""".stripMargin)
+    val result = RType.of[ListMapSub]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.ListMapSub:
+      |   fields ->
+      |      a: List of: co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |         fields ->
+      |            a: [U] Byte
+      |            b: [Q] Int
+      |      b: Map of:
+      |         key: String
+      |         value: co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+      |            fields ->
+      |               a: [U] Short
+      |               b: [Q] Float
+      |""".stripMargin)
   }
-  */
 
   test("Try type substitution") {
     val result = RType.of[TryHolder]

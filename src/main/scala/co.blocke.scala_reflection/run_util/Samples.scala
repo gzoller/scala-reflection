@@ -17,4 +17,4 @@ case class DuoHolder( a: DuoTypes[Int,Float] )
 
 case class NestedOption(a: Option[Option[Int]], b: String)
 
-case class Mixed(a: (String,Boolean,Person)) 
+case class Mixed[R](a: String, name: R)  extends Thing[R]

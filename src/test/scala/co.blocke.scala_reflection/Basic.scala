@@ -62,3 +62,34 @@ class Basic extends munit.FunSuite:
         |""".stripMargin)
     assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.SelfReferencing")    
   }
+
+  test("sealed trait with case classes") {
+    val result = RType.of[VehicleHolder]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.VehicleHolder:
+        |   fields ->
+        |      v: co.blocke.reflection.models.Vehicle (sealed trait):
+        |         children ->
+        |            co.blocke.scala_reflection.models.Truck:
+        |               fields ->
+        |                  numberOfWheels: Int
+        |            co.blocke.scala_reflection.models.Car:
+        |               fields ->
+        |                  numberOfWheels: Int
+        |                  color: String
+        |            co.blocke.scala_reflection.models.Plane:
+        |               fields ->
+        |                  numberOfEngines: Int
+        |""".stripMargin)
+  }
+
+  test("sealed trait with case objects") {
+    val result = RType.of[FlavorHolder]
+    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.FlavorHolder:
+        |   fields ->
+        |      f: co.blocke.reflection.models.Flavor (sealed trait):
+        |         children ->
+        |            co.blocke.reflection.models.Vanilla (object)
+        |            co.blocke.reflection.models.Chocolate (object)
+        |            co.blocke.reflection.models.Bourbon (object)
+        |""".stripMargin)
+  }

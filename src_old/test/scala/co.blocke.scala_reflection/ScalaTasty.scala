@@ -5,6 +5,7 @@ import co.blocke.reflect.{ClassAnno,FieldAnno}
 import info.*
 import impl.PrimitiveType.*
 
+// NOTE: This is equivalent to Basic.scala in the new code!!!
 
 inline def describe(message: String, color: String = Console.MAGENTA): Unit = println(s"$color$message${Console.RESET}")
 inline def pending = describe("   << Test Pending (below) >>", Console.YELLOW)

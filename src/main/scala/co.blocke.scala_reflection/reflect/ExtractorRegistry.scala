@@ -11,7 +11,7 @@ object ExtractorRegistry:
       EitherExtractor(),
       SeqExtractor(),
       ScalaArrayExtractor(),
-      // MapExtractor(),
+      MapExtractor(),
       TupleExtractor(),
       TryExtractor(),
       // JavaQueueExtractor(),
