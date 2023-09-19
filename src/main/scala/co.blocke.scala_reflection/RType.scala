@@ -80,18 +80,22 @@ object RType:
       newRType
     })
 
-
-  inline def inTermsOf[T](className: String): RType[_] = ${ inTermsOfImpl[T]('className) }
-
-  def inTermsOfImpl[T](className: Expr[String])(using quotes: Quotes)(using tt: Type[T]): Expr[RType[_]] =
-    import quotes.reflect.* 
-    val cname = className.show.replaceAll("\"","") // Cheat to unwrap class name from Expr.  There must be a better way!
-    val classQuotedTypeRepr = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(cname))
-    val traitsParams = TypeRepr.of[T] match {
-      case AppliedType(_, traitsParams) => traitsParams
+  // Amazing way to call something (like TypeRepr.of) that needs quotes, when no quotes are availabe.  In this case str value isn't
+  // known until runtime so it absolutely can't be passed in a macro (or boom!).  This bit o'magic materializes a quotes inside a 
+  // function.  So you create the function, having code using quotes, then pass the function to the withQuotes() mirqacle, and viola!
+  def inTermsOf(traitRType: RType[_], str: String): RType[_] = 
+    import scala.quoted.staging._
+    given Compiler = Compiler.make(getClass.getClassLoader)
+    val fn = (quotes: Quotes) ?=> {
+      import quotes.reflect.*
+      val classQuotedTypeRepr = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(str))
+      implicit val tt = traitRType.toType(quotes)
+      val traitsParams = TypeRepr.of[traitRType.T] match { 
+        case AppliedType(_, traitsParams) => traitsParams
+      }
+      RType.unwindType(quotes)(classQuotedTypeRepr.appliedTo( traitsParams ))
     }
-    exprs.ExprMaster.makeExpr( unwindType(quotes)( classQuotedTypeRepr.appliedTo( traitsParams ) ) )
-
+    withQuotes(fn)
   
   // ------------------------
   //   Common entry point of all reflection/inspection, to unwind the given type and return an RType[T]

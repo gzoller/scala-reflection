@@ -3,11 +3,13 @@ package runnable
 import co.blocke.scala_reflection.*
 import co.blocke.scala_reflection.rtypes.*
 // import co.blocke.scala_reflection.run_util.*
+import java.io.*
 
 object RunMe extends App:
 
-
-    val rt = RType.inTermsOf[Thing[Boolean]]("co.blocke.scala_reflection.ConcreteThing")
+    println("Enter a class name: ");
+    val input = System.console().readLine()
+    val rt = RType.inTermsOf(RType.of[Thing[Boolean,Person]],input) //("co.blocke.scala_reflection.ConcreteThing")
 
     // val rt = RType.of[Mixed[Int,Boolean]]
     // val rt = RType.of(Class.forName("co.blocke.scala_reflection.NestedOption"))

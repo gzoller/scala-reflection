@@ -43,6 +43,17 @@ case class TraitRType[R] (
   //       ).asInstanceOf[quotes.reflect.AppliedType]
   //   else
   //     quotes.reflect.TypeRepr.typeConstructorOf(infoClass)
+
+  override def toType(quotes: Quotes): quoted.Type[R] =
+    import quotes.reflect.*
+    val traitType: quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]
+    val traitTypeRepr = TypeRepr.of[R](using traitType)
+    val fieldTypes = fields.map{ f => 
+      val oneFieldType = f.fieldType.toType(quotes)
+      TypeRepr.of[f.fieldType.T](using oneFieldType)
+    }
+    AppliedType(traitTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
+
       
   def select(i: Int): RType[_] = 
     if i >= 0 && i <= actualParameterTypes.size-1 then

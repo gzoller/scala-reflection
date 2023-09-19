@@ -9,8 +9,8 @@ case class HasDefaults( a: String = "wow", b: Int = 5 )
 
 case class Foom( a: BigInt, b: BigDecimal )
 
-trait Thing[T]{ val name: T }
-case class ConcreteThing[U](name: U) extends Thing[U]
+trait Thing[T,U]{ val name: T; val item: U }
+case class ConcreteThing[A,B](name: A, item: Blather[B]) extends Thing[A,Blather[B]]
 
 case class Blather[T](val name: T) //extends Thing[T]
 case class Big(i: Int)
