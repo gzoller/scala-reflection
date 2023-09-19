@@ -11,7 +11,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level param substitution") {
     val result = RType.of[DuoTypes[Int,Float]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |   fields ->
       |      a: [U] Float
       |      b: [Q] Int
@@ -20,7 +20,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level Option substitution") {
     val result = RType.of[Option[WithDefault]]
-    assertEquals( result.prettyPrint(), """Option of co.blocke.scala_reflection.models.WithDefault:
+    assertEquals( result.pretty(), """Option of co.blocke.scala_reflection.models.WithDefault:
       |   fields ->
       |      a: Int
       |      b: String (default value: wow)
@@ -29,7 +29,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level Either substitution") {
     val result = RType.of[Either[Int,WithDefault]]
-    assertEquals( result.prettyPrint(), """Either of:
+    assertEquals( result.pretty(), """Either of:
       |   left--Int
       |   right--co.blocke.scala_reflection.models.WithDefault:
       |         fields ->
@@ -53,7 +53,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level List (Seq) substitution") {
     val result = RType.of[List[WithDefault]]
-    assertEquals( result.prettyPrint(), """List of: co.blocke.scala_reflection.models.WithDefault:
+    assertEquals( result.pretty(), """List of: co.blocke.scala_reflection.models.WithDefault:
       |   fields ->
       |      a: Int
       |      b: String (default value: wow)
@@ -62,7 +62,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level Try substitution") {
     val result = RType.of[scala.util.Try[WithDefault]]
-    assertEquals( result.prettyPrint(), """Try of co.blocke.scala_reflection.models.WithDefault:
+    assertEquals( result.pretty(), """Try of co.blocke.scala_reflection.models.WithDefault:
       |   fields ->
       |      a: Int
       |      b: String (default value: wow)
@@ -88,7 +88,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level Tuple substitution") {
     val result = RType.of[(Int,Boolean)].asInstanceOf[TupleRType[_]]
-    assertEquals( result.prettyPrint(), """Tuple of:
+    assertEquals( result.pretty(), """Tuple of:
       |   0: Int
       |   1: Boolean
       |""".stripMargin)
@@ -96,7 +96,7 @@ class Parameters extends munit.FunSuite:
 
   test("0-level Union substitution") {
     val result = RType.of[String | WithDefault]
-    assertEquals( result.prettyPrint(), """Union of:
+    assertEquals( result.pretty(), """Union of:
       |   left--String
       |   right--co.blocke.scala_reflection.models.WithDefault:
       |         fields ->
@@ -108,7 +108,7 @@ class Parameters extends munit.FunSuite:
 /* need trait support for this test
   test("0-level Intersection substitution") {    
     val result = RType.of[Stackable[Int] & Floatable[String]]
-    assertEquals( result.prettyPrint(), """Intersection:
+    assertEquals( result.pretty(), """Intersection:
     |   left--TraitInfo(co.blocke.scala_reflection.Stackable) actualParamTypes: [
     |         T: scala.Int
     |      ] with fields:
@@ -121,7 +121,7 @@ class Parameters extends munit.FunSuite:
 
   test("1st level param substitution") {
     val result = RType.of[DuoHolder]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.DuoHolder:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.DuoHolder:
       |   fields ->
       |      x: co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->
@@ -132,7 +132,7 @@ class Parameters extends munit.FunSuite:
 
   test("2nd level subsitution in a class field") {
     val result = RType.of[DuoTypes[Int,Thingy[Boolean]]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |   fields ->
       |      a: [U] co.blocke.scala_reflection.models.Thingy[Z]:
       |         fields ->
@@ -144,7 +144,7 @@ class Parameters extends munit.FunSuite:
 
   test("2nd level subsitution in a class field, with self-reference") {
     val result = RType.of[DuoTypes[Int,DuoTypes[String,Thingy[Boolean]]]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.DuoTypes[Q,U]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |   fields ->
       |      a: [U] co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->
@@ -159,7 +159,7 @@ class Parameters extends munit.FunSuite:
 
   test("2nd level param substitution - Option") {
     val result = RType.of[OptHolder]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptHolder:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.OptHolder:
       |   fields ->
       |      a: Option of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->
@@ -170,7 +170,7 @@ class Parameters extends munit.FunSuite:
 
   test("3rd level param substitution - Option") {
     val result = RType.of[OptHolder2]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptHolder2:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.OptHolder2:
       |   fields ->
       |      a: Option of Option of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->
@@ -181,7 +181,7 @@ class Parameters extends munit.FunSuite:
 
   test("2nd and 3rd level param substitution - Either") {
     val result = RType.of[EitherHolder]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.EitherHolder:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.EitherHolder:
       |   fields ->
       |      a: Either of:
       |         left--co.blocke.scala_reflection.models.DuoTypes[Q,U]:
@@ -210,7 +210,7 @@ class Parameters extends munit.FunSuite:
 
   test("2nd level subsitution in a class field") {
     val result = RType.of[DuoClass]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.DuoClass:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.DuoClass:
       |   fields ->
       |      a: co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->
@@ -224,7 +224,7 @@ class Parameters extends munit.FunSuite:
 
   test("List and Map subsitituion") {
     val result = RType.of[ListMapSub]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.ListMapSub:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ListMapSub:
       |   fields ->
       |      a: List of: co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->
@@ -241,7 +241,7 @@ class Parameters extends munit.FunSuite:
 
   test("Try type substitution") {
     val result = RType.of[TryHolder]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.TryHolder:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.TryHolder:
       |   fields ->
       |      a: Try of co.blocke.scala_reflection.models.DuoTypes[Q,U]:
       |         fields ->

@@ -7,7 +7,7 @@ class Basic extends munit.FunSuite:
 
   test("Class of all primitives") {
     val result = RType.of[Prim]
-    assertEquals(result.prettyPrint(), """co.blocke.scala_reflection.models.Prim:
+    assertEquals(result.pretty(), """co.blocke.scala_reflection.models.Prim:
         |   fields ->
         |      a: Boolean
         |      b: Byte
@@ -25,7 +25,7 @@ class Basic extends munit.FunSuite:
 
   test("Simple class having nested class as a parameter") {
     val result = RType.of[Person]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Person:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Person:
         |   fields ->
         |      name: String
         |      age: Int
@@ -39,7 +39,7 @@ class Basic extends munit.FunSuite:
 
   test("Class having default values for its parameters") {
     val result = RType.of[HasDefaults]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.HasDefaults:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.HasDefaults:
         |   fields ->
         |      a: String (default value: wow)
         |      item: co.blocke.scala_reflection.models.Item:
@@ -53,7 +53,7 @@ class Basic extends munit.FunSuite:
 
   test("Class having self-referencing members") {
     val result = RType.of[SelfReferencing]  
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.SelfReferencing:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.SelfReferencing:
         |   fields ->
         |      a: String
         |      b: co.blocke.reflection.models.SelfReferencing (recursive self-reference)
@@ -65,7 +65,7 @@ class Basic extends munit.FunSuite:
 
   test("sealed trait with case classes") {
     val result = RType.of[VehicleHolder]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.VehicleHolder:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.VehicleHolder:
         |   fields ->
         |      v: co.blocke.reflection.models.Vehicle (sealed trait):
         |         children ->
@@ -84,7 +84,7 @@ class Basic extends munit.FunSuite:
 
   test("sealed trait with case objects") {
     val result = RType.of[FlavorHolder]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.FlavorHolder:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.FlavorHolder:
         |   fields ->
         |      f: co.blocke.reflection.models.Flavor (sealed trait):
         |         children ->

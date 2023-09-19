@@ -10,7 +10,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala simple Either field") {
     val result = RType.of[BothSides]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSides:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.BothSides:
       |   fields ->
       |      a: Either of:
       |         left--Int
@@ -20,7 +20,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Either having a self-reference") {
     val result = RType.of[EitherWithSelf]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.EitherWithSelf:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.EitherWithSelf:
       |   fields ->
       |      a: co.blocke.scala_reflection.models.Person:
       |         fields ->
@@ -51,7 +51,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Either with Option") {
     val result = RType.of[BothSidesWithOption]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSidesWithOption:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.BothSidesWithOption:
       |   fields ->
       |      a: Either of:
       |         left--Int
@@ -73,7 +73,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Either with Union type") {
     val result = RType.of[BothSidesWithUnion]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSidesWithUnion:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.BothSidesWithUnion:
       |   fields ->
       |      a: Either of:
       |         left--Int
@@ -97,7 +97,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Either having a parameterized type") {
     val result = RType.of[BothSidesParam[String,Double]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.BothSidesParam[Y,Z]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.BothSidesParam[Y,Z]:
       |   fields ->
       |      a: Either of:
       |         left--String
@@ -109,7 +109,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Union type") {
     val result = RType.of[Together]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Together:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Together:
       |   fields ->
       |      a: Intersection of:
       |         left--Int
@@ -126,7 +126,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Intersection type with Option") {
     val result = RType.of[Apart]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Apart:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Apart:
       |   fields ->
       |      a: Union of:
       |         left--Option of co.blocke.scala_reflection.models.Person:
@@ -143,7 +143,7 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Intersection type with type parameters") {
     val result = RType.of[ApartWithType[Int,Boolean]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.ApartWithType[T,U]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ApartWithType[T,U]:
       |   fields ->
       |      a: Union of:
       |         left--Option of co.blocke.scala_reflection.models.Thingy[Z]:

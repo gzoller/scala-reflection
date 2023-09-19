@@ -189,4 +189,8 @@ object Show:
                 buf.append(showSimpleName(t))
                 buf.append(" (object)")
                 (buf, false, seenBefore)
+
+            case t: UnknownRType =>
+                buf.append("unknown type")
+                (buf, false, seenBefore)
         }

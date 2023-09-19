@@ -9,7 +9,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala List") {
     val result = RType.of[Coll1]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll1:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll1:
       |   fields ->
       |      a: List of: String
       |""".stripMargin)
@@ -17,7 +17,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala Set") {
     val result = RType.of[Coll2]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll2:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll2:
       |   fields ->
       |      a: HashSet of: String
       |""".stripMargin)
@@ -25,7 +25,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala Map 1") {
     val result = RType.of[Coll3]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll3:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll3:
       |   fields ->
       |      a: Map of:
       |         key: String
@@ -35,7 +35,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala Map 2") {
     val result = RType.of[Coll4]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll4:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll4:
       |   fields ->
       |      a: ListMap of:
       |         key: String
@@ -45,7 +45,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala mutable List") {
     val result = RType.of[Coll1m]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll1m:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll1m:
       |   fields ->
       |      a: mutable ListBuffer of: String
       |""".stripMargin)
@@ -53,7 +53,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala mutable Set") {
     val result = RType.of[Coll2m]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll2m:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll2m:
       |   fields ->
       |      a: mutable HashSet of: String
       |""".stripMargin)
@@ -61,7 +61,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala mutable Map 1") {
     val result = RType.of[Coll3m]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll3m:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll3m:
       |   fields ->
       |      a: mutable Map of:
       |         key: String
@@ -71,7 +71,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala mutable Map 2") {
     val result = RType.of[Coll4m]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.Coll4m:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Coll4m:
       |   fields ->
       |      a: mutable HashMap of:
       |         key: String
@@ -81,7 +81,7 @@ class Collections extends munit.FunSuite:
 
   test("Nested Collections") {
     val result = RType.of[NestedColl]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.NestedColl:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.NestedColl:
       |   fields ->
       |      a: Map of:
       |         key: String
@@ -91,7 +91,7 @@ class Collections extends munit.FunSuite:
 
   test("Tuples") {
     val result = RType.of[TupleTurtle[Boolean]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.TupleTurtle[Z]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.TupleTurtle[Z]:
       |   fields ->
       |      t: Tuple of:
       |         0: Int
@@ -106,7 +106,7 @@ class Collections extends munit.FunSuite:
 
   test("Scala Arrays") {
     val result = RType.of[WithScalaArray]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.WithScalaArray:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.WithScalaArray:
       |   fields ->
       |      list: Array of: Array of: Char
       |      x1: Array of: Boolean

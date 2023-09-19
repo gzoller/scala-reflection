@@ -3,27 +3,28 @@ package co.blocke.scala_reflection
 import scala.quoted.*
 import scala.reflect.ClassTag
 import rtypes.*
+import java.nio.file.{Files, Path}
+import scala.tasty.inspector.TastyInspector
 
+
+/**
+  * RType trait that all the RTypes implement
+  */
 trait RType[R]:
   type T = R                // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
   val name: String          // fully-qualified class name of this type
   val typedName: TypedName  // fully-qualified class name w/type parameters, if any, otherwise a copy of name
-  lazy val clazz: Class[_]
+  lazy val clazz: Class[_]  // runtime class of this RType; lazy because computed at runtime
+
+  // Stuff needed for equality tests, proper behavior in a Map, etc...
   override def hashCode: Int = name.hashCode
   override def equals(obj: Any) = this.hashCode == obj.hashCode
+
   def toType(quotes: Quotes): quoted.Type[T]  = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[Type[T]]
-  def prettyPrint(): String = Show.show(this)
-
-//   def show(
-//     tab: Int = 0,
-//     seenBefore: List[String] = Nil,
-//     suppressIndent: Boolean = false,
-//     modified: Boolean = false // modified is "special", ie. don't show index & sort for nonconstructor fields
-//   ): String = infoClass.getClass.getName
-//   override def toString(): String = show()
+  def pretty(): String = Show.show(this)
 
 
-/** This RType mixin needed because just because something is an AppliedType doesn't mean it has parameters.  
+/** This RType mixin needed because all AppliedTypes don't have parameters.  
  *  For examlpe a case class could be an applied type (isAppliedType=true) or not.  A collection is always applied.
  */
 trait AppliedRType:
@@ -39,14 +40,17 @@ trait PrimitiveRType:
   self: RType[_] =>
 
 
+//---------------------------------------------------------------------------------------
+
+
 object RType:
 
   // pre-loaded cache with known language types including primitives
   protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]] ++= PrimitiveRTypes.loadCache()
 
 
-  //------------------------0
-  //  <<  MACRO ENTRY >>
+  //------------------------
+  //  <<  MACRO ENTRY >>       (Tasty Reflection)
   //------------------------
   inline def of[T]: RType[T] = ${ ofImpl[T]() }
 
@@ -58,11 +62,40 @@ object RType:
 
    
   //------------------------
-  //  <<  NON-MACRO ENTRY >>
+  //  <<  NON-MACRO ENTRY >>  (Tasty Inspection)
   //------------------------
-//   def of(clazz: Class[_]): RType[_] = RTypeOfNoPlugin().of(clazz)
+  def of(clazz: Class[_]): RType[_] = 
+    import scala.quoted.staging.*
+    import reflect.*
+    given Compiler = Compiler.make(getClass.getClassLoader)
+
+    rtypeCache.getOrElse(clazz.getName, {
+      val newRType = {
+        val fn = (qctx: Quotes) ?=> RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(clazz), false)
+        withQuotes(fn)
+      }
+      rtypeCache.synchronized {
+        rtypeCache.put(clazz.getName, newRType)
+      }
+      newRType
+    })
 
 
+  inline def inTermsOf[T](className: String): RType[_] = ${ inTermsOfImpl[T]('className) }
+
+  def inTermsOfImpl[T](className: Expr[String])(using quotes: Quotes)(using tt: Type[T]): Expr[RType[_]] =
+    import quotes.reflect.* 
+    val cname = className.show.replaceAll("\"","") // Cheat to unwrap class name from Expr.  There must be a better way!
+    val classQuotedTypeRepr = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(cname))
+    val traitsParams = TypeRepr.of[T] match {
+      case AppliedType(_, traitsParams) => traitsParams
+    }
+    exprs.ExprMaster.makeExpr( unwindType(quotes)( classQuotedTypeRepr.appliedTo( traitsParams ) ) )
+
+  
+  // ------------------------
+  //   Common entry point of all reflection/inspection, to unwind the given type and return an RType[T]
+  // ------------------------
   protected[scala_reflection] def unwindType[T](quotes: Quotes)(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true): RType[T] =
     import quotes.reflect.*
 

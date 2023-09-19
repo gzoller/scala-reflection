@@ -10,7 +10,7 @@ class Options extends munit.FunSuite:
 
   test("Simple Option RType") {
     val result = RType.of[Option[String]]
-    assertEquals( result.prettyPrint(), "Option of String")
+    assertEquals( result.pretty(), "Option of String")
   }
 
   /*
@@ -22,7 +22,7 @@ class Options extends munit.FunSuite:
 
   test("Scala optional field") {
     val result = RType.of[NormalOption]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.NormalOption:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.NormalOption:
       |   fields ->
       |      a: Option of Int
       |      b: String
@@ -41,7 +41,7 @@ class Options extends munit.FunSuite:
 
   test("Scala nested optional field") {
     val result = RType.of[NestedOption]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.NestedOption:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.NestedOption:
       |   fields ->
       |      a: Option of Option of Int
       |      b: String
@@ -50,7 +50,7 @@ class Options extends munit.FunSuite:
 
   test("Scala option of a class with defaults") {
     val result = RType.of[OptionOfClass]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptionOfClass:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.OptionOfClass:
       |   fields ->
       |      a: Option of co.blocke.scala_reflection.models.Person:
       |         fields ->
@@ -79,7 +79,7 @@ class Options extends munit.FunSuite:
 
   test("Scala optional parameterized field") {
     val result = RType.of[ParamOption[Char]]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.ParamOption[T]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ParamOption[T]:
       |   fields ->
       |      a: Option of Char
       |""".stripMargin)
@@ -107,7 +107,7 @@ class Options extends munit.FunSuite:
 
   test("Option of a union") {    
     val result = RType.of[OptionHavingUnion]
-    assertEquals( result.prettyPrint(), """co.blocke.scala_reflection.models.OptionHavingUnion:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.OptionHavingUnion:
       |   fields ->
       |      a: Option of Union of:
       |         left--Boolean
