@@ -3,6 +3,7 @@ package co.blocke.scala_reflection
 import scala.quoted.*
 import scala.reflect.ClassTag
 import rtypes.*
+import reflect.*
 import java.nio.file.{Files, Path}
 import scala.tasty.inspector.TastyInspector
 
@@ -65,58 +66,23 @@ object RType:
   //------------------------
   //  <<  NON-MACRO ENTRY >>  (Tasty Inspection)
   //------------------------
-  def of(clazz: Class[_]): RType[_] = 
+  def of(className: String): RType[_] = 
     import scala.quoted.staging.*
-    import reflect.*
     given Compiler = Compiler.make(getClass.getClassLoader)
 
-    rtypeCache.getOrElse(clazz.getName, {
+    rtypeCache.getOrElse(className, {
       val newRType = {
         val fn = (qctx: Quotes) ?=> {
-          val newRType = RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(clazz), false)
-          reflect.TypeSymbolFinder.mapTypeSymbolsForClass(newRType) // ClassRType with type parameter paths computed
+          val newRType = RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)
+          TypeSymbolMapper.mapTypeSymbolsForClass(newRType) // ClassRType with type parameter paths computed
         }
         withQuotes(fn)
       }
       rtypeCache.synchronized {
-        rtypeCache.put(clazz.getName, newRType)
+        rtypeCache.put(className, newRType)
       }
       newRType
     })
-
-  // Amazing way to call something (like TypeRepr.of) that needs quotes, when no quotes are availabe.  In this case str value isn't
-  // known until runtime so it absolutely can't be passed in a macro (or boom!).  This bit o'magic materializes a quotes inside a 
-  // function.  So you create the function, having code using quotes, then pass the function to the withQuotes() mirqacle, and viola!
-  def inTermsOf(traitRType: RType[_], str: String): RType[_] = 
-    import scala.quoted.staging._
-    given Compiler = Compiler.make(getClass.getClassLoader)
-    val fn = (quotes: Quotes) ?=> {
-      import quotes.reflect.*
-
-      // val classRType = of(Class.forName(str))
-      // reflect.TypeSymbolFinder.findTypeSymbolsFor(classRType)
-
-      val classQuotedTypeRepr = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(str))
-
-      // val c = classQuotedTypeRepr.classSymbol.get.primaryConstructor
-
-      // val y = c.caseFields
-      // println("HEY: "+classQuotedTypeRepr.baseClasses)
-      // println("-------")
-
-      implicit val tt = traitRType.toType(quotes)
-      // println("You: "+TypeRepr.of[traitRType.T].typeArgs.mkString("\n"))
-      val traitsParams = TypeRepr.of[traitRType.T] match { 
-        case AppliedType(_, traitsParams) => 
-          val z = traitsParams
-          z.map(p => println("Param: "+p.toString))
-          z
-      }
-      println("Found: "+traitsParams.size)
-      println(traitsParams)
-      RType.unwindType(quotes)(classQuotedTypeRepr.appliedTo( traitsParams ))
-    }
-    withQuotes(fn)
   
   // ------------------------
   //   Common entry point of all reflection/inspection, to unwind the given type and return an RType[T]
@@ -135,7 +101,7 @@ object RType:
       val tName = typeName(quotes)(aType)
       rtypeCache.getOrElse(tName, {
         rtypeCache.put(tName, SelfRefRType(tName.toString))
-        val reflectedRType = reflect.ReflectOnType(quotes)(aType, tName, resolveTypeSyms)
+        val reflectedRType = ReflectOnType(quotes)(aType, tName, resolveTypeSyms)
         rtypeCache.put(tName, reflectedRType)
         reflectedRType
       }).asInstanceOf[RType[T]]
@@ -156,7 +122,8 @@ object RType:
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.
   // This name is used for RType.equals so caching works.
   def typeName(quotes: Quotes)(aType: quotes.reflect.TypeRepr): TypedName =
-    import quotes.reflect.{_, given}
+    import quotes.reflect.*
+
     aType.asInstanceOf[TypeRef] match {
       case sym if aType.typeSymbol.flags.is(Flags.Param) => sym.name
       case AppliedType(t,tob) =>

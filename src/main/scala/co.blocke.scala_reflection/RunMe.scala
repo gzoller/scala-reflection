@@ -31,9 +31,15 @@ object RunMe extends App:
     // println(rt.pretty())
     // println(rt)
 
-    println(RType.of(Class.forName("co.blocke.scala_reflection.One")).pretty())
+    val tt = RType.of[T10[T11[Boolean,T5[Int,String]],Boolean]].asInstanceOf[TraitRType[_]]
+    val ct = RType.of("co.blocke.scala_reflection.One").asInstanceOf[ScalaClassRType[_]]
+    println( (ct >> tt).pretty() )
+
+
+    // println(RType.inTermsOf[]("co.blocke.scala_reflection.One").pretty())
     // println(result.pretty())
 
+    /*
     println("----------------------------\n\n")
 
     def foldLeftBreak2[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
@@ -63,6 +69,7 @@ object RunMe extends App:
             Right(b :+ a)
     }
     println("RESULT: "+res)
+    */
 
     /*
 

@@ -14,7 +14,7 @@ import javax.management.ReflectionException
   * 
   * We'd fiscover that A is found on the first argument of Foo, and that B is found by diving into Bar and ultimately List to find B.
   */
-object TypeSymbolFinder:
+object TypeSymbolMapper:
 
     extension (list: List[TypeRecord])
         def indexOf2(elem: TypeSymbol): Int = {
@@ -87,3 +87,27 @@ object TypeSymbolFinder:
             case _ => // another RType with no type parameter involvement, e.g. primitive type
                 Left(paramList)
         }
+
+
+    def deepApply[T]( classRT: ScalaClassRType[_] )(using q:Quotes)(using Type[T]) = 
+        import q.reflect.*
+
+        def runPath( path: List[Int], tob: List[TypeRepr] ): TypeRepr = 
+            path match {
+                case p :: rest => 
+                    val navType = tob(p)
+                    if rest == Nil then
+                        navType
+                    else
+                        navType match {
+                            case AppliedType(_,tob2) =>  // parameterized trait
+                                runPath( rest, tob2 )
+                        }
+                case Nil => throw new ReflectException("Bad path navigation")
+            }
+
+        (TypeRepr.of[T] match {
+            case AppliedType(_,tob) =>  // parameterized trait
+                classRT.typeParamPaths.map{ path => runPath( path, tob ) }
+        })
+

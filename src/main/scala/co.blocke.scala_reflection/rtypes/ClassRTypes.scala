@@ -81,3 +81,20 @@ case class ScalaClassRType[R] (
   //   // case s: SelfRefRType => f.asInstanceOf[ScalaFieldInfo].copy(fieldType = s.resolve)
   //   case s => f
   // })
+
+
+  // The old inTermsOf().  This takes concrete type parameter values from a trait and applies them to this
+  // parameterized class having unmapped types (all type symbols).  So Foo[T] >> FooTrait[Int] = Foo[Int]
+  def >>( traitRT: TraitRType[_]): RType[_] = 
+    import scala.quoted.staging.*
+    given Compiler = Compiler.make(getClass.getClassLoader)
+
+    val me = this
+    val fn = (quotes: Quotes) ?=> {
+      import quotes.reflect.*
+      val traitType = traitRT.toType(quotes)
+      val typeParamTypes = reflect.TypeSymbolMapper.deepApply( me )(using quotes)(using traitType)
+      val classQuotedTypeRepr = TypeRepr.typeConstructorOf(clazz)
+      RType.unwindType(quotes)(classQuotedTypeRepr.appliedTo( typeParamTypes ))
+    }
+    withQuotes(fn)
