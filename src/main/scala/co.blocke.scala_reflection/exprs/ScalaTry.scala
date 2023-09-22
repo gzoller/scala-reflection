@@ -8,12 +8,13 @@ object ScalaTry:
 
   def makeExpr[T](scalaTry: TryRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
 
     val tt = scalaTry._tryType.toType(quotes)
-    val optTypeExpr = stripType(ExprMaster.makeExpr(scalaTry._tryType)(using q)(using tt.asInstanceOf[Type[scalaTry._tryType.T]]).asInstanceOf[Expr[RType[scalaTry._tryType.T]]])
+    val tryTypeExpr = stripType(ExprMaster.makeExpr(scalaTry._tryType)(using q)(using tt.asInstanceOf[Type[scalaTry._tryType.T]]).asInstanceOf[Expr[RType[scalaTry._tryType.T]]])
 
     Apply(
         TypeApply(
@@ -22,6 +23,7 @@ object ScalaTry:
         ),
         List(
             Expr(scalaTry.name).asTerm,
-            optTypeExpr.asTerm
+            Expr(scalaTry.typeParamSymbols).asTerm,
+            tryTypeExpr.asTerm
         )
     ).asExprOf[RType[T]]

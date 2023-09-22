@@ -5,6 +5,7 @@ import rtypes.Clazzes.*
 import rtypes.{ArrayRType, TypeSymbolRType}
 import reflect.TypeExtractor
 import scala.quoted.Quotes
+import scala.util.Try
 
 case class ScalaArrayExtractor() extends TypeExtractor[ArrayRType[_]]:
 
@@ -20,6 +21,7 @@ case class ScalaArrayExtractor() extends TypeExtractor[ArrayRType[_]]:
 
     val arrayOfType = tob.head
     val isTypeParam = arrayOfType.typeSymbol.flags.is(quotes.reflect.Flags.Param)
+    val typeParamSymbols = List("A")
     val arrayOfRType = 
       if isTypeParam then
         TypeSymbolRType(tob.head.typeSymbol.name)
@@ -29,5 +31,6 @@ case class ScalaArrayExtractor() extends TypeExtractor[ArrayRType[_]]:
     val mangled = mangleArrayClassName(arrayOfRType)
     ArrayRType(
       mangled,
+      typeParamSymbols,
       arrayOfRType)
 

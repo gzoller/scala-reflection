@@ -7,11 +7,14 @@ import scala.quoted.Quotes
 /** Arity 2 Collections, Map flavors, basiclly */
 case class MapRType[R] (
   name: String,
+  typeParamSymbols: List[TypeSymbol],
   _elementType: RType[_],  // map key
   _elementType2: RType[_]  // map value
 ) extends RType[R] with CollectionRType[R]:
 
   val typedName: TypedName = name + "[" + _elementType.typedName + "," + _elementType2.typedName + "]"
+  def selectLimit: Int = 2
+
   lazy val clazz: Class[_] = Class.forName(name)
 
   override def toType(quotes: Quotes): quoted.Type[R] =

@@ -25,6 +25,9 @@ case class TupleExtractor() extends TypeExtractor[TupleRType[_]]:
         else
           RType.unwindType(quotes)(oneTob)
       }
+    val (_, typeParamSymbols) = elementTypes.foldLeft( ('A',List.empty[String]) ){ case((sym,acc),b) =>
+      ((sym+1).toChar, acc :+ sym.toString())
+    }
 
-    TupleRType(t.classSymbol.get.fullName, elementTypes)
+    TupleRType(t.classSymbol.get.fullName, typeParamSymbols, elementTypes)
 

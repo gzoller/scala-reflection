@@ -31,6 +31,8 @@ trait LeftRightRType[R] extends AppliedRType:
       case (_, artR: AppliedRType) if artR.isAppliedType => true
       case _ => false
     }
+  def selectLimit: Int = 2
+  
 
   // TODO!
   override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] = ???

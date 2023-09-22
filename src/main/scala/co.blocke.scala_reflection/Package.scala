@@ -2,6 +2,8 @@ package co.blocke.scala_reflection
 
 /** Mnemonic symbol for a type--typically a paramaterized type, e.g. Foo[T], where T is the symbol */
 opaque type TypeSymbol = String 
+given listOstring2TypeSymbol: Conversion[List[String], List[TypeSymbol]] with
+  def apply(x: List[String]): List[TypeSymbol] = x.asInstanceOf[List[TypeSymbol]]
 
 /** Class name also having any type parameters listed (if any) */
 opaque type TypedName = String
@@ -29,3 +31,15 @@ def mangleArrayClassName(tpe: RType[_]): String =
     case c => "L" + c.name + ";"
   }
   "[" + mangled
+
+
+// Handy "break"-able fold iterator.  Return Left to stop.
+def foldLeftBreak[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
+  as match {
+    case Nil => init
+    case a :: as =>
+      op(a, init) match {
+        case Left(b) => b
+        case Right(b) => foldLeftBreak(as)(b)(op)
+      }
+  }

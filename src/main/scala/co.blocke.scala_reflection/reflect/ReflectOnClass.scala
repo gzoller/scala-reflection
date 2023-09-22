@@ -128,7 +128,6 @@ object ReflectOnClass:
               TraitRType(
                 className,
                 traitFields,
-                actualParamTypes,
                 typeSymbols
               )
             case _ =>
@@ -195,24 +194,14 @@ object ReflectOnClass:
               typeSymbols(pos),
               RType.unwindType(quotes)(tob(pos).asInstanceOf[TypeRepr])
             )
+          case TypeDef(typeName, typeTree) if !typeSymbols.contains(typeName) => // type memebers not used in the constructor
+            val tt = typeTree.asInstanceOf[TypeTree].tpe
+            TypeMemberRType(
+              typeName,
+              typeName.asInstanceOf[TypeSymbol],
+              RType.unwindType(quotes)(tt) // tob(pos).asInstanceOf[TypeRepr])
+            )
         }
-
-        val actualParamTypes = tob.zipWithIndex.map{ (oneTob,idx) =>
-          scala.util.Try{
-            if resolveTypeSyms then
-              RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef]) match {
-                case NONE  => TypeSymbolRType(typeSymbols(idx).toString)
-                case other => other
-              }
-            else if oneTob.asInstanceOf[quotes.reflect.TypeRef].typeSymbol.flags.is(Flags.Param) then
-              TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
-            else
-              RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef], false)
-          }.toOption.getOrElse{
-            TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
-          }
-        }
-        val paramMap: Map[TypeSymbol, RType[_]] = typeSymbols.zip(actualParamTypes).toMap
 
         val constructorParams =  // Annoying "ism"... different param order dep on whether class is parameterized or not!
           if classDef.constructor.paramss.tail == Nil then
@@ -239,7 +228,7 @@ object ReflectOnClass:
               TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
             }
             val fieldtt = valDef.tpt.tpe.asType.asInstanceOf[Type[fieldRType.T]]
-            reflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)//.resolveTypeParams( paramMap )
+            reflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)
           }
 
           var returnedRType = ScalaClassRType(
@@ -250,7 +239,6 @@ object ReflectOnClass:
             typeMembers,
             caseFields,
             classAnnos,
-            TypeLoom.descendParents(quotes)( typeRef ),
             classDef.parents.map(_.symbol.fullName),
             typeSymbols.nonEmpty,
             isValueClass,

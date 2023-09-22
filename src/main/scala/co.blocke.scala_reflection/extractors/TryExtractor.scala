@@ -17,6 +17,7 @@ case class TryExtractor() extends TypeExtractor[TryRType[_]]:
 
     val tryOfType = tob.head
     val isTypeParam = tryOfType.typeSymbol.flags.is(quotes.reflect.Flags.Param)
+    val typeParamSymbols = List("A")
     val tryOfRType = 
       if isTypeParam then
         TypeSymbolRType(tob.head.typeSymbol.name)
@@ -25,5 +26,6 @@ case class TryExtractor() extends TypeExtractor[TryRType[_]]:
 
     TryRType(
       t.classSymbol.get.fullName,
+      typeParamSymbols,
       tryOfRType
     )

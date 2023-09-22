@@ -3,6 +3,7 @@ package rtypes
 
 case class EitherRType[R](
   name: String,
+  typeParamSymbols: List[TypeSymbol],
   _leftType: RType[_],
   _rightType: RType[_]
 ) extends RType[R] with LeftRightRType[R]: 
@@ -20,4 +21,4 @@ case class EitherRType[R](
     case e => e
   }
 
-  def _copy( left: RType[_], right: RType[_] ) = EitherRType(name, left, right)
+  def _copy( left: RType[_], right: RType[_] ) = EitherRType(name, typeParamSymbols, left, right)

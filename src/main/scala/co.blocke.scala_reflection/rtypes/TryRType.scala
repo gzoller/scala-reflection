@@ -7,10 +7,12 @@ import scala.quoted.Quotes
 
 case class TryRType[R] (
   name: String,
+  typeParamSymbols: List[TypeSymbol],
   _tryType: RType[_]
 ) extends RType[R] with AppliedRType:
 
   val typedName: TypedName = name + "[" + _tryType.typedName  + "]"
+  def selectLimit: Int = 1
   lazy val clazz: Class[_] = Class.forName(name)
   lazy val tryType: RType[_] = _tryType match {
     // case e: SelfRefRType => e.resolve

@@ -8,6 +8,7 @@ object Map:
 
   def makeExpr[T](map: MapRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
@@ -24,6 +25,7 @@ object Map:
         ),
         List(
             Expr(map.name).asTerm,
+            Expr(map.typeParamSymbols).asTerm,
             keyTypeExpr.asTerm,
             valueTypeExpr.asTerm
         )

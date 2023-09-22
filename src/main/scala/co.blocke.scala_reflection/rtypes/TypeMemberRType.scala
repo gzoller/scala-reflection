@@ -8,5 +8,6 @@ case class TypeMemberRType(
     typeSymbol: TypeSymbol, 
     memberType: RType[_],
   ) extends RType[Any]:
+
   val typedName = name.asInstanceOf[TypedName]
   lazy val clazz: Class[_] = Clazzes.ObjectClazz

@@ -6,10 +6,12 @@ import scala.quoted.Quotes
 
 case class TupleRType[R] (
   name: String,
+  typeParamSymbols: List[TypeSymbol],
   _tupleTypes: List[RType[_]]
 ) extends RType[R] with AppliedRType:
 
   val typedName: TypedName = name + _tupleTypes.map(_.typedName).toList.mkString("[",",","]")
+  def selectLimit: Int = _tupleTypes.size
 
   lazy val clazz: Class[_] = Class.forName(name)
 

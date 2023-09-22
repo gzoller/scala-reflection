@@ -8,6 +8,7 @@ object LeftRight:
 
   def makeExpr[T](lr: LeftRightRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
@@ -26,6 +27,7 @@ object LeftRight:
                 ),
                 List(
                     Expr(scalaEither.name).asTerm,
+                    Expr(scalaEither.typeParamSymbols).asTerm,
                     leftTypeExpr.asTerm,
                     rightTypeExpr.asTerm
                 )
@@ -38,6 +40,7 @@ object LeftRight:
                 ),
                 List(
                     Expr(union.name).asTerm,
+                    Expr(union.typeParamSymbols).asTerm,
                     leftTypeExpr.asTerm,
                     rightTypeExpr.asTerm
                 )
@@ -50,6 +53,7 @@ object LeftRight:
                 ),
                 List(
                     Expr(intersection.name).asTerm,
+                    Expr(intersection.typeParamSymbols).asTerm,
                     leftTypeExpr.asTerm,
                     rightTypeExpr.asTerm
                 )

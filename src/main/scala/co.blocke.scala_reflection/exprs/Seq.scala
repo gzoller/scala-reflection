@@ -8,6 +8,7 @@ object Seq:
 
   def makeExpr[T](seq: SeqRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
@@ -22,6 +23,7 @@ object Seq:
         ),
         List(
             Expr(seq.name).asTerm,
+            Expr(seq.typeParamSymbols).asTerm,
             optTypeExpr.asTerm
         )
     ).asExprOf[RType[T]]

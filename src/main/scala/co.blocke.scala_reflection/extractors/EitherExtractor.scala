@@ -16,6 +16,8 @@ case class EitherExtractor() extends TypeExtractor[EitherRType[_]]:
     tob: List[quotes.reflect.TypeRepr], 
     symbol: quotes.reflect.Symbol): RType[_] =
 
+    val typeParamSymbols = List("L","R")
+
     val leftType = tob(0)
     val leftRType = 
       if leftType.typeSymbol.flags.is(quotes.reflect.Flags.Param) then
@@ -32,6 +34,7 @@ case class EitherExtractor() extends TypeExtractor[EitherRType[_]]:
 
     EitherRType(
       t.classSymbol.get.fullName,
+      typeParamSymbols,
       leftRType,
       rightRType
     )

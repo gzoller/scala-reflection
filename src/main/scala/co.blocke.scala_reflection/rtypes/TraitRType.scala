@@ -7,18 +7,14 @@ import scala.quoted.Quotes
 case class TraitRType[R] (
     name: String, 
     fields: List[FieldInfo],
-    actualParameterTypes: List[RType[_]] = List.empty[RType[_]],  //<-- TODO: Not sure this field is needed!
-    paramSymbols: List[TypeSymbol] = List.empty[TypeSymbol],
+    typeParamSymbols: List[TypeSymbol] = List.empty[TypeSymbol],
   ) extends RType[R] with AppliedRType: 
 
-  val typedName: TypedName = 
-    if actualParameterTypes.nonEmpty then
-      name + actualParameterTypes.map(_.typedName).toList.mkString("[",",","]")
-    else
-      name
+  val typedName: TypedName = name
   lazy val clazz: Class[_] = Class.forName(name)
  
-  override def isAppliedType: Boolean = paramSymbols.nonEmpty
+  override def isAppliedType: Boolean = typeParamSymbols.nonEmpty
+  def selectLimit: Int = fields.size
 
   override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[_] = this
     // TraitInfo(
@@ -32,18 +28,6 @@ case class TraitRType[R] (
     //   paramSymbols
     //   )
 
-  // override def toType(quotes: Quotes): quotes.reflect.TypeRepr = 
-  //   import quotes.reflect.{_, given}
-  //   if actualParameterTypes.nonEmpty then
-  //     val args = actualParameterTypes.map(_.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type]).toList
-  //     implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
-  //     dotty.tools.dotc.core.Types.AppliedType(
-  //       TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-  //       args
-  //       ).asInstanceOf[quotes.reflect.AppliedType]
-  //   else
-  //     quotes.reflect.TypeRepr.typeConstructorOf(infoClass)
-
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val traitType: quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]
@@ -56,8 +40,8 @@ case class TraitRType[R] (
 
       
   def select(i: Int): RType[_] = 
-    if i >= 0 && i <= actualParameterTypes.size-1 then
-      actualParameterTypes(i)
+    if i >= 0 && i < fields.size then
+      fields(i).fieldType
     else
       throw new ReflectException(s"AppliedType select index $i out of range for ${name}")   
 
@@ -71,12 +55,3 @@ case class SealedTraitRType[R] (
 
   val typedName: TypedName = name + children.map(_.typedName).toList.mkString("[",",","]")
   lazy val clazz: Class[_] = Class.forName(name)
-
-  // def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
-  //   val newTab = {if suppressIndent then tab else tab+1}
-  //   if seenBefore.contains(name) then
-  //     {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName + s"($name) (self-ref recursion)\n"
-  //   else
-  //     {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName
-  //     + s"($name)"
-  //     + {if children.isEmpty then "\n" else ":\n"+ tabs(newTab) + "children:\n" + children.map(_.show(newTab+1,name :: seenBefore)).mkString}

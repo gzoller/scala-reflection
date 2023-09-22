@@ -6,6 +6,7 @@ import scala.quoted.Quotes
 
 case class UnionRType[R] (
   name: String,
+  typeParamSymbols: List[TypeSymbol],
   _leftType: RType[_],
   _rightType: RType[_]
   ) extends RType[R] with LeftRightRType[R]:

@@ -119,8 +119,8 @@ object Show:
                     (buf, true, seenBefore)
                 else
                     buf.append(t.name)
-                    if t.paramSymbols.nonEmpty then
-                        buf.append( t.paramSymbols.map(_.toString).mkString("[",",","]"))
+                    if t.typeParamSymbols.nonEmpty then
+                        buf.append( t.typeParamSymbols.map(_.toString).mkString("[",",","]"))
                     buf.append(":\n")
                     buf.append(tabs(tabLevel+1))
                     buf.append("fields ->\n")
@@ -142,7 +142,21 @@ object Show:
                             buf.append("\n")
                         classesSeenBefore
                     }
-                    (buf, true, allClassesSeenUpToNow)
+                    val allClassesSeenUpToNow2 = if t._typeMembers.nonEmpty then
+                        buf.append(tabs(tabLevel+1))
+                        buf.append("type members ->\n")
+                        t._typeMembers.foldLeft(allClassesSeenUpToNow){ (classesSeen, f) =>
+                            buf.append(tabs(tabLevel+2))
+                            buf.append(f.name+": ")
+                            buf.append("["+f.typeSymbol+"] " )
+                            val (_, lastWasMultiLine, classesSeenBefore) = _show(f.memberType, buf, tabLevel+2, classesSeen)
+                            if !lastWasMultiLine then
+                                buf.append("\n")
+                            classesSeenBefore
+                        }
+                    else
+                        allClassesSeenUpToNow
+                    (buf, true, allClassesSeenUpToNow2)
 
 
             case t: TraitRType[_] =>
@@ -151,8 +165,6 @@ object Show:
                     (buf, true, seenBefore)
                 else
                     buf.append(showSimpleName(t))
-                    // if t.paramSymbols.nonEmpty then
-                    //     buf.append( t.paramSymbols.map(_.toString).mkString("[",",","]"))
                     buf.append(" (trait):\n")
                     buf.append(tabs(tabLevel+1))
                     buf.append("fields ->\n")
@@ -160,7 +172,7 @@ object Show:
                         buf.append(tabs(tabLevel+2))
                         buf.append(f.name+": ")
                         f.originalSymbol.map( os => buf.append("["+os+"] ") )
-                        val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
+                        val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, seenBefore)
                         if !lastWasMultiLine then
                             buf.append("\n")
                         classesSeenBefore

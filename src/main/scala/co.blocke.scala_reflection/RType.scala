@@ -29,8 +29,10 @@ trait RType[R]:
  */
 trait AppliedRType:
   self: RType[_] =>
+  val typeParamSymbols: List[TypeSymbol]
   def isAppliedType: Boolean = true  // can be overridden to false, e.g. Scala class that isn't parameterized
   def select(i: Int): RType[_]
+  def selectLimit: Int
   // Take a parameterized type's normal type 'T' and map it to the declared type 'X'
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[_]
 
@@ -57,7 +59,6 @@ object RType:
   def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
     import quotes.reflect.*
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
-    // println("RT: "+rtype)
     exprs.ExprMaster.makeExpr(rtype)
 
    
@@ -71,7 +72,10 @@ object RType:
 
     rtypeCache.getOrElse(clazz.getName, {
       val newRType = {
-        val fn = (qctx: Quotes) ?=> RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(clazz), false)
+        val fn = (qctx: Quotes) ?=> {
+          val newRType = RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(clazz), false)
+          reflect.TypeSymbolFinder.mapTypeSymbolsForClass(newRType) // ClassRType with type parameter paths computed
+        }
         withQuotes(fn)
       }
       rtypeCache.synchronized {
@@ -88,11 +92,28 @@ object RType:
     given Compiler = Compiler.make(getClass.getClassLoader)
     val fn = (quotes: Quotes) ?=> {
       import quotes.reflect.*
+
+      // val classRType = of(Class.forName(str))
+      // reflect.TypeSymbolFinder.findTypeSymbolsFor(classRType)
+
       val classQuotedTypeRepr = quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(str))
+
+      // val c = classQuotedTypeRepr.classSymbol.get.primaryConstructor
+
+      // val y = c.caseFields
+      // println("HEY: "+classQuotedTypeRepr.baseClasses)
+      // println("-------")
+
       implicit val tt = traitRType.toType(quotes)
+      // println("You: "+TypeRepr.of[traitRType.T].typeArgs.mkString("\n"))
       val traitsParams = TypeRepr.of[traitRType.T] match { 
-        case AppliedType(_, traitsParams) => traitsParams
+        case AppliedType(_, traitsParams) => 
+          val z = traitsParams
+          z.map(p => println("Param: "+p.toString))
+          z
       }
+      println("Found: "+traitsParams.size)
+      println(traitsParams)
       RType.unwindType(quotes)(classQuotedTypeRepr.appliedTo( traitsParams ))
     }
     withQuotes(fn)

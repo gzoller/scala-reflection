@@ -8,6 +8,7 @@ object Options:
 
   def makeExpr[T](opt: OptionRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
@@ -25,6 +26,7 @@ object Options:
                 ),
                 List(
                     Expr(scalaOpt.name).asTerm,
+                    Expr(scalaOpt.typeParamSymbols).asTerm,
                     optTypeExpr.asTerm
                 )
             ).asExprOf[RType[T]]

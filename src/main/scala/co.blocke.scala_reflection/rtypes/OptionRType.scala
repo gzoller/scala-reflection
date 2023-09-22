@@ -19,10 +19,13 @@ trait OptionRType[R] extends RType[R] with AppliedRType:
 
 case class ScalaOptionRType[R] (
   name: String,
+  typeParamSymbols: List[TypeSymbol],
   _optionParamType: RType[_]
 ) extends OptionRType[R]:
 
   val typedName: TypedName = name + "[" + _optionParamType.typedName + "]"
+  def selectLimit: Int = 1
+
   lazy val clazz: Class[_] = Class.forName(name)
   lazy val optionParamType: RType[_] = _optionParamType match {
     // case e: SelfRefRType => e.resolve

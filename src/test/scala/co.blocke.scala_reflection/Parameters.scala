@@ -250,50 +250,48 @@ class Parameters extends munit.FunSuite:
     |""".stripMargin)
   }
 
-  /*
   test("Trait type substitution") {
     val result = RType.of[TypeShellHolder]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.TypeShellHolder):
-    |   fields:
-    |      (0) a: TraitInfo(co.blocke.scala_reflection.TypeShell) actualParamTypes: [
-    |            X: scala.Int
-    |         ] with fields:
-    |            x[X]: scala.Int
-    |""".stripMargin)
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.TypeShellHolder:
+      |   fields ->
+      |      a: co.blocke.reflection.models.TypeShell (trait):
+      |         fields ->
+      |            x: [X] Int
+      |""".stripMargin)
   }
 
   test("Union type substitution") {
     val result = RType.of[UnionHolder]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.UnionHolder):
-    |   fields:
-    |      (0) a: Union:
-    |         left--scala.Int
-    |         right--TraitInfo(co.blocke.scala_reflection.TypeShell) actualParamTypes: [
-    |               X: java.lang.String
-    |            ] with fields:
-    |               x[X]: java.lang.String
-    |""".stripMargin)
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.UnionHolder:
+      |   fields ->
+      |      a: Union of:
+      |         left--Int
+      |         right--co.blocke.reflection.models.TypeShell (trait):
+      |               fields ->
+      |                  x: [X] String
+      |""".stripMargin)
   }
 
   test("Type member substitutions") {
     val result = RType.of[Envelope[FancyBody,Boolean]]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Envelope):
-    |   fields:
-    |      (0) id: java.lang.String
-    |      (1)[T] body: ScalaCaseClassInfo(co.blocke.scala_reflection.FancyBody):
-    |         fields:
-    |            (0) message: java.lang.String
-    |   type members:
-    |      Giraffe[T]: ScalaCaseClassInfo(co.blocke.scala_reflection.FancyBody):
-    |         fields:
-    |            (0) message: java.lang.String
-    |""".stripMargin)
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Envelope[T,U]:
+      |   fields ->
+      |      id: String
+      |      body: [T] co.blocke.scala_reflection.models.FancyBody:
+      |         fields ->
+      |            message: String
+      |   type members ->
+      |      Giraffe: [T] co.blocke.scala_reflection.models.FancyBody (seen before, details above)
+      |      Foo: [Foo] Int
+      |""".stripMargin)
   }
 
+  /*
   test("Nested trait substitutions") {
     val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
-    val result = RType.inTermsOf[T10[T11[Int, T5[Double, Char]], String]]( inst.getClass )
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.TFoo6):
+    val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]]
+    val result = RType.inTermsOf( rt, inst.getClass.getName )
+    assertEquals( result.pretty(), """ScalaCaseClassInfo(co.blocke.scala_reflection.TFoo6):
     |   fields:
     |      (0) x: TraitInfo(co.blocke.scala_reflection.T11) actualParamTypes: [
     |            W: scala.Int
@@ -314,8 +312,9 @@ class Parameters extends munit.FunSuite:
     |      (1)[B] y: java.lang.String
     |""".stripMargin)
   }
+  */
 
-
+/*
   test("With nested Option and List") {
     val inst: Base[Level1[String,Boolean],Int] = BaseClass(L1Class("foo",Some(List(true))), 3)
     val result = RType.inTermsOf[Base[Level1[String,Boolean],Int]](inst.getClass)

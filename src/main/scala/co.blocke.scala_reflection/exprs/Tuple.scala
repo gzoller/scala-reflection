@@ -8,6 +8,7 @@ object Tuple:
 
   def makeExpr[T](tuple: TupleRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
@@ -26,6 +27,7 @@ object Tuple:
         ),
         List(
             Expr(tuple.name).asTerm,
+            Expr(tuple.typeParamSymbols).asTerm,
             Expr.ofList(tupleTypeExpr).asTerm
         )
     ).asExprOf[RType[T]]

@@ -18,6 +18,8 @@ case class MapExtractor() extends TypeExtractor[MapRType[_]]:
     tob: List[quotes.reflect.TypeRepr], 
     symbol: quotes.reflect.Symbol): RType[_] = 
 
+    val typeParamSymbols = List("K","V")
+
     val leftType = tob(0)
     val leftRType = 
       if leftType.typeSymbol.flags.is(quotes.reflect.Flags.Param) then
@@ -34,6 +36,7 @@ case class MapExtractor() extends TypeExtractor[MapRType[_]]:
 
     MapRType(
       t.classSymbol.get.fullName,
+      typeParamSymbols,
       leftRType,
       rightRType
     )

@@ -58,15 +58,15 @@ object Classes:
             List(
                 Expr(sc.name).asTerm,
                 Expr(sc.typedName).asTerm,
-                Expr(sc.paramSymbols).asTerm,
+                Expr(sc.typeParamSymbols).asTerm,
                 typeMembers.asTerm,
                 caseFields.asTerm,
                 Expr(sc._annotations).asTerm,
-                Expr(sc.paths).asTerm,
                 Expr(sc._mixins).asTerm,
                 Expr(sc.isAppliedType).asTerm,
                 Expr(sc.isValueClass).asTerm,
-                Expr(sc.isCaseClass).asTerm
+                Expr(sc.isCaseClass).asTerm,
+                Expr(sc.typeParamPaths).asTerm
             )
         ).asExprOf[RType[T]]
     }

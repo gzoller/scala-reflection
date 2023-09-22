@@ -17,6 +17,7 @@ case class OptionExtractor() extends TypeExtractor[ScalaOptionRType[_]]:
 
     val optionOfType = tob.head
     val isTypeParam = optionOfType.typeSymbol.flags.is(quotes.reflect.Flags.Param)
+    val typeParamSymbols = List("A")
     val optionOfRType = 
       if isTypeParam then
         TypeSymbolRType(tob.head.typeSymbol.name)
@@ -25,5 +26,6 @@ case class OptionExtractor() extends TypeExtractor[ScalaOptionRType[_]]:
 
     ScalaOptionRType(
       t.classSymbol.get.fullName, 
+      typeParamSymbols,
       optionOfRType
     )

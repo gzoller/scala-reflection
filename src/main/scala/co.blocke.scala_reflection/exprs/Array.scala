@@ -8,6 +8,7 @@ object Array:
 
   def makeExpr[T](arr: ArrayRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
     import q.reflect.*
+    import Liftables.TypeSymbolToExpr
 
     inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
         '{ $z.asInstanceOf[RType[_]] }
@@ -22,6 +23,7 @@ object Array:
         ),
         List(
             Expr(arr.name).asTerm,
+            Expr(arr.typeParamSymbols).asTerm,
             arrTypeExpr.asTerm
         )
     ).asExprOf[RType[T]]

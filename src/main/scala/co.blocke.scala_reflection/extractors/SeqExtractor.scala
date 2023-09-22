@@ -22,6 +22,7 @@ case class SeqExtractor() extends TypeExtractor[SeqRType[_]]:
 
     val listOfType = tob.head
     val isTypeParam = listOfType.typeSymbol.flags.is(quotes.reflect.Flags.Param)
+    val typeParamSymbols = List("A")
     val listOfRType = 
       if isTypeParam then
         TypeSymbolRType(tob.head.typeSymbol.name)
@@ -30,5 +31,6 @@ case class SeqExtractor() extends TypeExtractor[SeqRType[_]]:
 
     SeqRType(
       t.classSymbol.get.fullName,
+      typeParamSymbols,
       listOfRType
     )

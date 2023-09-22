@@ -25,14 +25,16 @@ object ReflectOnType: // extends NonCaseClassReflection:
           case AndType(left,right) =>
             val resolvedLeft = RType.unwindType(quotes)(left.asInstanceOf[quotes.reflect.TypeRef])
             val resolvedRight = RType.unwindType(quotes)(right.asInstanceOf[quotes.reflect.TypeRef])
-            IntersectionRType(Clazzes.INTERSECTION_CLASS, resolvedLeft, resolvedRight)      
+            val typeSymbols = List("L","R")
+            IntersectionRType(Clazzes.INTERSECTION_CLASS, typeSymbols, resolvedLeft, resolvedRight)      
 
           // Union Type
           //----------------------------------------
           case OrType(left,right) =>
             val resolvedLeft = RType.unwindType(quotes)(left.asInstanceOf[quotes.reflect.TypeRef])
             val resolvedRight = RType.unwindType(quotes)(right.asInstanceOf[quotes.reflect.TypeRef])
-            UnionRType(Clazzes.UNION_CLASS, resolvedLeft, resolvedRight)
+            val typeSymbols = List("L","R")
+            UnionRType(Clazzes.UNION_CLASS, typeSymbols, resolvedLeft, resolvedRight)
         }
 
       // Most types will have a classSymbol and will be handled here...
@@ -90,7 +92,8 @@ object ReflectOnType: // extends NonCaseClassReflection:
           case OrType(left,right) =>
             val resolvedLeft = RType.unwindType(quotes)(left.asInstanceOf[quotes.reflect.TypeRef])
             val resolvedRight = RType.unwindType(quotes)(right.asInstanceOf[quotes.reflect.TypeRef])
-            UnionRType(Clazzes.UNION_CLASS, resolvedLeft, resolvedRight)
+            val typeSymbols = List("L","R")
+            UnionRType(Clazzes.UNION_CLASS, typeSymbols, resolvedLeft, resolvedRight)
 
           // Parameterized Types (classes, traits, & collections)
           //----------------------------------------

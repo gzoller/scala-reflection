@@ -35,14 +35,6 @@ object Trait:
                     ).asExprOf[FieldInfo]              
                 )}
 
-
-            val actualTypes = scalaTrait.actualParameterTypes.map( _.toType(quotes) )
-            val actualTypeExpr = scalaTrait.actualParameterTypes.zip(actualTypes).map{ case(rt, rtType) =>
-                stripType(
-                    ExprMaster.makeExpr(rt)(using q)(using rtType.asInstanceOf[Type[rt.T]]).asInstanceOf[Expr[RType[rt.T]]]
-                )
-            }
-
             Apply(
                 TypeApply(
                     Select.unique(New(TypeTree.of[TraitRType[T]]),"<init>"), 
@@ -51,8 +43,7 @@ object Trait:
                 List(
                     Expr(scalaTrait.name).asTerm,
                     liftedFields.asTerm,
-                    Expr.ofList(actualTypeExpr).asTerm,
-                    Expr(scalaTrait.paramSymbols).asTerm
+                    Expr(scalaTrait.typeParamSymbols).asTerm
                 )
             ).asExprOf[RType[T]]
 
