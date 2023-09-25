@@ -7,26 +7,17 @@ import scala.quoted.Quotes
 case class TraitRType[R] (
     name: String, 
     fields: List[FieldInfo],
-    typeParamSymbols: List[TypeSymbol] = List.empty[TypeSymbol],
+    typeParamSymbols: List[TypeSymbol] = Nil,  // Like T,U
+    typeParamValues: List[RType[_]] = Nil      // Like Int, Boolean
   ) extends RType[R] with AppliedRType: 
 
   val typedName: TypedName = name
   lazy val clazz: Class[_] = Class.forName(name)
  
   override def isAppliedType: Boolean = typeParamSymbols.nonEmpty
-  def selectLimit: Int = fields.size
 
   override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[_] = this
-    // TraitInfo(
-    //   name, 
-    //   fields.map( _.asInstanceOf[ScalaFieldInfo].resolveTypeParams(paramMap) ),
-    //   actualParameterTypes.map( _ match {
-    //       case ts: TypeSymbolInfo if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => paramMap(ts.name.asInstanceOf[TypeSymbol])
-    //       case art: AppliedRType if art.isAppliedType => art.resolveTypeParams(paramMap)
-    //       case t => t
-    //     }),
-    //   paramSymbols
-    //   )
+ 
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
@@ -39,9 +30,10 @@ case class TraitRType[R] (
     AppliedType(traitTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
 
       
+  def selectLimit: Int = typeParamSymbols.size
   def select(i: Int): RType[_] = 
-    if i >= 0 && i < fields.size then
-      fields(i).fieldType
+    if i >= 0 && i < selectLimit then
+      typeParamValues(i)
     else
       throw new ReflectException(s"AppliedType select index $i out of range for ${name}")   
 

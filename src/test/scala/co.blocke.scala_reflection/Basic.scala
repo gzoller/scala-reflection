@@ -56,9 +56,9 @@ class Basic extends munit.FunSuite:
     assertEquals( result.pretty(), """co.blocke.scala_reflection.models.SelfReferencing:
         |   fields ->
         |      a: String
-        |      b: co.blocke.reflection.models.SelfReferencing (recursive self-reference)
+        |      b: co.blocke.scala_reflection.models.SelfReferencing (recursive self-reference)
         |      c: Int
-        |      d: Option of co.blocke.reflection.models.SelfReferencing (recursive self-reference)
+        |      d: Option of co.blocke.scala_reflection.models.SelfReferencing (recursive self-reference)
         |""".stripMargin)
     assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.SelfReferencing")    
   }
@@ -67,7 +67,7 @@ class Basic extends munit.FunSuite:
     val result = RType.of[VehicleHolder]
     assertEquals( result.pretty(), """co.blocke.scala_reflection.models.VehicleHolder:
         |   fields ->
-        |      v: co.blocke.reflection.models.Vehicle (sealed trait):
+        |      v: co.blocke.scala_reflection.models.Vehicle (sealed trait):
         |         children ->
         |            co.blocke.scala_reflection.models.Truck:
         |               fields ->
@@ -86,10 +86,10 @@ class Basic extends munit.FunSuite:
     val result = RType.of[FlavorHolder]
     assertEquals( result.pretty(), """co.blocke.scala_reflection.models.FlavorHolder:
         |   fields ->
-        |      f: co.blocke.reflection.models.Flavor (sealed trait):
+        |      f: co.blocke.scala_reflection.models.Flavor (sealed trait):
         |         children ->
-        |            co.blocke.reflection.models.Vanilla (object)
-        |            co.blocke.reflection.models.Chocolate (object)
-        |            co.blocke.reflection.models.Bourbon (object)
+        |            co.blocke.scala_reflection.models.Vanilla (object)
+        |            co.blocke.scala_reflection.models.Chocolate (object)
+        |            co.blocke.scala_reflection.models.Bourbon (object)
         |""".stripMargin)
   }

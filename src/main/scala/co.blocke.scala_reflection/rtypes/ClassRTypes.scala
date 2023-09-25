@@ -7,21 +7,31 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
   val name:                       String
   lazy val fields:                List[FieldInfo]
   val typeParamSymbols:           List[TypeSymbol]
+  val typeParamValues:            List[RType[_]]
   lazy val typeMembers:           List[TypeMemberRType]
   lazy val annotations:           Map[String, Map[String,String]]
   lazy val mixins:                List[String]
 
+  def selectLimit: Int = typeParamSymbols.size
   def select(i: Int): RType[_] = 
-    if i >= 0 && i < fields.size then
-      fields(i).fieldType
+    if i >= 0 && i < selectLimit then
+      typeParamValues(i)
     else
-      throw new ReflectException(s"AppliedType select index $i out of range for ${name}") 
+      throw new ReflectException(s"AppliedType select index $i out of range for ${name}")   
+
+// Convenience for creating a ScalaClassRType, often for use with '>>' operator.
+object ScalaClassRType:
+  def apply(className: String): ScalaClassRType[_] = RType.of(className) match {
+    case s: ScalaClassRType[_] => s
+    case _ => throw new ReflectException(s"$className is not a Scala class")
+  }
 
 
 case class ScalaClassRType[R] (
     name:                   String,
     typedName:              TypedName,
     typeParamSymbols:       List[TypeSymbol],
+    typeParamValues:        List[RType[_]],      // Like Int, Boolean
     _typeMembers:           List[TypeMemberRType],
     _fields:                List[FieldInfo],
     _annotations:           Map[String, Map[String,String]],
@@ -29,7 +39,7 @@ case class ScalaClassRType[R] (
     override val isAppliedType: Boolean,
     isValueClass:           Boolean,
     isCaseClass:            Boolean,
-    typeParamPaths:         List[List[Int]] = Nil
+    typeParamPaths:         Map[String,List[List[Int]]] = Map.empty[String,List[List[Int]]] // Trait/Class name -> List of Int (path) for each type param
 ) extends ClassRType[R]:
 
   override def toType(quotes: Quotes): quoted.Type[R] =
@@ -41,8 +51,6 @@ case class ScalaClassRType[R] (
       TypeRepr.of[f.fieldType.T](using oneFieldType)
     }
     AppliedType(classTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
-
-  def selectLimit: Int = _fields.size
 
   def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] =
     this
@@ -83,7 +91,7 @@ case class ScalaClassRType[R] (
   // })
 
 
-  // The old inTermsOf().  This takes concrete type parameter values from a trait and applies them to this
+  // Convenience for RType.inTermsOf().  This takes concrete type parameter values from a trait and applies them to this
   // parameterized class having unmapped types (all type symbols).  So Foo[T] >> FooTrait[Int] = Foo[Int]
   def >>( traitRT: TraitRType[_]): RType[_] = 
     import scala.quoted.staging.*
@@ -92,8 +100,9 @@ case class ScalaClassRType[R] (
     val me = this
     val fn = (quotes: Quotes) ?=> {
       import quotes.reflect.*
-      val traitType = traitRT.toType(quotes)
-      val typeParamTypes = reflect.TypeSymbolMapper.deepApply( me )(using quotes)(using traitType)
+      println("--1--")
+      val typeParamTypes = reflect.TypeSymbolMapper.deepApply( me, traitRT )(using quotes)
+      println("--3-- "+typeParamTypes)
       val classQuotedTypeRepr = TypeRepr.typeConstructorOf(clazz)
       RType.unwindType(quotes)(classQuotedTypeRepr.appliedTo( typeParamTypes ))
     }

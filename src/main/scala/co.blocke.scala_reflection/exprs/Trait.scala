@@ -35,6 +35,11 @@ object Trait:
                     ).asExprOf[FieldInfo]              
                 )}
 
+            val typeValues = Expr.ofList{scalaTrait.typeParamValues.map(tv =>
+                val tt = tv.toType(quotes)
+                ExprMaster.makeExpr(tv)(using q)(using tt).asInstanceOf[Expr[RType[_]]]
+            )}
+
             Apply(
                 TypeApply(
                     Select.unique(New(TypeTree.of[TraitRType[T]]),"<init>"), 
@@ -43,7 +48,8 @@ object Trait:
                 List(
                     Expr(scalaTrait.name).asTerm,
                     liftedFields.asTerm,
-                    Expr(scalaTrait.typeParamSymbols).asTerm
+                    Expr(scalaTrait.typeParamSymbols).asTerm,
+                    typeValues.asTerm
                 )
             ).asExprOf[RType[T]]
 

@@ -22,6 +22,11 @@ object Classes:
           ExprMaster.makeExpr(tm)(using q)(using tt).asInstanceOf[Expr[TypeMemberRType]]
         )}
 
+        val typeValues = Expr.ofList{sc.typeParamValues.map(tv =>
+          val tt = tv.toType(quotes)
+          ExprMaster.makeExpr(tv)(using q)(using tt).asInstanceOf[Expr[RType[_]]]
+        )}
+
         // This silly little piece of drama is sadly necessary to keep Scala's ADHD type-checkker happy.
         // We need to take the incoming RType (z), which has some given type, and explicitly cast it to
         // RType[_] to make Scala happy.  Sigh.  It works great when we do, so...
@@ -59,6 +64,7 @@ object Classes:
                 Expr(sc.name).asTerm,
                 Expr(sc.typedName).asTerm,
                 Expr(sc.typeParamSymbols).asTerm,
+                typeValues.asTerm,
                 typeMembers.asTerm,
                 caseFields.asTerm,
                 Expr(sc._annotations).asTerm,

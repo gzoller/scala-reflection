@@ -22,9 +22,10 @@ object ReflectOnClass:
     // The .replace here "fixes" wrong class name in the case where a class is defined inside an object
     val className = typeRef.classSymbol.get.fullName.replace("$.","$")
     val symbol = typeRef.classSymbol.get
-    val typeSymbols = symbol.primaryConstructor.paramSymss match {
-      case List(paramSyms: List[Symbol], _) => paramSyms.map(_.name.asInstanceOf[TypeSymbol])
-      case _ => Nil
+    val (typeSymbols, typeSymbolValues) = symbol.primaryConstructor.paramSymss match {
+      case List(paramSyms: List[Symbol], _) => 
+        (paramSyms.map(_.name.asInstanceOf[TypeSymbol]), typeRef.typeArgs.map( RType.unwindType(quotes)(_) ))
+      case _ => (Nil, Nil)
     }
 
     // Something to allow us to pattern match and extract on default value methods in companion object...
@@ -80,7 +81,7 @@ object ReflectOnClass:
         else
           //  >> Normal (unsealed) traits
           typeRef match {
-            case a @ AppliedType(t,tob) =>  // parameterized trait
+            case AppliedType(t,tob) =>  // parameterized trait
               val actualParamTypes = tob.map{ oneTob =>
                 scala.util.Try{
                   if resolveTypeSyms then
@@ -128,7 +129,8 @@ object ReflectOnClass:
               TraitRType(
                 className,
                 traitFields,
-                typeSymbols
+                typeSymbols,
+                typeSymbolValues
               )
             case _ =>
               // non-parameterized trait
@@ -231,22 +233,26 @@ object ReflectOnClass:
             reflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)
           }
 
-          var returnedRType = ScalaClassRType(
+          // compute type param paths for parameterized class
+          val typeParamPaths = if typeSymbols.isEmpty then
+            Map.empty[String,List[List[Int]]]
+          else 
+            TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
+
+          ScalaClassRType(
             className,
             typedName,
-            // {if typeSymbols.nonEmpty then className + actualParamTypes.map(t => t.name).mkString("[",",","]") else fullName},
             typeSymbols,
+            typeSymbolValues,
             typeMembers,
             caseFields,
             classAnnos,
-            classDef.parents.map(_.symbol.fullName),
+            classDef.parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName),
             typeSymbols.nonEmpty,
             isValueClass,
-            true
+            true,
+            typeParamPaths
             )
-
-            // RType.quotedTypeCache.put(returnedRType.typedName, classDef.symbol.typeRef.asType) // register the quoted.Type into the cache
-            returnedRType
 
         else
           UnknownRType(className)

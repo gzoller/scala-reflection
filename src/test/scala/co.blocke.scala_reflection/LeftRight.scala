@@ -97,11 +97,11 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Either having a parameterized type") {
     val result = RType.of[BothSidesParam[String,Double]]
-    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.BothSidesParam[Y,Z]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.BothSidesParam[String,Double]:
       |   fields ->
       |      a: Either of:
       |         left--String
-      |         right--Option of co.blocke.scala_reflection.models.ParamOption[T]:
+      |         right--Option of co.blocke.scala_reflection.models.ParamOption[Double]:
       |               fields ->
       |                  a: Option of Double
       |""".stripMargin)
@@ -143,10 +143,10 @@ class LeftRight extends munit.FunSuite:
 
   test("Scala Intersection type with type parameters") {
     val result = RType.of[ApartWithType[Int,Boolean]]
-    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ApartWithType[T,U]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ApartWithType[Int,Boolean]:
       |   fields ->
       |      a: Union of:
-      |         left--Option of co.blocke.scala_reflection.models.Thingy[Z]:
+      |         left--Option of co.blocke.scala_reflection.models.Thingy[Int]:
       |               fields ->
       |                  name: String
       |                  payload: [Z] Int

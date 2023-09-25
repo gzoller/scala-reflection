@@ -4,78 +4,36 @@ import co.blocke.scala_reflection.*
 import co.blocke.scala_reflection.rtypes.*
 // import co.blocke.scala_reflection.run_util.*
 import java.io.*
+import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    // val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
-    // val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]]
-    // val result = RType.inTermsOf( rt, inst.getClass.getName )
+    val sample = ScalaClassRType("co.blocke.scala_reflection.Thingy2")
+    // val two = RType.of[Thingy2[_]]
 
-    // A: String, B: Boolean C: Int
-    // val rt = RType.of[T10[T11[Boolean,T5[Int,String]],Boolean]]
+    // println("\n\n=======================\n"+sample.pretty())
+    // println(sample)
 
-    // val two = Two[Boolean,T5[Int,String]](true, TBar7(5,"foom"))
-    // val one = One[String,Boolean,Int](two, false)
-    // val clazz = "co.blocke.scala_reflection.One"
-    // val result = RType.inTermsOf( rt, clazz )
-
-
-    val cname = "co.blocke.scala_reflection.One"
-
-    // val rt = RType.of[TLevel0[TLevel1[Int,Boolean],String]]
-    // val result = RType.inTermsOf(rt, cname)
-
-    // val rt = RType.inTermsOf(RType.of[Which[String]], "co.blocke.scala_reflection.Arr")
-    // val rt = RType.of(Class.forName("co.blocke.scala_reflection.Three"))
-
-    // println(rt.pretty())
+    // val result = RType.inTermsOf[Basis[  List[Int|String]  ]](sample)
+    // val result = RType.inTermsOf[Basis[  List[Option[String]]  ]](sample)
+    
+    // val rt = RType.of[Basis[  List[Option[Int|Boolean]]  ]]
     // println(rt)
 
-    val tt = RType.of[T10[T11[Boolean,T5[Int,String]],Boolean]].asInstanceOf[TraitRType[_]]
-    val ct = RType.of("co.blocke.scala_reflection.One").asInstanceOf[ScalaClassRType[_]]
-    println( (ct >> tt).pretty() )
+    // val result = RType.inTermsOf[Basis[  Int|Boolean  ]](sample)
+    val result = RType.inTermsOf[Basis[  List[Option[Int|Boolean]]  ]](sample)
+    println(result.pretty())
+
+    // val trt = RType.of[Basis[List[Option[Int|Boolean]]]].asInstanceOf[TraitRType[_]]
+    // println("\n"+trt.pretty())
+    // println((sample >> trt).pretty())
 
 
-    // println(RType.inTermsOf[]("co.blocke.scala_reflection.One").pretty())
-    // println(result.pretty())
 
-    /*
-    println("----------------------------\n\n")
+    // RType.of[Int | String]
+    //OrType(TypeRef(TermRef(ThisType(TypeRef(NoPrefix,module class <root>)),object scala),class Int),TypeRef(TermRef(ThisType(TypeRef(NoPrefix,module class scala)),object Predef),type String))
 
-    def foldLeftBreak2[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
-        as match {
-            case Nil => 
-                println("Init with: "+init)
-                init
-            case a :: as =>
-                println("A: "+a)
-                println("Rest: "+as)
-                op(a, init) match {
-                    case Left(b) => 
-                        println("Returning left: "+b)
-                        b
-                    case Right(b) => 
-                        println("Recursing on the right....")
-                        foldLeftBreak2(as)(b)(op)
-                }
-        }  
+    // RType.of[List[Int|String]]
+    //AppliedType(TypeRef(ThisType(TypeRef(NoPrefix,module class immutable)),class List),List(OrType(TypeRef(TermRef(ThisType(TypeRef(NoPrefix,module class <root>)),object scala),class Int),TypeRef(TermRef(ThisType(TypeRef(NoPrefix,module class scala)),object Predef),type String))))
 
-    val stuff = List(23,75,99,304,-3,0)
-    val res = foldLeftBreak2[Int,List[Int]](stuff)(List.empty[Int]){ (a,b) => 
-        if a == 99 then
-            println("Found 99!")
-            Left(b)
-        else
-            Right(b :+ a)
-    }
-    println("RESULT: "+res)
-    */
-
-    /*
-
-trait TLevel0[X,Y]{ val x: X; val y: Y }
-trait TLevel1[A,B]{ val a: A; val b: B }
-case class One[Q,R,S](x: TLevel1[Q,S], y: R) extends TLevel0[TLevel1[Q,S],R]
-
-
-    */
+    println("Done")

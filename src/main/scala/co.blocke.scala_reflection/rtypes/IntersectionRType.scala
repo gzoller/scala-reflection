@@ -3,7 +3,6 @@ package rtypes
 
 import scala.quoted.Quotes
 
-
 case class IntersectionRType[R] (
   name: String,
   typeParamSymbols: List[TypeSymbol],
@@ -13,7 +12,7 @@ case class IntersectionRType[R] (
 
     val typedName: TypedName = name + "[" + _leftType.typedName + "," + _rightType.typedName + "]"
 
-    lazy val clazz: Class[_] = Clazzes.AnyClazz
+    lazy val clazz: Class[_] = Clazzes.AnyClazz  // The only "class" And and Or types have is the useless Matchable class
 
     lazy val leftType: RType[_] = _leftType match {
       // case e: SelfRefRType => e.resolve

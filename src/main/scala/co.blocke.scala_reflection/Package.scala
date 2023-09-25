@@ -33,13 +33,13 @@ def mangleArrayClassName(tpe: RType[_]): String =
   "[" + mangled
 
 
-// Handy "break"-able fold iterator.  Return Left to stop.
+// Handy "break"-able fold iterator.  Return Right to stop/complete.
 def foldLeftBreak[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
   as match {
     case Nil => init
     case a :: as =>
       op(a, init) match {
-        case Left(b) => b
-        case Right(b) => foldLeftBreak(as)(b)(op)
+        case Right(b) => b
+        case Left(b) => foldLeftBreak(as)(b)(op)
       }
   }

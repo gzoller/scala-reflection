@@ -73,8 +73,8 @@ object RType:
     rtypeCache.getOrElse(className, {
       val newRType = {
         val fn = (qctx: Quotes) ?=> {
-          val newRType = RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)
-          TypeSymbolMapper.mapTypeSymbolsForClass(newRType) // ClassRType with type parameter paths computed
+          val clazz = Class.forName(className)
+          RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)
         }
         withQuotes(fn)
       }
@@ -84,12 +84,21 @@ object RType:
       newRType
     })
   
+  inline def inTermsOf[T](clazz: ScalaClassRType[_]): RType[_] =
+    of[T] match {
+      case t: TraitRType[_] => clazz >> t
+      case x => throw new ReflectException(s"${x.name} is not of type trait")
+    }
+
+  var count = 0
+
   // ------------------------
   //   Common entry point of all reflection/inspection, to unwind the given type and return an RType[T]
   // ------------------------
   protected[scala_reflection] def unwindType[T](quotes: Quotes)(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true): RType[T] =
     import quotes.reflect.*
 
+    count += 1
     val className = aType.asInstanceOf[TypeRef] match {
       case AndType(_,_) => Clazzes.INTERSECTION_CLASS
       case OrType(_,_)  => Clazzes.UNION_CLASS
@@ -112,7 +121,7 @@ object RType:
           TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
         else
           cache.put(tName, SelfRefRType(className))
-          val reflectedRType = TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
+          val reflectedRType = TastyReflection.refldeepApplyectOnType(quotes)(aType, tName, resolveTypeSyms)
           cache.put(tName, reflectedRType)
           reflectedRType
       })
@@ -125,14 +134,19 @@ object RType:
     import quotes.reflect.*
 
     aType.asInstanceOf[TypeRef] match {
-      case sym if aType.typeSymbol.flags.is(Flags.Param) => sym.name
+      case sym if aType.typeSymbol.flags.is(Flags.Param) => 
+        sym.name
       case AppliedType(t,tob) =>
         typeName(quotes)(t).toString + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
-      case AndType(left, right) => Clazzes.INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
-      case OrType(left, right) => Clazzes.UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
-      case _: dotty.tools.dotc.core.Types.WildcardType => "unmapped"
+      case AndType(left, right) => 
+        Clazzes.INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
+      case OrType(left, right) => 
+        Clazzes.UNION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
+      case _: dotty.tools.dotc.core.Types.WildcardType => 
+        "unmapped"
       case _ => aType.classSymbol.get.fullName match {
         case Clazzes.ENUM_CLASS => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
-        case tn => tn
+        case tn => 
+          tn
       }
     }

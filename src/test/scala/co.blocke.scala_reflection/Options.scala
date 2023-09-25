@@ -79,7 +79,7 @@ class Options extends munit.FunSuite:
 
   test("Scala optional parameterized field") {
     val result = RType.of[ParamOption[Char]]
-    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ParamOption[T]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.ParamOption[Char]:
       |   fields ->
       |      a: Option of Char
       |""".stripMargin)

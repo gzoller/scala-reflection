@@ -91,7 +91,7 @@ class Collections extends munit.FunSuite:
 
   test("Tuples") {
     val result = RType.of[TupleTurtle[Boolean]]
-    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.TupleTurtle[Z]:
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.TupleTurtle[Boolean]:
       |   fields ->
       |      t: Tuple of:
       |         0: Int

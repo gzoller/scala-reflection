@@ -23,11 +23,58 @@ object Show:
             s
     }
     final inline def showSimpleName(rt: RType[_]): String =
-        rt.name
-            .replaceAll("java.lang.","")
-            .replaceAll("java.util.","")
-            .replaceAll("scala.util.","")
-            .replaceAll("scala.","")
+        if rt.name.startsWith("scala.") || rt.name.startsWith("java.") then
+            rt.name.split('.').last
+        else
+            rt.name
+
+    def typeString(rtypes: List[RType[_]]): String = 
+        val buf = new StringBuilder("[")
+        rtypes.map{ rt => 
+            _typeString(rt, buf) 
+            buf.append(",")
+        }
+        buf.setCharAt(buf.length()-1,']')
+        buf.toString
+
+    inline def pureTypeName(in: String): String = in.split('.').last 
+
+    private def _typeString(rt: RType[_], buf: StringBuilder): StringBuilder =
+        rt match {
+            case u: UnionRType[_] => 
+                _typeString(u.leftType, buf)
+                buf.append(" | ")
+                buf.append(pureTypeName(u.rightType.name))
+                _typeString(u.rightType, buf)
+
+            case i: IntersectionRType[_] => 
+                _typeString(i.leftType, buf)
+                buf.append(" & ")
+                _typeString(i.rightType, buf)
+
+            case t: TupleRType[_] => 
+                buf.append( "(")
+                (0 to t.selectLimit-1).map{ i =>
+                    _typeString(t.select(i), buf)
+                    buf.append(",")
+                    }
+                buf.setCharAt(buf.length()-1,')')
+                buf
+
+            case a: AppliedRType =>  // parameterized thing
+                buf.append( pureTypeName(a.name) )
+                if a.typeParamSymbols.nonEmpty then 
+                    buf.append("[")
+                    (0 to a.selectLimit-1).map{ i =>
+                        _typeString(a.select(i), buf)
+                        buf.append(",")
+                        }
+                    buf.setCharAt(buf.length()-1,']')
+                buf
+
+            case _ => 
+                buf.append(pureTypeName(rt.name))
+        }
 
     val normalColl: Regex = """^scala.collection.immutable.(\w+)$""".r
     val mutableColl: Regex = """^scala.collection.mutable.(\w+)$""".r
@@ -111,7 +158,7 @@ object Show:
                 (buf, true, classesSeenBefore2)
 
             case t: SelfRefRType[_] =>
-                (buf.append(showSimpleName(t)+ " (recursive self-reference)"), false, seenBefore)
+                (buf.append(t.name + " (recursive self-reference)"), false, seenBefore)
 
             case t: ScalaClassRType[_] =>
                 if seenBefore.contains(t.typedName.toString) then
@@ -119,7 +166,9 @@ object Show:
                     (buf, true, seenBefore)
                 else
                     buf.append(t.name)
-                    if t.typeParamSymbols.nonEmpty then
+                    if t.typeParamValues.nonEmpty then
+                        buf.append(typeString(t.typeParamValues))
+                    else if t.typeParamSymbols.nonEmpty then
                         buf.append( t.typeParamSymbols.map(_.toString).mkString("[",",","]"))
                     buf.append(":\n")
                     buf.append(tabs(tabLevel+1))
@@ -165,6 +214,10 @@ object Show:
                     (buf, true, seenBefore)
                 else
                     buf.append(showSimpleName(t))
+                    if t.typeParamValues.nonEmpty then
+                        buf.append(typeString(t.typeParamValues))
+                    else if t.typeParamSymbols.nonEmpty then
+                        buf.append( t.typeParamSymbols.map(_.toString).mkString("[",",","]"))
                     buf.append(" (trait):\n")
                     buf.append(tabs(tabLevel+1))
                     buf.append("fields ->\n")
