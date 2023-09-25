@@ -114,18 +114,6 @@ object RType:
         rtypeCache.put(tName, reflectedRType)
         reflectedRType
       }).asInstanceOf[RType[T]]
-
-      /*
-      cache.getOrElse(tName, {
-        if className == "scala.Any" then
-          TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
-        else
-          cache.put(tName, SelfRefRType(className))
-          val reflectedRType = TastyReflection.refldeepApplyectOnType(quotes)(aType, tName, resolveTypeSyms)
-          cache.put(tName, reflectedRType)
-          reflectedRType
-      })
-      */
     }
 
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.

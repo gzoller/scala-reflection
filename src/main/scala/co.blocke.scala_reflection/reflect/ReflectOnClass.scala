@@ -11,7 +11,7 @@ import rtypes.*
   */
 object ReflectOnClass:
 
-  def apply(quotes: Quotes)(typeRef: quotes.reflect.TypeRef, typedName: TypedName, resolveTypeSyms: Boolean, appliedTob: List[quotes.reflect.TypeRepr] =  Nil): RType[_] = 
+  def apply[T](quotes: Quotes)(typeRef: quotes.reflect.TypeRef, typedName: TypedName, resolveTypeSyms: Boolean, appliedTob: List[quotes.reflect.TypeRepr] =  Nil): RType[T] = 
     import quotes.reflect.*
 
     //===

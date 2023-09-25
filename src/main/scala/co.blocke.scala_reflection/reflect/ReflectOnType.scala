@@ -12,7 +12,7 @@ import rtypes.*
   */
 object ReflectOnType: // extends NonCaseClassReflection:
 
-  def apply(quotes: Quotes)(aType: quotes.reflect.TypeRepr, typedName: TypedName, resolveTypeSyms: Boolean): RType[_] = 
+  def apply[T](quotes: Quotes)(aType: quotes.reflect.TypeRepr, typedName: TypedName, resolveTypeSyms: Boolean): RType[T] = 
     import quotes.reflect.*
 
     val typeRef = aType.asInstanceOf[TypeRef]
@@ -68,7 +68,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
             //----------------------------------------
             else
               */
-              // AnyRType()
+              // AnyRType().asInstanceOf[RType[T]]
 
           // Scala3 Tasty-equipped type incl. primitive types
           // Traits and classes w/type parameters are *not* here... they're AppliedTypes
@@ -106,7 +106,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
             foundType.getOrElse {
               // Nope--we've got a parameterized class or trait here
               ReflectOnClass(quotes)(a.asInstanceOf[TypeRef], RType.typeName(quotes)(a), resolveTypeSyms, tob)
-            }
+            }.asInstanceOf[RType[T]]
         
           case _ => // === No idea!  Unknown entity...
             UnknownRType(className)

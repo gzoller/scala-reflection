@@ -23,7 +23,7 @@ object ExprMaster:
       case scalaTrait: TraitRType[T]          => Trait.makeExpr(scalaTrait)
       case sealedTrait: SealedTraitRType[T]   => Trait.makeExpr(sealedTrait)
       case typeMember: TypeMemberRType        => TypeMember.makeExpr(typeMember)
-      case typeSymbol: TypeSymbolRType        => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
+      case typeSymbol: TypeSymbolRType[T]     => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
       case scalaEither: EitherRType[T]        => LeftRight.makeExpr(scalaEither)
       case scalaTry: TryRType[T]              => ScalaTry.makeExpr(scalaTry)
       case tuple: TupleRType[T]               => Tuple.makeExpr(tuple)
@@ -31,6 +31,6 @@ object ExprMaster:
       case union: UnionRType[T]               => LeftRight.makeExpr(union)
       case selfRef: SelfRefRType[T]           => SelfRef.makeExpr(selfRef)
       case obj: ObjectRType                   => '{ ObjectRType( ${Expr(obj.name)} ).asInstanceOf[RType[T]] }
-      case unknown: UnknownRType              => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }
+      case unknown: UnknownRType[T]           => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }
     }
 

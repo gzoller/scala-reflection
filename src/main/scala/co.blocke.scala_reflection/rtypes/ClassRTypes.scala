@@ -100,9 +100,7 @@ case class ScalaClassRType[R] (
     val me = this
     val fn = (quotes: Quotes) ?=> {
       import quotes.reflect.*
-      println("--1--")
       val typeParamTypes = reflect.TypeSymbolMapper.deepApply( me, traitRT )(using quotes)
-      println("--3-- "+typeParamTypes)
       val classQuotedTypeRepr = TypeRepr.typeConstructorOf(clazz)
       RType.unwindType(quotes)(classQuotedTypeRepr.appliedTo( typeParamTypes ))
     }

@@ -16,7 +16,7 @@ class ReflectException(msg: String) extends Exception(msg)
 
 def mangleArrayClassName(tpe: RType[_]): String =
   val mangled = tpe match {
-    case _: rtypes.TypeSymbolRType => "Ljava.lang.Object;"
+    case _: rtypes.TypeSymbolRType[_] => "Ljava.lang.Object;"
     case c: rtypes.ArrayRType[_] => mangleArrayClassName(c.elementType)
     // case c: rtypes.JavaArrayInfo => mangleArrayClassName(c.elementType)
     case _: rtypes.BooleanRType => "Z"

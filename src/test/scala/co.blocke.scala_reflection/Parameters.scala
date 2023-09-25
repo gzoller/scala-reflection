@@ -359,12 +359,12 @@ class Parameters extends munit.FunSuite:
 
   test("InTermsOf deep type substitution") {
     val result = RType.inTermsOf[Basis[List[Option[Int|Boolean]]]](ScalaClassRType("co.blocke.scala_reflection.models.Thingy2"))
-    assertEquals( result.pretty(), """ScalaCaseClassInfo(co.blocke.scala_reflection.Thingy):
-    |   fields:
-    |      (0) a: scala.Int
-    |      (1) b: java.lang.String
-    |      (2)[T] c: SeqLikeInfo(scala.collection.immutable.List): Option of Union:
-    |         left--scala.Int
-    |         right--scala.Boolean
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Thingy2[List[Option[Int | Boolean]]]:
+    |   fields ->
+    |      a: Int
+    |      b: String
+    |      c: [T] List of: Option of Union of:
+    |         left--Int
+    |         right--Boolean
     |""".stripMargin)
   }

@@ -44,7 +44,6 @@ object Show:
             case u: UnionRType[_] => 
                 _typeString(u.leftType, buf)
                 buf.append(" | ")
-                buf.append(pureTypeName(u.rightType.name))
                 _typeString(u.rightType, buf)
 
             case i: IntersectionRType[_] => 
@@ -99,7 +98,7 @@ object Show:
             case t: PrimitiveRType => 
                 (buf.append(lastPart(t.name)), false, seenBefore)
 
-            case t: TypeSymbolRType =>
+            case t: TypeSymbolRType[_] =>
                 (buf.append(t.name), false, seenBefore)
 
             case t: TypeMemberRType =>
@@ -255,7 +254,7 @@ object Show:
                 buf.append(" (object)")
                 (buf, false, seenBefore)
 
-            case t: UnknownRType =>
+            case t: UnknownRType[_] =>
                 buf.append("unknown type")
                 (buf, false, seenBefore)
         }

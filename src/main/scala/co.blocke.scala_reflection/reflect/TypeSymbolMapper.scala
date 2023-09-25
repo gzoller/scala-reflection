@@ -75,7 +75,7 @@ object TypeSymbolMapper:
                 else
                     Left( cleanedList )
 
-            case ts: TypeSymbolRType =>
+            case ts: TypeSymbolRType[_] =>
                 paramList.indexOf2(ts.name.asInstanceOf[TypeSymbol]) match {
                     case i if(i >= 0 && !paramList(i).isFound) => 
                         Left(paramList.updated(i, paramList(i).pushPath(index, true)))
@@ -95,6 +95,30 @@ object TypeSymbolMapper:
     def deepApply( classRT: ScalaClassRType[_], traitRT: TraitRType[_] )(using q:Quotes): List[q.reflect.TypeRepr] = 
         import q.reflect.*
 
+        // This nonsense is required because if you have type parameters with a union or intersection, wrapped in some
+        // other AppliedType (like List[Int|String]), the And/Or types get demoted to Object, which blows up.
+        // Need to rebuild the TypeRepr tree with the proper AndType/OrType.  <sigh>
+        def rebuildAppliedType( rt: RType[_] ): TypeRepr = 
+            rt match {
+                case u: UnionRType[_] =>
+                    OrType( rebuildAppliedType(u._leftType), rebuildAppliedType(u._rightType) )
+
+                case i: IntersectionRType[_] =>
+                    AndType( rebuildAppliedType(i._leftType), rebuildAppliedType(i._rightType) )
+
+                case a: AppliedRType => 
+                    implicit val tt = a.toType(q)
+                    TypeRepr.of[a.T] match {
+                        case AppliedType(t, tob) =>
+                            val paramReprs = (0 to a.selectLimit-1).map( i => rebuildAppliedType(a.select(i)) ).toList
+                            AppliedType(t, paramReprs)
+                    }
+
+                case _ =>
+                    implicit val tt = rt.toType(q)
+                    TypeRepr.of[rt.T]
+            }
+
         def runPath( path: List[Int], rt: RType[_] ): TypeRepr =
             rt match {
                 case a: AppliedRType => 
@@ -104,29 +128,7 @@ object TypeSymbolMapper:
                             if rest != Nil then
                                 runPath( rest, cur )
                             else
-                                cur match {
-                                    // Union and Interstion types are messed up and require special construction of a TypeRepr 
-                                    // because they don't actuall have a real class--just "Matchable", which is merely a marker
-                                    // trait.  Thus, their TypeReprs need to be explicitly constructed.
-                                    case u: UnionRType[_] =>
-                                        implicit val leftTT = u._leftType.toType(q)
-                                        implicit val rightTT = u._rightType.toType(q)
-                                        val leftTypeRepr = TypeRepr.of[u._leftType.T]
-                                        val rightTypeRepr = TypeRepr.of[u._rightType.T]
-                                        OrType(leftTypeRepr, rightTypeRepr)
-                                    case i: IntersectionRType[_] =>
-                                        implicit val leftTT = i._leftType.toType(q)
-                                        implicit val rightTT = i._rightType.toType(q)
-                                        val leftTypeRepr = TypeRepr.of[i._leftType.T]
-                                        val rightTypeRepr = TypeRepr.of[i._rightType.T]
-                                        AndType(leftTypeRepr, rightTypeRepr)
-                                    case _ =>
-                                        implicit val tt = cur.toType(q)
-                                        val x = TypeRepr.of[cur.T]
-                                        println("-- 0 -- "+TypeRepr.of[List[Int|String]])
-                                        println("-- 2 -- "+x)
-                                        x
-                                }
+                                rebuildAppliedType(cur)
                         case Nil => 
                             TypeRepr.of[Any] // If we can't map a type parameter, we default to Any-type
                     }
