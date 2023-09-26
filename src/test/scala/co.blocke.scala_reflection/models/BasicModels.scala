@@ -33,3 +33,7 @@ case object Vanilla extends Flavor
 case object Chocolate extends Flavor
 case object Bourbon extends Flavor
 case class FlavorHolder(f: Flavor)
+
+// Opaque type aliases
+opaque type EMP_ID = Int
+case class Employee(eId: EMP_ID, age: Int)

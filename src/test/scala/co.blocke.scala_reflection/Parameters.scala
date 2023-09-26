@@ -183,18 +183,16 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin)
   }
 
-  /*
   test("Opaque type alias type substitution (rare)") {
-    val result = RType.of[AliasTypeSub].asInstanceOf[ScalaCaseClassInfo]
-    assertEquals( result.show(), """ScalaCaseClassInfo(co.blocke.scala_reflection.AliasTypeSub):
-    |   fields:
-    |      (0) a: alias mystery defined as ScalaCaseClassInfo(co.blocke.scala_reflection.DuoTypes):
-    |         fields:
-    |            (0)[Q] a: scala.Byte
-    |            (1)[U] b: scala.Short
-    |""".stripMargin)
+    val result = RType.of[AliasTypeSub]
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.AliasTypeSub:
+      |   fields ->
+      |      a: alias mystery defined as co.blocke.scala_reflection.models.DuoTypes[Byte,Short]:
+      |         fields ->
+      |            a: [U] Short
+      |            b: [Q] Byte
+      |""".stripMargin)
   }
-  */
 
   test("2nd level subsitution in a class field") {
     val result = RType.of[DuoClass]

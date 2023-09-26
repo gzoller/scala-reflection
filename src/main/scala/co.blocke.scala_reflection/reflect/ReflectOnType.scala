@@ -55,19 +55,12 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         typeRef match {
-          // case named: dotty.tools.dotc.core.Types.NamedType if classSymbol == Symbol.classSymbol("scala.Any") =>
-            // Scala3 opaque type alias
-            //----------------------------------------
-            /*
-            if typeRef.isOpaqueAlias then
-              val translucentSuperType = typeRef.translucentSuperType
-              AliasInfo(typeRef.show, RType.unwindType(quotes)(translucentSuperType))
-
-            // Any Type
-            //----------------------------------------
-            else
-              */
-              // AnyRType().asInstanceOf[RType[T]]
+          // Scala3 opaque type alias
+          //----------------------------------------
+          case named: dotty.tools.dotc.core.Types.NamedType if classSymbol == Symbol.classSymbol("scala.Any") && typeRef.isOpaqueAlias =>
+            val translucentSuperType = typeRef.translucentSuperType
+            val wrappedType = RType.unwindType(quotes)(translucentSuperType)
+            AliasRType(typeRef.show, wrappedType).asInstanceOf[RType[T]]
 
           // Scala3 Tasty-equipped type incl. primitive types
           // Traits and classes w/type parameters are *not* here... they're AppliedTypes

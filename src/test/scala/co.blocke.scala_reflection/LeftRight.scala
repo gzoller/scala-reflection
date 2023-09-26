@@ -153,3 +153,13 @@ class LeftRight extends munit.FunSuite:
       |         right--Boolean
       |""".stripMargin)
   }
+
+  test("opaque type alias is a union type") {
+    val result = RType.of[OpaqueUnion] 
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.OpaqueUnion:
+      |   fields ->
+      |      id: alias GEN_ID defined as Union of:
+      |         left--Int
+      |         right--String
+      |""".stripMargin)
+  }

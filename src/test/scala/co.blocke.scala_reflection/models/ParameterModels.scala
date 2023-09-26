@@ -90,3 +90,7 @@ trait Basis[T] {
   val c: T
 }
 case class Thingy2[T]( a: Int, b: String, c: T) extends Basis[T]
+
+// Alias type substitution
+opaque type mystery = DuoTypes[Byte,Short]
+case class AliasTypeSub(a: mystery) 

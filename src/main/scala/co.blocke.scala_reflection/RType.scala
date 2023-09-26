@@ -89,15 +89,12 @@ object RType:
       case x => throw new ReflectException(s"${x.name} is not of type trait")
     }
 
-  var count = 0
-
   // ------------------------
   //   Common entry point of all reflection/inspection, to unwind the given type and return an RType[T]
   // ------------------------
   protected[scala_reflection] def unwindType[T](quotes: Quotes)(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true): RType[T] =
     import quotes.reflect.*
 
-    count += 1
     val className = aType.asInstanceOf[TypeRef] match {
       case AndType(_,_) => Clazzes.INTERSECTION_CLASS
       case OrType(_,_)  => Clazzes.UNION_CLASS
@@ -108,23 +105,14 @@ object RType:
     this.synchronized {
       val tName = typeName(quotes)(aType)
       rtypeCache.getOrElse(tName, {
-        rtypeCache.put(tName, SelfRefRType(tName.toString))
-        val reflectedRType = ReflectOnType(quotes)(aType, tName, resolveTypeSyms)
-        rtypeCache.put(tName, reflectedRType)
-        reflectedRType
-      }).asInstanceOf[RType[T]]
-
-      /*
-      cache.getOrElse(tName, {
-        if className == "scala.Any" then
-          TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
+        if className == Clazzes.ANY_CLASS then
+          ReflectOnType(quotes)(aType, tName, resolveTypeSyms)  // Reflect on Any.  Could be Any, or an opaque type usage
         else
-          cache.put(tName, SelfRefRType(className))
-          val reflectedRType = TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
-          cache.put(tName, reflectedRType)
+          rtypeCache.put(tName, SelfRefRType(tName.toString))
+          val reflectedRType = ReflectOnType(quotes)(aType, tName, resolveTypeSyms)
+          rtypeCache.put(tName, reflectedRType)
           reflectedRType
-      })
-      */
+      }).asInstanceOf[RType[T]]
     }
 
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.

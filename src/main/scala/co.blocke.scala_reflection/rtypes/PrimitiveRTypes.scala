@@ -82,6 +82,8 @@ object PrimitiveRTypes:
     given string2typednamekey: Conversion[(String,RType[_]), (TypedName,RType[_])] with
       def apply(x: (String,RType[_])): (TypedName,RType[_]) = (x._1.asInstanceOf[TypedName], x._2)
 
+    // Do NOT pre-populate Any type into the cache!  Doing so will erroneously convert any opaque type
+    // usages to type symbols.
     Map(
       "boolean"              -> boolRType,
       "Boolean"              -> boolRType,
@@ -115,8 +117,7 @@ object PrimitiveRTypes:
       "Short"                -> shortRType,
       "scala.Short"          -> shortRType,
     //   "java.lang.Short"      -> Java_Short,
-      "java.lang.String"     -> stringRType,
-      "scala.Any"            -> anyRType
+      "java.lang.String"     -> stringRType
     //   "java.lang.Object"     -> Java_Object,
     //   "java.lang.Number"     -> Java_Number
     )

@@ -17,7 +17,6 @@ class Enums extends munit.FunSuite:
 
   test("Scala Enums (old and new)") {
     val result = RType.of[Birthday]
-    println(result)
     assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Birthday:
       |   fields ->
       |      m: Enum (Scala 3) having values (Jan,Feb,Mar)

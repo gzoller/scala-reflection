@@ -13,3 +13,7 @@ case class BothSidesParam[Y,Z](a: scala.util.Either[Y, Option[ParamOption[Z]]])
 case class Together( a: Int & Person)
 case class Apart( a: Option[Person] | String)
 case class ApartWithType[T,U]( a: Option[Thingy[T]] | U)
+
+// Opaque type is union
+opaque type GEN_ID = Int | String
+case class OpaqueUnion(id: GEN_ID)

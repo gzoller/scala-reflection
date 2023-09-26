@@ -93,3 +93,12 @@ class Basic extends munit.FunSuite:
         |            co.blocke.scala_reflection.models.Bourbon (object)
         |""".stripMargin)
   }
+
+  test("handle opaque type alias") {
+    val result = RType.of[Employee]
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Employee:
+        |   fields ->
+        |      eId: alias EMP_ID defined as Int
+        |      age: Int
+        |""".stripMargin)
+  }

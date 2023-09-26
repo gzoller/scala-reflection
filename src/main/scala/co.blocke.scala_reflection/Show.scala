@@ -265,4 +265,7 @@ object Show:
             case t: UnknownRType[_] =>
                 buf.append("unknown type")
                 (buf, false, seenBefore)
+
+            case t: AliasRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, s"alias ${lastPart(t.definedType)} defined as ", t.unwrappedType)
         }

@@ -8,16 +8,6 @@ import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    val rt = RType.of[Birthday]
-    println(rt)
-    println("\n"+rt.pretty())
-
-    val foo = WeekDayX
-    val c = foo.getClass.getName()
-    val bar = Class.forName(c)
-    println(bar)
-
-    // println(rt2.values)
-    // println(rt2.ordinal("Wednesday"))
-    // println(rt2.valueAt(2))
+    val rt = RType.of[Employee]
+    println(rt.pretty())
 

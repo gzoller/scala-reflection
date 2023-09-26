@@ -30,6 +30,7 @@ object ExprMaster:
       case tuple: TupleRType[T]               => Tuple.makeExpr(tuple)
       case intersection: IntersectionRType[T] => LeftRight.makeExpr(intersection)
       case union: UnionRType[T]               => LeftRight.makeExpr(union)
+      case alias: AliasRType[T]               => Alias.makeExpr(alias)
       case selfRef: SelfRefRType[T]           => SelfRef.makeExpr(selfRef)
       case obj: ObjectRType                   => '{ ObjectRType( ${Expr(obj.name)} ).asInstanceOf[RType[T]] }
       case unknown: UnknownRType[T]           => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }

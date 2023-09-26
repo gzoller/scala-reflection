@@ -215,14 +215,13 @@ object ReflectOnClass:
             val fieldRType = scala.util.Try{
               if resolveTypeSyms then
                 RType.unwindType(quotes)(typeRef.memberType(symbol.caseFields(idx))) match {
-                  case NONE  =>
-                    TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
+                  case NONE  => TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
                   case other => other
                 }
               else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then
                 TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
               else
-                RType.unwindType(quotes)(valDef.tpt.tpe, false)
+                RType.unwindType(quotes)(valDef.tpt.tpe.asInstanceOf[TypeRef], false)
             }.toOption.getOrElse{
               TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
             }
