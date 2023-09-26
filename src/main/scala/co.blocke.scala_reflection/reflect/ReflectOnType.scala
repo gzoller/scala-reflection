@@ -40,19 +40,18 @@ object ReflectOnType: // extends NonCaseClassReflection:
       // Most types will have a classSymbol and will be handled here...
       case Some(classSymbol) =>
         // Handle gobbled non-class scala.Enumeration.Value (old 2.x Enumeration class values)
-        val (is2xEnumeration, className) = classSymbol.fullName match { 
-          /*
-          case raw if raw == ENUM_CLASS => 
+        val (is2xEnumeration, className) = classSymbol.fullName match {           
+          case raw if raw == Clazzes.ENUMERATION_CLASS => 
             val enumerationClass = typeRef.typeSymbol.fullName
-            if( enumerationClass == ENUM_CLASS ) then
+            if( enumerationClass == Clazzes.ENUMERATION_CLASS ) then
               // If caller did NOT define a type member (type X = Value) inside their Enumeration class
               val enumClassName = typeRef.qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName.dropRight(1) // chop the '$' off the end!
               (true, enumClassName)
             else
               // If caller defined a type member (type X = Value) inside their Enumeration class
               (true, enumerationClass.dropRight(enumerationClass.length - enumerationClass.lastIndexOf('$')))
-              */
-          case _  => (false, classSymbol.fullName)
+          case _  => 
+            (false, classSymbol.fullName)
         }
 
         typeRef match {
@@ -76,13 +75,20 @@ object ReflectOnType: // extends NonCaseClassReflection:
           case named: dotty.tools.dotc.core.Types.NamedType => 
             val isTypeParam = typeRef.typeSymbol.flags.is(Flags.Param)   // Is 'T' or a "real" type?  (true if T)
             classSymbol match {
+
               case cs if isTypeParam => 
                 TypeSymbolRType(typeRef.name)  // TypeSymbols Foo[T] have typeRef of Any
-              /*
+
               case cs if is2xEnumeration => 
-                val enumerationClassSymbol = typeRef.qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass
-                ScalaEnumerationInfo(enumerationClassSymbol.fullName.dropRight(1), enumerationClassSymbol.declaredFields.map( _.name ).toArray)  // get the values of the Enumeration
-                */
+                val enumerationClassSymbol = typeRef.qualifier.termSymbol.moduleClass
+                ScalaEnumerationRType(
+                  className, 
+                  enumerationClassSymbol.declaredFields.map( _.name )
+                  )
+
+              case a if a == defn.AnyClass =>
+                AnyRType().asInstanceOf[RType[T]]  // Any type
+
               case cs => // Non-parameterized classes
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
             }

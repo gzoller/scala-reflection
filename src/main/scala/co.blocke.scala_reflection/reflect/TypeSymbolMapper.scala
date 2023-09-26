@@ -42,16 +42,16 @@ object TypeSymbolMapper:
     def mapTypeSymbolsForClass(quotes: Quotes)(classDef: quotes.reflect.ClassDef, paramSymbols: List[TypeSymbol]): Map[String, List[List[Int]]] = 
         import quotes.reflect.* 
 
-        classDef.parents.map(_.asInstanceOf[TypeTree].tpe).collect {
-            case a: AppliedType => // for each AppliedType ancestor of this class...
-                val extendsType = RType.unwindType(quotes)(a, false)
-                val initialMap = paramSymbols.map(ts => TypeRecord(ts,Nil))
-                val result = navLevel(extendsType, -1, initialMap) match {
-                    case Left(r)  => r  // Doesn't matter if finished or not--return it.  The Left/Right was for navLevel internal abort-when-done
-                    case Right(r) => r
-                }
-                (extendsType.name, result.map(_.path))
-        }.toMap
+            classDef.parents.map(_.asInstanceOf[TypeTree].tpe).collect {
+                case a: AppliedType => // for each AppliedType ancestor of this class...
+                    val extendsType = RType.unwindType(quotes)(a, false)
+                    val initialMap = paramSymbols.map(ts => TypeRecord(ts,Nil))
+                    val result = navLevel(extendsType, -1, initialMap) match {
+                        case Left(r)  => r  // Doesn't matter if finished or not--return it.  The Left/Right was for navLevel internal abort-when-done
+                        case Right(r) => r
+                    }
+                    (extendsType.name, result.map(_.path))
+            }.toMap
 
 
     private def navLevel(rt: RType[_], index: Int, paramList: List[TypeRecord]): Either[List[TypeRecord], List[TypeRecord]] =  // Left => More to do, Right => complete
@@ -121,20 +121,20 @@ object TypeSymbolMapper:
 
         def runPath( path: List[Int], rt: RType[_] ): TypeRepr =
             rt match {
-                case a: AppliedRType => 
-                    path match {
-                        case p :: rest => 
-                            val cur = a.select(p)
-                            if rest != Nil then
-                                runPath( rest, cur )
-                            else
-                                rebuildAppliedType(cur)
-                        case Nil => 
-                            TypeRepr.of[Any] // If we can't map a type parameter, we default to Any-type
-                    }
-                case _ =>
+                case x if !x.isInstanceOf[AppliedRType] =>
                     implicit val tt = rt.toType(q)
                     TypeRepr.of[rt.T]
+                case a: AppliedRType => 
+                    path match {
+                        case Nil => 
+                            TypeRepr.of[Any] // If we can't map a type parameter, we default to Any-type
+                        case p :: rest => 
+                            val cur = a.select(p)
+                            if rest == Nil then
+                                rebuildAppliedType(cur)
+                            else
+                                runPath( rest, cur )
+                    }
             }
 
         val selectedParentMap = classRT.typeParamPaths.getOrElse(traitRT.name, classRT.typeParamSymbols.map(_ => Nil))

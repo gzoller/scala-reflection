@@ -22,6 +22,7 @@ object ExprMaster:
       case arr: ArrayRType[T]                 => Array.makeExpr(arr)
       case scalaTrait: TraitRType[T]          => Trait.makeExpr(scalaTrait)
       case sealedTrait: SealedTraitRType[T]   => Trait.makeExpr(sealedTrait)
+      case enums: EnumRType[T]                => Enums.makeExpr(enums)
       case typeMember: TypeMemberRType        => TypeMember.makeExpr(typeMember)
       case typeSymbol: TypeSymbolRType[T]     => '{ TypeSymbolRType( ${Expr(typeSymbol.name)} ).asInstanceOf[RType[T]] }
       case scalaEither: EitherRType[T]        => LeftRight.makeExpr(scalaEither)

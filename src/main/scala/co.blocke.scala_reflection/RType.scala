@@ -72,9 +72,8 @@ object RType:
 
     rtypeCache.getOrElse(className, {
       val newRType = {
-        val fn = (qctx: Quotes) ?=> {
-          val clazz = Class.forName(className)
-          RType.unwindType(qctx)(qctx.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)
+        val fn = (quotes: Quotes) ?=> {
+          RType.unwindType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)
         }
         withQuotes(fn)
       }
@@ -114,6 +113,18 @@ object RType:
         rtypeCache.put(tName, reflectedRType)
         reflectedRType
       }).asInstanceOf[RType[T]]
+
+      /*
+      cache.getOrElse(tName, {
+        if className == "scala.Any" then
+          TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
+        else
+          cache.put(tName, SelfRefRType(className))
+          val reflectedRType = TastyReflection.reflectOnType(quotes)(aType, tName, resolveTypeSyms)
+          cache.put(tName, reflectedRType)
+          reflectedRType
+      })
+      */
     }
 
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.
@@ -133,7 +144,7 @@ object RType:
       case _: dotty.tools.dotc.core.Types.WildcardType => 
         "unmapped"
       case _ => aType.classSymbol.get.fullName match {
-        case Clazzes.ENUM_CLASS => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
+        case Clazzes.ENUMERATION_CLASS => aType.asInstanceOf[TypeRef].qualifier.asInstanceOf[quotes.reflect.TermRef].termSymbol.moduleClass.fullName
         case tn => 
           tn
       }

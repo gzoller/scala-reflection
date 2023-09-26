@@ -249,6 +249,14 @@ object Show:
                     }
                     (buf, true, allClassesSeenUpToNow)
 
+            case t: ScalaEnumerationRType[_] =>
+                buf.append("Enumeration (Scala 2) having values "+t.values.mkString("(",",",")"))
+                (buf, false, seenBefore)
+
+            case t: ScalaEnumRType[_] =>
+                buf.append("Enum (Scala 3) having values "+t.values.mkString("(",",",")"))
+                (buf, false, seenBefore)
+
             case t: ObjectRType => 
                 buf.append(showSimpleName(t))
                 buf.append(" (object)")

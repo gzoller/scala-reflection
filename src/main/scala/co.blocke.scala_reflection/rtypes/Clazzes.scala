@@ -15,7 +15,7 @@ object Clazzes {
   val SHORT_CLASS = "scala.Short"
   val STRING_CLASS = "java.lang.String"
   val ANY_CLASS = "scala.Any"
-  val ENUM_CLASS = "scala.Enumeration.Value"
+  val ENUMERATION_CLASS = "scala.Enumeration.Value"
 
   /** Union and intersection types are only denoted internally as scala.Matchable, which is so generic it isn't helpful
    *  These are marker class names to differentiate a union type.  Following Scala naming conventions, but be clear--there
