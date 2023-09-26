@@ -57,11 +57,7 @@ object ReflectOnClass:
 
       // === Scala 2 Classes ===
       if symbol.flags.is(quotes.reflect.Flags.Scala2x) then
-        UnknownRType(symbol.fullName)
-        // symbol.fullName match {
-        //   case PrimitiveType(t) => t
-        //   case s => Scala2Info(s)
-        // }
+        Scala2RType(symbol.fullName)
 
       else if symbol.flags.is(quotes.reflect.Flags.Trait) then
         // === Trait ===
@@ -108,7 +104,7 @@ object ReflectOnClass:
                         case vd: ValDef if vd.tpt.tpe.typeSymbol.flags.is(Flags.Param) =>
                           paramMap.getOrElse(
                             vd.tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
-                            RType.unwindType(quotes)(vd.tpt.tpe).asInstanceOf[AppliedRType].resolveTypeParams(paramMap)
+                            RType.unwindType(quotes)(vd.tpt.tpe)//.asInstanceOf[AppliedRType].resolveTypeParams(paramMap)
                           )
                         case _ =>
                           RType.unwindType(quotes)(typeRef.memberType(f), false)
@@ -116,7 +112,7 @@ object ReflectOnClass:
                   }.toOption.getOrElse{
                     paramMap.getOrElse(
                       f.tree.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
-                      RType.unwindType(quotes)(f.tree.asInstanceOf[ValDef].tpt.tpe).asInstanceOf[AppliedRType].resolveTypeParams(paramMap)
+                      RType.unwindType(quotes)(f.tree.asInstanceOf[ValDef].tpt.tpe)//.asInstanceOf[AppliedRType].resolveTypeParams(paramMap)
                     )
                   }
                 val typeSym =

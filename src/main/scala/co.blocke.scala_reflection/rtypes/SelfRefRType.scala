@@ -9,7 +9,3 @@ package rtypes
 case class SelfRefRType[R](name: String) extends RType[R]:
   val typedName = name.asInstanceOf[TypedName]
   lazy val clazz: Class[_] = Class.forName(name)
-
-  def resolve: RType[R] = ??? //RType.of(infoClass)
-
-  // def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String = s"SelfRefRType of $name" 

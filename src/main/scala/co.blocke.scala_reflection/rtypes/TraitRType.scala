@@ -16,9 +16,6 @@ case class TraitRType[R] (
  
   override def isAppliedType: Boolean = typeParamSymbols.nonEmpty
 
-  override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[_] = this
- 
-
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val traitType: quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]

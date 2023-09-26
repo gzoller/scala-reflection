@@ -23,5 +23,3 @@ trait CollectionRType[R] extends AppliedRType:
       elementType
     else
       throw new ReflectException(s"AppliedType select index $i out of range for ${self.name}")
-
-  override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] = ???

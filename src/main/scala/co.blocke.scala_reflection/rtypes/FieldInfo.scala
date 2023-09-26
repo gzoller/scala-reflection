@@ -16,8 +16,6 @@ trait FieldInfo extends Serializable:
   lazy val defaultValue:         Option[Object]
 
   def reIndex(i: Int): FieldInfo
-  def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): FieldInfo
-
 
 //------------------------------------------------------------
 
@@ -44,13 +42,6 @@ case class ScalaFieldInfo(
 ) extends FieldInfo:
 
   def reIndex(i: Int): FieldInfo = this.copy(index = i)
-
-  override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): FieldInfo = 
-    fieldType match {
-      // case ts: TypeSymbolRType if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => this.copy(fieldType = paramMap(ts.name.asInstanceOf[TypeSymbol]).asInstanceOf[RType[R]])
-      // case art: AppliedRType if art.isAppliedType => this.copy(fieldType = art.resolveTypeParams(paramMap).asInstanceOf[RType[R]])
-      case _ => this
-    }
 
   /** Default values of constructor fields, where present. This is a rare case where the clunky Java reflection way of getting
    *  this information is better... we can get the default values and conveniently store them with the RType, vs some separate

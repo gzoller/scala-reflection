@@ -32,14 +32,6 @@ case class ScalaOptionRType[R] (
     case e => e
   }
 
-  def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] = 
-    ???
-    // _optionParamType match {
-    //   case ts: TypeSymbolInfo if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => ScalaOptionInfo(name, paramMap(ts.name.asInstanceOf[TypeSymbol]))
-    //   case art: AppliedRType if art.isAppliedType => ScalaOptionInfo(name, art.resolveTypeParams(paramMap))
-    //   case _ => this
-    // }
-
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val optType: quoted.Type[R] = super.toType(quotes)
@@ -47,16 +39,6 @@ case class ScalaOptionRType[R] (
     val optTypeRepr = TypeRepr.of[R](using optType)
     val paramTypeRepr = TypeRepr.of[_optionParamType.T](using paramType)
     AppliedType(optTypeRepr, List(paramTypeRepr)).asType.asInstanceOf[quoted.Type[R]]
-
-    // implicit val stuff: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx 
-    // dotty.tools.dotc.core.Types.AppliedType(
-    //   TypeRepr.typeConstructorOf(infoClass).asInstanceOf[dotty.tools.dotc.core.Types.Type], 
-    //   List(optionParamType.toType(quotes).asInstanceOf[dotty.tools.dotc.core.Types.Type])
-    //   ).asInstanceOf[quotes.reflect.AppliedType]
-    
-//   def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
-//     val newTab = {if suppressIndent then tab else tab+1}
-//     {if(!suppressIndent) tabs(tab) else ""} + "Option of " + optionParamType.show(newTab,name :: seenBefore,true)
 
 //-------------------
 

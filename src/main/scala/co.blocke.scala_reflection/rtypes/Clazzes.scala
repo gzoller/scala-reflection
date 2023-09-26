@@ -17,8 +17,8 @@ object Clazzes {
   val ANY_CLASS = "scala.Any"
   val ENUMERATION_CLASS = "scala.Enumeration.Value"
 
-  /** Union and intersection types are only denoted internally as scala.Matchable, which is so generic it isn't helpful
-   *  These are marker class names to differentiate a union type.  Following Scala naming conventions, but be clear--there
+  /** Union and intersection types are only denoted internally as scala.Matchable, which is so generic it isn't helpful.
+   *  These are synthetic marker class names to differentiate a union type.  Following Scala naming conventions, but be clear--there
    *  is (currently) no such class as "scala.Union" or "scala.Intersection" and bad things will happen if you try to 
    *  instantiate one!
    */

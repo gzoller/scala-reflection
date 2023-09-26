@@ -44,7 +44,7 @@ object TypeSymbolMapper:
 
             classDef.parents.map(_.asInstanceOf[TypeTree].tpe).collect {
                 case a: AppliedType => // for each AppliedType ancestor of this class...
-                    val extendsType = RType.unwindType(quotes)(a, false)
+                    val extendsType = RType.unwindType(quotes)(a)
                     val initialMap = paramSymbols.map(ts => TypeRecord(ts,Nil))
                     val result = navLevel(extendsType, -1, initialMap) match {
                         case Left(r)  => r  // Doesn't matter if finished or not--return it.  The Left/Right was for navLevel internal abort-when-done

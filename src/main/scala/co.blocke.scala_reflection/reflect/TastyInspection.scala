@@ -15,5 +15,5 @@ class TastyInspection(clazz: Class[_]) extends Inspector:
   def inspect(using Quotes)(tastys: List[Tasty[quotes.type]]): Unit =
     import quotes.reflect._
     val tastyType = quotes.reflect.TypeRepr.typeConstructorOf(clazz)
-    inspected = RType.unwindType(quotes)( tastyType, false )
+    inspected = RType.unwindType(quotes)( tastyType )
 

@@ -102,3 +102,8 @@ class Basic extends munit.FunSuite:
         |      age: Int
         |""".stripMargin)
   }
+
+  test("Scala 2.x class") {
+    val result = RType.of[scala.math.BigDecimal]
+    assertEquals( result.pretty(), "scala.math.BigDecimal (Scala 2)")
+  }

@@ -268,4 +268,8 @@ object Show:
 
             case t: AliasRType[_] =>
                 showOfType(buf, seenBefore, tabLevel, s"alias ${lastPart(t.definedType)} defined as ", t.unwrappedType)
+
+            case t: Scala2RType[_] =>
+                buf.append(t.name+ " (Scala 2)")
+                (buf, false, seenBefore)
         }

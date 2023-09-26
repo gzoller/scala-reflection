@@ -15,14 +15,8 @@ case class UnionRType[R] (
 
   lazy val clazz: Class[_] = Clazzes.AnyClazz  // something here so we don't blow up
 
-  lazy val leftType: RType[_] = _leftType match {
-    // case e: SelfRefRType => e.resolve
-    case e => e
-  }
-  lazy val rightType: RType[_] = _rightType match {
-    // case e: SelfRefRType => e.resolve
-    case e => e
-  }
+  lazy val leftType: RType[_] = _leftType
+  lazy val rightType: RType[_] = _rightType
   
   def _copy( left: RType[_], right: RType[_] ) = this.copy(_leftType = left, _rightType = right)
 

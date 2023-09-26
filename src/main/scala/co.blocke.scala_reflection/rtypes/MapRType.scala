@@ -33,28 +33,6 @@ case class MapRType[R] (
       case 1 => elementType2
       case _ => throw new ReflectException(s"AppliedType select index $i out of range for ${name}")
     }     
-    
-  // override def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[_] = this
-    // val stage1 = _elementType match {
-    //   case ts: TypeSymbolInfo if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => 
-    //     MapLikeInfo(name, paramMap(ts.name.asInstanceOf[TypeSymbol]), _elementType2)
-    //   case art: AppliedRType if art.isAppliedType => 
-    //     MapLikeInfo(name, art.resolveTypeParams(paramMap), _elementType2)
-    //   case _ => this
-    // }
-    // _elementType2 match {
-    //   case ts: TypeSymbolInfo if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => 
-    //     MapLikeInfo(name, stage1._elementType, paramMap(ts.name.asInstanceOf[TypeSymbol]))
-    //   case art: AppliedRType if art.isAppliedType => 
-    //     MapLikeInfo(name, stage1._elementType, art.resolveTypeParams(paramMap))
-    //   case _ => stage1
-    // }
 
-  lazy val elementType: RType[_] = _elementType match {
-    // case e: SelfRefRType => e.resolve
-    case e => e
-  }
-  lazy val elementType2: RType[_] = _elementType2 match {
-    // case e: SelfRefRType => e.resolve
-    case e => e
-  }
+  lazy val elementType: RType[_] = _elementType
+  lazy val elementType2: RType[_] = _elementType2

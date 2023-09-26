@@ -19,6 +19,7 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
     else
       throw new ReflectException(s"AppliedType select index $i out of range for ${name}")   
 
+
 // Convenience for creating a ScalaClassRType, often for use with '>>' operator.
 object ScalaClassRType:
   def apply(className: String): ScalaClassRType[_] = RType.of(className) match {
@@ -52,12 +53,6 @@ case class ScalaClassRType[R] (
     }
     AppliedType(classTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
 
-  def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[R] =
-    this
-    // this.copy( 
-    //   _fields = _fields.map( _.asInstanceOf[ScalaFieldInfo].resolveTypeParams(paramMap) )
-    //   )
-
   override def equals(obj: Any) =
     obj match {
       case s: ScalaClassRType[_] if s.name == this.name => s._fields.toList == this.fields.toList
@@ -85,11 +80,6 @@ case class ScalaClassRType[R] (
 
   // Fields may be self-referencing, so we need to unwind this...
   lazy val fields = _fields
-  // lazy val fields = _fields.map( f => f.fieldType match {
-  //   // case s: SelfRefRType => f.asInstanceOf[ScalaFieldInfo].copy(fieldType = s.resolve)
-  //   case s => f
-  // })
-
 
   // Convenience for RType.inTermsOf().  This takes concrete type parameter values from a trait and applies them to this
   // parameterized class having unmapped types (all type symbols).  So Foo[T] >> FooTrait[Int] = Foo[Int]

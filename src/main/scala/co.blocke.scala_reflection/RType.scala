@@ -34,8 +34,6 @@ trait AppliedRType:
   def isAppliedType: Boolean = true  // can be overridden to false, e.g. Scala class that isn't parameterized
   def select(i: Int): RType[_]
   def selectLimit: Int
-  // Take a parameterized type's normal type 'T' and map it to the declared type 'X'
-  def resolveTypeParams( paramMap: Map[TypeSymbol, RType[_]] ): RType[_]
 
 
 // Marker trait denoting a primitive type
@@ -73,7 +71,7 @@ object RType:
     rtypeCache.getOrElse(className, {
       val newRType = {
         val fn = (quotes: Quotes) ?=> {
-          RType.unwindType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)
+          RType.unwindType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(className)))
         }
         withQuotes(fn)
       }
