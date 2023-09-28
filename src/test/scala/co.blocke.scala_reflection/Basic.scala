@@ -107,3 +107,32 @@ class Basic extends munit.FunSuite:
     val result = RType.of[scala.math.BigDecimal]
     assertEquals( result.pretty(), "scala.math.BigDecimal (Scala 2)")
   }
+
+  test("support value classes") {
+    val result = RType.of[Employee2]
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Employee2:
+        |   fields ->
+        |      eId: co.blocke.scala_reflection.models.IdUser (value class):
+        |         fields ->
+        |            id: Int
+        |      age: Int
+        |""".stripMargin)
+  }
+
+  test("Skip_Reflection annotation works") {
+    val result = RType.of[SkipMe]
+    assertEquals( result.pretty().stripLineEnd, """unknown type: co.blocke.scala_reflection.models.SkipMe""")
+  }
+
+  test("Simple non-case class") {
+    val result = RType.of[FoomNC]
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.FoomNC:
+        |   fields ->
+        |      a: Int
+        |      b: String
+        |      c (set-only): Option of co.blocke.scala_reflection.models.FoomNC (recursive self-reference)
+        |   non-constructor fields (non-case class) ->
+        |      age: Int
+        |      blah: Boolean
+        |""".stripMargin)
+  }

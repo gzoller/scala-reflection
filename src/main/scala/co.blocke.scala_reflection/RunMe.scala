@@ -8,6 +8,6 @@ import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    val rt = RType.of[Employee]
+    val rt = RType.of[FoomNC]
     println(rt.pretty())
 

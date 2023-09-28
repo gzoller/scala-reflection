@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package extractors
 
 import rtypes.Clazzes.*
-import rtypes.{ArrayRType, TypeSymbolRType}
+import rtypes.*
 import reflect.TypeExtractor
 import scala.quoted.Quotes
 import scala.util.Try
@@ -34,3 +34,21 @@ case class ScalaArrayExtractor() extends TypeExtractor[ArrayRType[_]]:
       typeParamSymbols,
       arrayOfRType)
 
+
+  private def mangleArrayClassName(tpe: co.blocke.scala_reflection.RType[_]): String =
+    val mangled = tpe match {
+      case _: TypeSymbolRType[_] => "Ljava.lang.Object;"
+      case c: ArrayRType[_] => mangleArrayClassName(c.elementType)
+      // case c: rtypes.JavaArrayInfo => mangleArrayClassName(c.elementType)
+      case _: BooleanRType => "Z"
+      case _: ByteRType => "B"
+      case _: CharRType => "C"
+      case _: DoubleRType => "D"
+      case _: FloatRType => "F"
+      case _: IntRType => "I"
+      case _: LongRType => "J"
+      case _: ShortRType => "S"
+      case _: AnyRType => "Ljava.lang.Object;"
+      case c => "L" + c.name + ";"
+    }
+    "[" + mangled

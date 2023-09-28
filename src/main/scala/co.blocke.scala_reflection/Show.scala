@@ -169,12 +169,17 @@ object Show:
                         buf.append(typeString(t.typeParamValues))
                     else if t.typeParamSymbols.nonEmpty then
                         buf.append( t.typeParamSymbols.map(_.toString).mkString("[",",","]"))
+                    if t.isValueClass then
+                        buf.append(" (value class)")
                     buf.append(":\n")
                     buf.append(tabs(tabLevel+1))
                     buf.append("fields ->\n")
                     val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) =>
                         buf.append(tabs(tabLevel+2))
-                        buf.append(f.name+": ")
+                        buf.append(f.name)
+                        if f.asInstanceOf[ScalaFieldInfo].isNonValConstructorField then
+                            buf.append(" (set-only)")
+                        buf.append(": ")
                         f.originalSymbol.map( os => buf.append("["+os+"] ") )
                         val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
                         f.defaultValue.map{ default => 
@@ -190,10 +195,33 @@ object Show:
                             buf.append("\n")
                         classesSeenBefore
                     }
-                    val allClassesSeenUpToNow2 = if t._typeMembers.nonEmpty then
+                    val allClassesSeenUpToNow2 = if t.nonConstructorFields.nonEmpty then
+                        buf.append(tabs(tabLevel+1))
+                        buf.append("non-constructor fields (non-case class) ->\n")
+                        t.nonConstructorFields.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) => 
+                            buf.append(tabs(tabLevel+2))
+                            buf.append(f.getterLabel+": ")
+                            val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
+                            // f.defaultValue.map{ default => 
+                            //     if lastWasMultiLine then
+                            //         buf.append(tabs(tabLevel+3))
+                            //     else
+                            //         buf.append(" ")
+                            //     buf.append("(default value: "+clipDefault(default)+")")
+                            //     if lastWasMultiLine then
+                            //         buf.append("\n")
+                            // }
+                            if !lastWasMultiLine then
+                                buf.append("\n")
+                            classesSeenBefore
+                        }
+                    else
+                        allClassesSeenUpToNow
+
+                    val allClassesSeenUpToNow3 = if t._typeMembers.nonEmpty then
                         buf.append(tabs(tabLevel+1))
                         buf.append("type members ->\n")
-                        t._typeMembers.foldLeft(allClassesSeenUpToNow){ (classesSeen, f) =>
+                        t._typeMembers.foldLeft(allClassesSeenUpToNow2){ (classesSeen, f) =>
                             buf.append(tabs(tabLevel+2))
                             buf.append(f.name+": ")
                             buf.append("["+f.typeSymbol+"] " )
@@ -203,8 +231,9 @@ object Show:
                             classesSeenBefore
                         }
                     else
-                        allClassesSeenUpToNow
-                    (buf, true, allClassesSeenUpToNow2)
+                        allClassesSeenUpToNow2
+                        
+                    (buf, true, allClassesSeenUpToNow3)
 
 
             case t: TraitRType[_] =>
@@ -263,7 +292,7 @@ object Show:
                 (buf, false, seenBefore)
 
             case t: UnknownRType[_] =>
-                buf.append("unknown type")
+                buf.append("unknown type: "+t.name)
                 (buf, false, seenBefore)
 
             case t: AliasRType[_] =>

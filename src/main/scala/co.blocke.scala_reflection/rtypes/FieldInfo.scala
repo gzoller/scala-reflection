@@ -56,6 +56,17 @@ case class ScalaFieldInfo(
 
 
 //------------------------------------------------------------
+
+case class NonConstructorFieldInfo(
+  getterLabel: String,
+  setterLabel: String,
+  getterIsVal: Boolean,
+  fieldType:   RType[_],
+  annotations: Map[String,Map[String,String]]
+)
+
+//------------------------------------------------------------
+
 /*
 object JavaFieldInfo:
   def fromBytes( bbuf: ByteBuffer ): JavaFieldInfo =

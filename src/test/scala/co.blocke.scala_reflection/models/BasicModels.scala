@@ -1,4 +1,8 @@
-package co.blocke.scala_reflection.models
+package co.blocke.scala_reflection
+package models
+
+import co.blocke.reflect.* 
+
 
 case class Item(desc:String)
 case class Person(name:String, age:Int, item:Item, allDone: Boolean)
@@ -37,3 +41,23 @@ case class FlavorHolder(f: Flavor)
 // Opaque type aliases
 opaque type EMP_ID = Int
 case class Employee(eId: EMP_ID, age: Int)
+
+// Value classes
+case class IdUser(id: Int) extends AnyVal  // value class
+case class Employee2(eId: IdUser, age: Int)
+
+// @Skip_Reflection
+@Ignore
+case class SkipMe(a: Int, b: String)
+
+// Non-Case Scala class handling
+class FoomNC(val a: Int, val b: String, c: Option[FoomNC]) {
+  @FieldAnno(idx=5) var blah: Boolean = false
+  @Ignore var hey: Int = 2
+  private var cantSee: Boolean = true
+  val nope: Float = 1.2
+
+  private var _age = 0
+  def age = _age
+  @FieldAnno(idx=2) def age_=(g: Int): Unit = _age = g
+}

@@ -52,6 +52,22 @@ object Classes:
               ).asExprOf[FieldInfo]              
             )}
 
+        val nonConstructorFields: Expr[List[NonConstructorFieldInfo]] =
+            Expr.ofList{sc.nonConstructorFields.map( f => 
+              val fieldtt = f.fieldType.toType(quotes)
+              val fieldTypeExpr = stripType( ExprMaster.makeExpr(f.fieldType)(using q:Quotes)(using fieldtt) )
+              Apply(
+                Select.unique(New(TypeTree.of[NonConstructorFieldInfo]),"<init>"),
+                List(
+                  Expr(f.getterLabel).asTerm,
+                  Expr(f.setterLabel).asTerm,
+                  Expr(f.getterIsVal).asTerm,
+                  fieldTypeExpr.asTerm, 
+                  Expr(f.annotations).asTerm
+                )
+              ).asExprOf[NonConstructorFieldInfo]              
+            )}
+
         //-------------------------------
         // Recipe:  How to instantiate a parameterized class by applying type first like: case class Foo[T](arg: T)  We apply T to an actual type, then supply the args.
         //-------------------------------
@@ -72,7 +88,8 @@ object Classes:
                 Expr(sc.isAppliedType).asTerm,
                 Expr(sc.isValueClass).asTerm,
                 Expr(sc.isCaseClass).asTerm,
-                Expr(sc.typeParamPaths).asTerm
+                Expr(sc.typeParamPaths).asTerm,
+                nonConstructorFields.asTerm
             )
         ).asExprOf[RType[T]]
     }

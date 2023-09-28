@@ -40,7 +40,8 @@ case class ScalaClassRType[R] (
     override val isAppliedType: Boolean,
     isValueClass:           Boolean,
     isCaseClass:            Boolean,
-    typeParamPaths:         Map[String,List[List[Int]]] = Map.empty[String,List[List[Int]]] // Trait/Class name -> List of Int (path) for each type param
+    typeParamPaths:         Map[String,List[List[Int]]] = Map.empty[String,List[List[Int]]], // Trait/Class name -> List of Int (path) for each type param
+    nonConstructorFields:   List[NonConstructorFieldInfo] = Nil  // Populated for non-case classes only
 ) extends ClassRType[R]:
 
   override def toType(quotes: Quotes): quoted.Type[R] =

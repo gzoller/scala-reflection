@@ -46,7 +46,7 @@ object ReflectOnClass:
     }.toMap
 
     // Is this class annotated to skip reflection?   If so, return UnknownInfo
-    if classAnnos.contains("co.blocke.scala_reflection.Skip_Reflection") then
+    if classAnnos.contains("co.blocke.scala_reflection.Ignore") then
       UnknownRType(symbol.fullName)
 
     else 
@@ -60,9 +60,12 @@ object ReflectOnClass:
         Scala2RType(symbol.fullName)
 
       else if symbol.flags.is(quotes.reflect.Flags.Trait) then
-        // === Trait ===
-        //     >> Sealed Traits
+
         if symbol.flags.is(quotes.reflect.Flags.Sealed) then
+
+          //===
+          //===  Sealed Traits
+          //===
           val kidsRTypes = symbol.children.map{ c =>
             c.tree match {
               case vd: ValDef =>
@@ -75,7 +78,10 @@ object ReflectOnClass:
           }
           SealedTraitRType(className, kidsRTypes)
         else
-          //  >> Normal (unsealed) traits
+
+          //===
+          //===  Traits (normal, non-sealed)
+          //===
           typeRef match {
             case AppliedType(t,tob) =>  // parameterized trait
               val actualParamTypes = tob.map{ oneTob =>
@@ -138,6 +144,9 @@ object ReflectOnClass:
               TraitRType(className, traitFields)
           }
 
+      //===
+      //===  Enums
+      //===          
       else if symbol.flags.is(quotes.reflect.Flags.Enum) then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
         ScalaEnumRType(symbol.fullName, typeRef.classSymbol.get.children.map(_.name))
 
@@ -150,7 +159,9 @@ object ReflectOnClass:
         JavaClassInfo(symbol.fullName, symbol.fullName, typeSymbols.toArray, appliedTob.map( at => RType.unwindType(quotes)(at.asInstanceOf[TypeRef])).toArray )
         */
 
-      // === Scala 3 Classes ===
+      //===
+      //===  Scala 3 Classes
+      //===          
       else if symbol.isClassDef then
         val classDef = symbol.tree.asInstanceOf[ClassDef]
 
@@ -205,7 +216,10 @@ object ReflectOnClass:
             classDef.constructor.paramss.tail.head.params
 
         if symbol.flags.is(quotes.reflect.Flags.Case) then
-          // === Case Classes ===
+
+          //===
+          //===  Case Classes
+          //===          
           val caseFields = constructorParams.zipWithIndex.map{ (definition, idx) =>
             val valDef = definition.asInstanceOf[ValDef]
             val fieldRType = scala.util.Try{
@@ -222,7 +236,7 @@ object ReflectOnClass:
               TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
             }
             val fieldtt = valDef.tpt.tpe.asType.asInstanceOf[Type[fieldRType.T]]
-            reflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)
+            ReflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)
           }
 
           // compute type param paths for parameterized class
@@ -247,91 +261,29 @@ object ReflectOnClass:
             )
 
         else
-          UnknownRType(className)
 
-            /*
-        else
-          // === Non-Case Classes ===
-
-          // ensure all constructur fields are vals
-          val classFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))
-            .zipWithIndex
-            .map{ (oneField, idx) =>
-              val fieldType = RType.unwindType(quotes)(typeRef.memberType(oneField))
-              reflectOnField(quotes)(fieldType, constructorParams(idx).asInstanceOf[ValDef], idx, dad, fieldDefaultMethods, oneField.flags.is(Flags.PrivateLocal))
-            }
-
-          inspectNonCaseClass(quotes)(
-            symbol,
-            tob,
-            typeSymbols.toArray,
-            classDef,
-            dad,
+          //===
+          //===  Non-Case Classes
+          //===          
+          ReflectNonCaseClass.apply(quotes)(
             className,
-            fullName,
-            typeSymbols.nonEmpty,
+            typedName,
+            symbol,
+            constructorParams,
+            dad,
             fieldDefaultMethods,
-            typeMembers.toArray,
-            classFields.toArray,
-            classAnnos,
-            TypeLoom.descendParents(quotes)( typeRef ),
-            classDef.parents.map(_.symbol.fullName).toArray,
-            isValueClass)
-            */
+
+            // tob,
+            // typeSymbols.toArray,
+            // classDef,
+            // typeSymbols.nonEmpty,
+            // typeMembers.toArray,
+            // classAnnos,
+            // TypeLoom.descendParents(quotes)( typeRef ),
+            // classDef.parents.map(_.symbol.fullName).toArray,
+            // isValueClass
+            )
 
       // === Other kinds of classes (non-case Scala) ===
       else
         UnknownRType(symbol.fullName)
-
-
-  def reflectOnField[Q](quotes: Quotes)(
-    fieldType: RType[Q],
-    valDef: quotes.reflect.ValDef, 
-    index: Int, 
-    dad: Option[ClassRType[_]],
-    fieldDefaultMethods: Map[Int, (String,String)],
-    isNonValConstructorField: Boolean = false
-  )(using Type[Q]): FieldInfo = 
-    import quotes.reflect.* 
-
-    // Get any field annotations (from body of class--they're not on the constructor fields)
-    val fieldAnnos = dad match {
-      // case Some(c) if c.isInstanceOf[JavaClassInfo] => Map.empty[String,Map[String,String]]
-      case _ =>
-        val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
-        baseAnnos ++ valDef.symbol.annotations.map{ a =>
-          val quotes.reflect.Apply(_, params) = a: @unchecked
-          val annoName = a.symbol.signature.resultSig
-          (annoName, annoSymToString(quotes)(params))
-        }.toMap
-    }
-
-    // Figure out the original type symbols, i.e. T, (if any)
-    val valTypeRef = valDef.tpt.tpe.asInstanceOf[quotes.reflect.TypeRef]
-    val isTypeParam = valTypeRef.typeSymbol.flags.is(quotes.reflect.Flags.Param)
-    val originalTypeSymbol = if isTypeParam then Some(valTypeRef.name.asInstanceOf[TypeSymbol]) else None
-
-    ScalaFieldInfo(
-      index, 
-      valDef.name, 
-      fieldType, 
-      fieldAnnos,
-      fieldDefaultMethods.get(index),
-      originalTypeSymbol,
-      isNonValConstructorField
-      )
-
-
-inline def annoSymToString(quotes: Quotes)( terms: List[quotes.reflect.Term] ): Map[String,String] =
-  import quotes.reflect._
-  terms.collect {
-    case NamedArg(argName, Literal(BooleanConstant(argValue))) => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(ByteConstant(argValue)))    => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(ShortConstant(argValue)))   => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(CharConstant(argValue)))    => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(IntConstant(argValue)))     => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(LongConstant(argValue)))    => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(FloatConstant(argValue)))   => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(DoubleConstant(argValue)))  => (argName -> argValue.toString)
-    case NamedArg(argName, Literal(StringConstant(argValue)))  => (argName -> argValue)
-  }.toMap
