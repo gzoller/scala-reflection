@@ -21,7 +21,7 @@ object ReflectOnField:
       case _ =>
         val baseAnnos = dad.flatMap( _.fields.find(_.name == valDef.name) ).map(_.annotations).getOrElse(Map.empty[String,Map[String,String]])
         baseAnnos ++ valDef.symbol.annotations.map{ a =>
-          val quotes.reflect.Apply(_, params) = a: @unchecked
+          val Apply(_, params) = a: @unchecked
           val annoName = a.symbol.signature.resultSig
           (annoName, annoSymToString(quotes)(params))
         }.toMap

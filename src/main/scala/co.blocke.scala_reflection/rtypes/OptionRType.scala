@@ -27,10 +27,7 @@ case class ScalaOptionRType[R] (
   def selectLimit: Int = 1
 
   lazy val clazz: Class[_] = Class.forName(name)
-  lazy val optionParamType: RType[_] = _optionParamType match {
-    // case e: SelfRefRType => e.resolve
-    case e => e
-  }
+  lazy val optionParamType: RType[_] = _optionParamType
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

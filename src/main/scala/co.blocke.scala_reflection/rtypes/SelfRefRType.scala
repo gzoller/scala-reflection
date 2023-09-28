@@ -6,6 +6,5 @@ package rtypes
  *  type cache so that when the self-reference comes there's something in the cache to find.
  *  When one of these is encountered in the wild, just re-Reflect on the infoClass and you'll get the non-SelfRef (i.e. normal) RType
  */
-case class SelfRefRType[R](name: String) extends RType[R]:
-  val typedName = name.asInstanceOf[TypedName]
+case class SelfRefRType[R](name: String, typedName: TypedName) extends RType[R]:
   lazy val clazz: Class[_] = Class.forName(name)

@@ -57,7 +57,11 @@ object RType:
 
   def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
     import quotes.reflect.*
+    // println("::: of[]: "+TypeRepr.of[T])
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
+    // println("OK: "+rtype.pretty())
+    // println("-----")
+    // println(rtype)
     exprs.ExprMaster.makeExpr(rtype)
 
    
@@ -106,7 +110,7 @@ object RType:
         if className == Clazzes.ANY_CLASS then
           ReflectOnType(quotes)(aType, tName, resolveTypeSyms)  // Reflect on Any.  Could be Any, or an opaque type usage
         else
-          rtypeCache.put(tName, SelfRefRType(tName.toString))
+          rtypeCache.put(tName, SelfRefRType(className, tName))
           val reflectedRType = ReflectOnType(quotes)(aType, tName, resolveTypeSyms)
           rtypeCache.put(tName, reflectedRType)
           reflectedRType

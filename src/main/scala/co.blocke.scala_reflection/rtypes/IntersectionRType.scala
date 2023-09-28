@@ -14,13 +14,7 @@ case class IntersectionRType[R] (
 
     lazy val clazz: Class[_] = Clazzes.AnyClazz  // The only "class" And and Or types have is the useless Matchable class
 
-    lazy val leftType: RType[_] = _leftType match {
-      // case e: SelfRefRType => e.resolve
-      case e => e
-    }
-    lazy val rightType: RType[_] = _rightType match {
-      // case e: SelfRefRType => e.resolve
-      case e => e
-    } 
+    lazy val leftType: RType[_] = _leftType 
+    lazy val rightType: RType[_] = _rightType
 
     def _copy( left: RType[_], right: RType[_] ) = this.copy(_leftType = left, _rightType = right)

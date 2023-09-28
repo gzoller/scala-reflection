@@ -8,6 +8,6 @@ import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    val rt = RType.of[FoomNC]
+    val rt = RType.of[Drawer[Shape]]
     println(rt.pretty())
 

@@ -52,7 +52,7 @@ object Classes:
               ).asExprOf[FieldInfo]              
             )}
 
-        val nonConstructorFields: Expr[List[NonConstructorFieldInfo]] =
+        val nonConstructorFields: Expr[List[NonConstructorFieldInfo]] = 
             Expr.ofList{sc.nonConstructorFields.map( f => 
               val fieldtt = f.fieldType.toType(quotes)
               val fieldTypeExpr = stripType( ExprMaster.makeExpr(f.fieldType)(using q:Quotes)(using fieldtt) )

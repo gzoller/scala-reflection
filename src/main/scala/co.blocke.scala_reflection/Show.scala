@@ -193,6 +193,9 @@ object Show:
                         }
                         if !lastWasMultiLine then
                             buf.append("\n")
+                        if f.annotations.nonEmpty then
+                            buf.append(tabs(tabLevel+3))
+                            buf.append("annotations -> " + f.annotations.toString + "\n")
                         classesSeenBefore
                     }
                     val allClassesSeenUpToNow2 = if t.nonConstructorFields.nonEmpty then
@@ -213,6 +216,9 @@ object Show:
                             // }
                             if !lastWasMultiLine then
                                 buf.append("\n")
+                            if f.annotations.nonEmpty then
+                                buf.append(tabs(tabLevel+3))
+                                buf.append("annotations -> " + f.annotations.toString + "\n")
                             classesSeenBefore
                         }
                     else
@@ -232,6 +238,12 @@ object Show:
                         }
                     else
                         allClassesSeenUpToNow2
+
+                    if t.annotations.nonEmpty then
+                        buf.append(tabs(tabLevel+1))
+                        buf.append("annotations ->\n")
+                        buf.append(tabs(tabLevel+2))
+                        buf.append(t.annotations.toString+"\n")
                         
                     (buf, true, allClassesSeenUpToNow3)
 

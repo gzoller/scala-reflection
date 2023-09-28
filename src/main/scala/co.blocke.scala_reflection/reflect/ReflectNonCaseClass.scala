@@ -37,6 +37,7 @@ object ReflectNonCaseClass:
     constructorParams:     List[quotes.reflect.ValDef] | List[quotes.reflect.TypeDef],
     superClass:            Option[ClassRType[_]],
     fieldDefaultMethods:   Map[Int, (String,String)],
+    classAnnotations:      Map[String, Map[String,String]],
 
     // fields:                Array[FieldInfo],
     // tob:                   List[quotes.reflect.TypeRepr],
@@ -44,7 +45,6 @@ object ReflectNonCaseClass:
     // classDef:              quotes.reflect.ClassDef,
     // isAppliedType:         Boolean,
     // typeMembers:           Array[TypeMemberRType],
-    // annotations:           Map[String, Map[String,String]],
     // paths:                 Map[String, Map[String,List[Int]]],
     // mixins:                Array[String],
     // isValueClass:          Boolean
@@ -52,11 +52,6 @@ object ReflectNonCaseClass:
     import quotes.reflect.*
 
     /*
-    var index: Int = fields.length - 1
-
-    val fieldNames = fields.map(_.name)
-
-    val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
     val varDefDeclarations = classDef.body.collect{
         // We just want public var definitions here
         case s: ValDef if !s.symbol.flags.is(quotes.reflect.Flags.Private) 
@@ -88,8 +83,15 @@ object ReflectNonCaseClass:
     }
     */
 
+    /*
+        var index: Int = fields.length - 1
+    val fieldNames = fields.map(_.name)
+
+    */
+
     // Include inherited methods (var & def), including inherited!
     // Produces (val <field>, method <field>_=)
+    // val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
     val nonConstructorFields: List[NonConstructorFieldInfo] = symbol.methodMembers.filter(_.name.endsWith("_=")).map{ setter =>
       // Trying to get the setter... which could be a val (field) if declared is a var, or it could be a method 
       // in the case of user-written getter/setter... OR it could be defined in the superclass
@@ -107,16 +109,21 @@ object ReflectNonCaseClass:
     }.filterNot{ (getterSym, setterSym) => 
       getterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore") ||
         setterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore")
-    }.map{ case (getter, setter) =>
+    }.map{ case (getter, setter) =>   
+      // Pull out field annotations (either getter or setter can be annotated)
+      val varAnnos = (getter.annotations ++: setter.annotations).map{ a => 
+          val Apply(_, params) = a: @unchecked
+          (a.symbol.signature.resultSig, annoSymToString(quotes)(params))
+        }.toMap
       val ftypeRepr = setter.tree.asInstanceOf[DefDef].paramss.head.params.head.asInstanceOf[ValDef].tpt.tpe
       NonConstructorFieldInfo(
         getter.name,
         setter.name,
         getter.isValDef,
         RType.unwindType(quotes)(ftypeRepr),
-        Map.empty[String,Map[String,String]]
+        varAnnos
       )
-    }
+    }.sortBy(_.getterLabel)  // sorted for consistent ordering for testing ;-)
 
     // ensure all constructur fields are vals
     val constructorFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))
@@ -134,7 +141,7 @@ object ReflectNonCaseClass:
       Nil,
       Nil,
       constructorFields,
-      Map.empty[String, Map[String,String]],
+      classAnnotations,
       Nil,
       false,
       false,
@@ -163,20 +170,6 @@ case class ScalaClassRType[R] (
     */
 
     /*
-    val knownAnnos = baseAnnos ++ getterSetter.map{ (fGet, fSet) =>
-      val both = fGet.annotations ++ fSet.annotations
-      val annoMap = both.map{ a => 
-        val quotes.reflect.Apply(_, params) = a: @unchecked
-        val annoName = a.symbol.signature.resultSig
-        (annoName, annoSymToString(quotes)(params))
-      }.toMap
-      val allMap = 
-        annoMap ++ varAnnos.getOrElse(fGet.name, Map.empty[String,Map[String,String]]) match {
-          case m if m.isEmpty => baseAnnos.getOrElse(fGet.name, Map.empty[String,Map[String,String]])
-          case m => m
-        }
-      (fGet.name -> allMap)
-    }.toMap
 
     val typeSymbols = symbol.primaryConstructor.paramSymss match {
       case List(paramSyms: List[Symbol], _) => paramSyms.map(_.name)

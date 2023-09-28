@@ -272,13 +272,13 @@ object ReflectOnClass:
             constructorParams,
             dad,
             fieldDefaultMethods,
+            classAnnos,
 
             // tob,
             // typeSymbols.toArray,
             // classDef,
             // typeSymbols.nonEmpty,
             // typeMembers.toArray,
-            // classAnnos,
             // TypeLoom.descendParents(quotes)( typeRef ),
             // classDef.parents.map(_.symbol.fullName).toArray,
             // isValueClass

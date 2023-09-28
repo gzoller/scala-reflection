@@ -50,9 +50,16 @@ case class Employee2(eId: IdUser, age: Int)
 @Ignore
 case class SkipMe(a: Int, b: String)
 
+// Self-referencing
+case class Shape(id: Int, parent: Option[Shape])
+case class Person2(name: String, age: Int, boss: Person2)
+case class Drawer[T]( id: Int, nextInChain: Option[Drawer[T]], thing: T)
+
+//-------------------<< Non-Case Classes ---------------
+
 // Non-Case Scala class handling
-class FoomNC(val a: Int, val b: String, c: Option[FoomNC]) {
-  @FieldAnno(idx=5) var blah: Boolean = false
+class FoomNC(val a: Int, val b: String, @FieldAnno(idx=0) c: Option[FoomNC]) {
+  @FieldAnno(idx=5) @DBKey var blah: Boolean = false
   @Ignore var hey: Int = 2
   private var cantSee: Boolean = true
   val nope: Float = 1.2
@@ -61,3 +68,8 @@ class FoomNC(val a: Int, val b: String, c: Option[FoomNC]) {
   def age = _age
   @FieldAnno(idx=2) def age_=(g: Int): Unit = _age = g
 }
+
+// Object/field Annotations
+@ClassAnno(name="Foom")
+case class WithAnnotation(@FieldAnno(idx=5) id: String)
+

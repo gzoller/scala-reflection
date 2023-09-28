@@ -124,6 +124,35 @@ class Basic extends munit.FunSuite:
     assertEquals( result.pretty().stripLineEnd, """unknown type: co.blocke.scala_reflection.models.SkipMe""")
   }
 
+  test("Self-referencing types (non-parameterized") {
+    val result = RType.of[Shape]
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Shape:
+        |   fields ->
+        |      id: Int
+        |      parent: Option of co.blocke.scala_reflection.models.Shape (recursive self-reference)
+        |""".stripMargin)
+    val result2 = RType.of[Person2]
+    assertEquals( result2.pretty(), """co.blocke.scala_reflection.models.Person2:
+        |   fields ->
+        |      name: String
+        |      age: Int
+        |      boss: co.blocke.scala_reflection.models.Person2 (recursive self-reference)
+        |""".stripMargin)
+  }
+
+  test("Self-referencing types (parameterized") {
+    val result = RType.of[Drawer[Shape]]
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.Drawer[Shape]:
+        |   fields ->
+        |      id: Int
+        |      nextInChain: Option of co.blocke.scala_reflection.models.Drawer (recursive self-reference)
+        |      thing: [T] co.blocke.scala_reflection.models.Shape:
+        |         fields ->
+        |            id: Int
+        |            parent: Option of co.blocke.scala_reflection.models.Shape (recursive self-reference)
+        |""".stripMargin)
+  }
+
   test("Simple non-case class") {
     val result = RType.of[FoomNC]
     assertEquals( result.pretty(), """co.blocke.scala_reflection.models.FoomNC:
@@ -131,8 +160,22 @@ class Basic extends munit.FunSuite:
         |      a: Int
         |      b: String
         |      c (set-only): Option of co.blocke.scala_reflection.models.FoomNC (recursive self-reference)
+        |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 0))
         |   non-constructor fields (non-case class) ->
         |      age: Int
+        |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 2))
         |      blah: Boolean
+        |         annotations -> Map(co.blocke.reflect.DBKey -> Map(), co.blocke.reflect.FieldAnno -> Map(idx -> 5))
+        |""".stripMargin)
+  }
+
+  test("capture field and class annotations") {
+    val result = RType.of[WithAnnotation] 
+    assertEquals( result.pretty(), """co.blocke.scala_reflection.models.WithAnnotation:
+        |   fields ->
+        |      id: String
+        |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 5))
+        |   annotations ->
+        |      Map(co.blocke.reflect.ClassAnno -> Map(name -> Foom))
         |""".stripMargin)
   }
