@@ -38,6 +38,14 @@ case object Chocolate extends Flavor
 case object Bourbon extends Flavor
 case class FlavorHolder(f: Flavor)
 
+// Sealed abstract class
+sealed abstract class Animal(val animalType: String) {
+  val name: String
+}
+class Dog(val name: String) extends Animal("Dog")
+class Cat(val name: String) extends Animal("Cat")
+case class PetOwner(owner: String, pet: Animal)
+
 // Opaque type aliases
 opaque type EMP_ID = Int
 case class Employee(eId: EMP_ID, age: Int)

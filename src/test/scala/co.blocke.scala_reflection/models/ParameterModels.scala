@@ -73,6 +73,7 @@ case class BaseClass[X, Y, Z]( a: Level1[X,Z], b: Y ) extends Base[Level1[X,Z],Y
 trait MapIt[X,Y,S,T]{ val x: Map[X,Option[Y]]; val s: Array[S]; val t: Array[List[T]] }
 case class MapItC[A,B,W,U]( x: Map[A,Option[B]], s: Array[W], t: Array[List[U]]) extends MapIt[A,B,W,U]
 
+// Mix case and non-case classes
 case class CClass[X](x:List[X])
 class PClass[Y](val y:List[Y])
 case class CClassLevel2[Z](z: Z)

@@ -8,6 +8,5 @@ import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    val rt = RType.of[Drawer[Shape]]
-    println(rt.pretty())
-
+    val rt = RType.of[Foo[Boolean]]
+    println(rt.pretty)

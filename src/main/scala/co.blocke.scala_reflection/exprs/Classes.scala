@@ -68,6 +68,12 @@ object Classes:
               ).asExprOf[NonConstructorFieldInfo]              
             )}
 
+        val sealedChildren: Expr[List[RType[_]]] = 
+          Expr.ofList{sc.sealedChildren.map( c =>
+            val childtt = c.toType(quotes).asInstanceOf[Type[c.T]]
+            stripType( ExprMaster.makeExpr(c)(using q:Quotes)(using childtt) )
+            )}
+
         //-------------------------------
         // Recipe:  How to instantiate a parameterized class by applying type first like: case class Foo[T](arg: T)  We apply T to an actual type, then supply the args.
         //-------------------------------
@@ -88,8 +94,10 @@ object Classes:
                 Expr(sc.isAppliedType).asTerm,
                 Expr(sc.isValueClass).asTerm,
                 Expr(sc.isCaseClass).asTerm,
+                Expr(sc.isAbstractClass).asTerm,
                 Expr(sc.typeParamPaths).asTerm,
-                nonConstructorFields.asTerm
+                nonConstructorFields.asTerm,
+                sealedChildren.asTerm
             )
         ).asExprOf[RType[T]]
     }

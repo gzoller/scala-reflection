@@ -22,7 +22,7 @@ trait RType[R]:
   override def equals(obj: Any) = this.hashCode == obj.hashCode
 
   def toType(quotes: Quotes): quoted.Type[T]  = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[Type[T]]
-  def pretty(): String = Show.show(this)
+  def pretty: String = Show.show(this)
 
 
 /** This RType mixin needed because all AppliedTypes don't have parameters.  
@@ -59,7 +59,7 @@ object RType:
     import quotes.reflect.*
     // println("::: of[]: "+TypeRepr.of[T])
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
-    // println("OK: "+rtype.pretty())
+    // println("OK: "+rtype.pretty)
     // println("-----")
     // println(rtype)
     exprs.ExprMaster.makeExpr(rtype)

@@ -171,6 +171,13 @@ object Show:
                         buf.append( t.typeParamSymbols.map(_.toString).mkString("[",",","]"))
                     if t.isValueClass then
                         buf.append(" (value class)")
+                    if t.isAbstractClass || t.sealedChildren.nonEmpty then
+                        buf.append(" (")
+                        if t.sealedChildren.nonEmpty then
+                            buf.append("sealed ")
+                        if t.isAbstractClass then
+                            buf.append("abstract ")
+                        buf.append("class)")
                     buf.append(":\n")
                     buf.append(tabs(tabLevel+1))
                     buf.append("fields ->\n")
@@ -244,8 +251,21 @@ object Show:
                         buf.append("annotations ->\n")
                         buf.append(tabs(tabLevel+2))
                         buf.append(t.annotations.toString+"\n")
-                        
-                    (buf, true, allClassesSeenUpToNow3)
+
+                    val allClassesSeenUpToNow4 = if t.isAbstractClass && t.sealedChildren.nonEmpty then
+                        buf.append(tabs(tabLevel+1))
+                        buf.append("children ->\n")
+                        t.sealedChildren.foldLeft(allClassesSeenUpToNow3){ (classesSeen, f) =>
+                            buf.append(tabs(tabLevel+2))
+                            val (_, lastWasMultiLine, classesSeenBefore) = _show(f, buf, tabLevel+2, classesSeen)
+                            if !lastWasMultiLine then
+                                buf.append("\n")
+                            classesSeenBefore
+                            }
+                    else
+                        allClassesSeenUpToNow3
+
+                    (buf, true, allClassesSeenUpToNow4)
 
 
             case t: TraitRType[_] =>

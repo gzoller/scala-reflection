@@ -55,28 +55,35 @@ object ReflectOnClass:
       //===  Class Reflection begins...
       //===
 
+      val isAbstract = symbol.flags.is(quotes.reflect.Flags.Abstract)
+
+      // sealed children, if any
+      val isSealed = symbol.flags.is(quotes.reflect.Flags.Sealed)
+      val sealedChildrenRTypes = if isSealed then
+        symbol.children.map{ c =>
+          c.tree match {
+            case vd: ValDef =>
+              RType.unwindType(quotes)(vd.tpt.tpe)
+              ObjectRType(vd.symbol.fullName)  // sealed object implementation
+            case _ =>   // sealed case class implementation
+              val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
+              RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
+          }
+        }
+        else Nil
+
       // === Scala 2 Classes ===
       if symbol.flags.is(quotes.reflect.Flags.Scala2x) then
         Scala2RType(symbol.fullName)
 
       else if symbol.flags.is(quotes.reflect.Flags.Trait) then
 
-        if symbol.flags.is(quotes.reflect.Flags.Sealed) then
+        if isSealed then
 
           //===
           //===  Sealed Traits
           //===
-          val kidsRTypes = symbol.children.map{ c =>
-            c.tree match {
-              case vd: ValDef =>
-                RType.unwindType(quotes)(vd.tpt.tpe)
-                ObjectRType(vd.symbol.fullName)  // sealed object implementation
-              case _ =>   // sealed case class implementation
-                val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[_] = c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
-                RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
-            }
-          }
-          SealedTraitRType(className, kidsRTypes)
+          SealedTraitRType(className, sealedChildrenRTypes)
         else
 
           //===
@@ -209,6 +216,12 @@ object ReflectOnClass:
             )
         }
 
+        // compute type param paths for parameterized class
+        val typeParamPaths = if typeSymbols.isEmpty then
+          Map.empty[String,List[List[Int]]]
+        else 
+          TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
+
         val constructorParams =  // Annoying "ism"... different param order dep on whether class is parameterized or not!
           if classDef.constructor.paramss.tail == Nil then
             classDef.constructor.paramss.head.params
@@ -222,28 +235,15 @@ object ReflectOnClass:
           //===          
           val caseFields = constructorParams.zipWithIndex.map{ (definition, idx) =>
             val valDef = definition.asInstanceOf[ValDef]
-            val fieldRType = scala.util.Try{
-              if resolveTypeSyms then
-                RType.unwindType(quotes)(typeRef.memberType(symbol.caseFields(idx))) match {
-                  case NONE  => TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-                  case other => other
-                }
-              else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then
-                TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-              else
-                RType.unwindType(quotes)(valDef.tpt.tpe.asInstanceOf[TypeRef], false)
-            }.toOption.getOrElse{
-              TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-            }
+            val fieldRType = unwindFieldRTypeWithTypeSubstitution(quotes)(
+              valDef,
+              symbol.caseFields(idx),
+              resolveTypeSyms,
+              typeRef
+            )
             val fieldtt = valDef.tpt.tpe.asType.asInstanceOf[Type[fieldRType.T]]
             ReflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)
           }
-
-          // compute type param paths for parameterized class
-          val typeParamPaths = if typeSymbols.isEmpty then
-            Map.empty[String,List[List[Int]]]
-          else 
-            TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
 
           ScalaClassRType(
             className,
@@ -257,33 +257,110 @@ object ReflectOnClass:
             typeSymbols.nonEmpty,
             isValueClass,
             true,
-            typeParamPaths
+            isAbstract,
+            typeParamPaths,
+            Nil,
+            sealedChildrenRTypes
             )
 
         else
 
           //===
           //===  Non-Case Classes
-          //===          
-          ReflectNonCaseClass.apply(quotes)(
+          //===
+
+          // Include inherited methods (var & def), including inherited!
+          // Produces (val <field>, method <field>_=)
+          // val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
+          val nonConstructorFields: List[NonConstructorFieldInfo] = symbol.methodMembers.filter(_.name.endsWith("_=")).map{ setter =>
+            // Trying to get the setter... which could be a val (field) if declared is a var, or it could be a method 
+            // in the case of user-written getter/setter... OR it could be defined in the superclass
+            symbol.fieldMember(setter.name.dropRight(2)) match {
+              case dotty.tools.dotc.core.Symbols.NoSymbol => 
+                symbol.methodMember(setter.name.dropRight(2)) match {
+                  case Nil => 
+                    throw new ReflectException(s"Can't find field getter ${setter.name.dropRight(2)} in class ${symbol.fullName} or its superclass(es).")
+                  case getter => 
+                    (getter.head, setter)
+                }
+              case getter: Symbol => 
+                (getter, setter)
+            }
+          }.filterNot{ (getterSym, setterSym) => 
+            getterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore") ||
+              setterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore")
+          }.map{ case (getter, setter) =>   
+            // Pull out field annotations (either getter or setter can be annotated)
+            val varAnnos = (getter.annotations ++: setter.annotations).map{ a => 
+                val Apply(_, params) = a: @unchecked
+                (a.symbol.signature.resultSig, annoSymToString(quotes)(params))
+              }.toMap
+            val ftypeRepr = setter.tree.asInstanceOf[DefDef].paramss.head.params.head.asInstanceOf[ValDef].tpt.tpe
+            NonConstructorFieldInfo(
+              getter.name,
+              setter.name,
+              getter.isValDef,
+              RType.unwindType(quotes)(ftypeRepr),
+              varAnnos
+            )
+          }.sortBy(_.getterLabel)  // sorted for consistent ordering for testing ;-)
+
+          // ensure all constructur fields are vals
+          val constructorFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))
+            .zipWithIndex
+            .map{ (oneField, idx) =>
+              val valDef = constructorParams(idx).asInstanceOf[ValDef]
+              val fieldType = ReflectOnClass.unwindFieldRTypeWithTypeSubstitution(quotes)(
+                valDef,
+                oneField,
+                resolveTypeSyms,
+                typeRef
+              )
+              val fieldtt = fieldType.toType(quotes)
+              ReflectOnField(quotes)(fieldType, valDef, idx, dad, fieldDefaultMethods, oneField.flags.is(Flags.PrivateLocal))(using fieldtt)
+            }
+
+          ScalaClassRType(
             className,
             typedName,
-            symbol,
-            constructorParams,
-            dad,
-            fieldDefaultMethods,
+            typeSymbols,
+            typeSymbolValues,
+            typeMembers,
+            constructorFields,
             classAnnos,
-
-            // tob,
-            // typeSymbols.toArray,
-            // classDef,
-            // typeSymbols.nonEmpty,
-            // typeMembers.toArray,
-            // TypeLoom.descendParents(quotes)( typeRef ),
-            // classDef.parents.map(_.symbol.fullName).toArray,
-            // isValueClass
-            )
+            classDef.parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName),
+            typeSymbols.nonEmpty,
+            isValueClass,
+            false,
+            isAbstract,
+            typeParamPaths,
+            nonConstructorFields,
+            sealedChildrenRTypes
+          )
 
       // === Other kinds of classes (non-case Scala) ===
       else
         UnknownRType(symbol.fullName)
+
+
+  // Unwind RType for given constructor field--and do type subsititution if available (ie T->String)
+  def unwindFieldRTypeWithTypeSubstitution(quotes: Quotes)(
+    valDef: quotes.reflect.ValDef, 
+    fieldSymbol: quotes.reflect.Symbol,
+    resolveTypeSyms: Boolean,
+    typeRef: quotes.reflect.TypeRef): RType[_] = 
+      import quotes.reflect.*
+
+      scala.util.Try{
+        if resolveTypeSyms then
+          RType.unwindType(quotes)(typeRef.memberType(fieldSymbol)) match {
+            case NONE  => TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
+            case other => other
+          }
+        else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then
+          TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
+        else
+          RType.unwindType(quotes)(valDef.tpt.tpe.asInstanceOf[TypeRef], false)
+      }.toOption.getOrElse{
+        TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
+      }
