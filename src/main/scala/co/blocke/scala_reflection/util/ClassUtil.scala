@@ -1,4 +1,5 @@
-package co.blocke.scala_reflection.util
+package co.blocke.scala_reflection
+package util
 
 object ClassUtil:
   /**
@@ -12,10 +13,8 @@ object ClassUtil:
     } else {
       val prefix = name.substring(0, splitPos)
       val suffix = name.substring(splitPos + 1)
-      val s = new StringBuilder(name.length)
+      new StringBuilder(name.length)
         .append(prefix)
         .append(suffix.replace(".", "$"))
         .toString()
-      println(">>>>> adjusted " + s + " - input " + name)
-      s
     }
