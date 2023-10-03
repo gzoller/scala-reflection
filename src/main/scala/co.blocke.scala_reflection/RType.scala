@@ -101,7 +101,7 @@ object RType:
       case AndType(_,_) => Clazzes.INTERSECTION_CLASS
       case OrType(_,_)  => Clazzes.UNION_CLASS
       case _: dotty.tools.dotc.core.Types.WildcardType => "scala.Any"
-      case normal       => normal.classSymbol.get.fullName
+      case normal       =>  normal.classSymbol.get.fullName
     }
 
     this.synchronized {
@@ -117,16 +117,22 @@ object RType:
       }).asInstanceOf[RType[T]]
     }
 
+  // var cnt = 0
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.
   // This name is used for RType.equals so caching works.
   def typeName(quotes: Quotes)(aType: quotes.reflect.TypeRepr): TypedName =
     import quotes.reflect.*
 
     aType.asInstanceOf[TypeRef] match {
+      case AppliedType(t,tob) =>
+        t match {
+          case AppliedType(t2,tob2) =>
+            typeName(quotes)(t2).toString + tob2.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
+          case _ =>
+            typeName(quotes)(t).toString + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
+        }
       case sym if aType.typeSymbol.flags.is(Flags.Param) => 
         sym.name
-      case AppliedType(t,tob) =>
-        typeName(quotes)(t).toString + tob.map( oneTob => typeName(quotes)(oneTob.asInstanceOf[TypeRef])).mkString("[",",","]")
       case AndType(left, right) => 
         Clazzes.INTERSECTION_CLASS + "[" + typeName(quotes)(left.asInstanceOf[TypeRef]) + "," + typeName(quotes)(right.asInstanceOf[TypeRef]) + "]"
       case OrType(left, right) => 

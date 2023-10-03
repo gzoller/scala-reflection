@@ -4,10 +4,10 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.1.4/jar)
 
-Scala 2 provided a robust runtime reflection capability that was removed for Scala 3.  Runtime reflection is pretty useful, and Scala 3's macro-based compile-time reflection is, in our opinion, harder to use than the old reflection facility, so this library seeks to bring back easy-to-use runtime reflection.  The scala-reflection library does the hard work of navigating Scala 3 macro reflection and provides simple RType abstractions you can navigate at runtime to see what's inside your classes.
+Scala 2 provided a robust runtime reflection capability that was removed for Scala 3.  Runtime reflection turns out to be quite useful, and is sorely missed.  Scala 3's macro-based compile-time reflection is also more complex to use than the old reflection facility. The scala-reflection library does the hard work of navigating Scala 3 macro reflection and provides simple RType abstractions you can navigate at runtime to see what's inside your classes.
 
 ## Configuration
-In your build.sbt file be sure you've set co.blocke's releases repo in bintray as a resolver and add the current version of the library to libraryDependences:
+In your build.sbt file add the current version of the library to libraryDependences:
 
 ```scala
 libraryDependencies += "co.blocke" %% "scala-reflection" % CURRENT_VERSION
@@ -23,21 +23,20 @@ package com.me.models
 case class Thing[T](a: String, b: List[T])
 ```
 ```scala
-package com.me.controller // <-- different package from model/target classes
+package com.me.controller
 
 import co.blocke.scala_reflection.*
 import com.me.models.*
 
 // >> Compile-time reflection (using square brackets) for types we know at runtime
-val macroRType: RType[_] = RType.of[Thing[Int]] // returns ScalaCaseClassRType
+val macroRType: RType[_] = RType.of[Thing[Int]] // returns ScalaClassRType
 
 // >> Run-time reflection using parentheses for type
-val className: String = ...  // get needed class from somewhere, REST call, etc.
-val runtimeRType: RType[_] = RType.of(Class.forName(className))
+val runtimeRType: RType[_] = RType.of(className)
 ```
-The second example is for when you don't know the actual type of the class to reflect on until runtime.  The only requirement is that the runtime class, given by className, must be somewhere on your JVM  class path, so that the inspector can find it. 
+The second example is when you don't know the actual type of the class to reflect on until runtime.  For example, perhaps the class name is dynamic, passed at runtime.  The only requirement is that the runtime class, given by className, must be somewhere on your JVM class path so that the inspector can find it. 
 
->If, for any reason, you wish NOT to have scala-reflection examine a class, you may annotate that class with @Skip_Reflection and scala-reflection will return UnknownRType.
+>If, for any reason, you wish NOT to have scala-reflection examine a class, you may annotate that class with @Ignore and scala-reflection will return UnknownRType.
 
 
 ## Learning to Drive with Macros
@@ -51,9 +50,9 @@ case  class  Foo(name: String)
 val  fooRType = RType.of[Foo]
 ```
 
-In Scala 2 (non-macro runtime reflection) if you update Foo in File1.scala you would naturally expect sbt to re-compile this file, and anything else necessary for your changes to be visible wherever used.  sbt does this rather well, all is well, with no real thought or concern on your part. 
+In Scala 2 (non-macro runtime reflection) if you update Foo in File1.scala you would naturally expect sbt to re-compile this file, and anything else necessary for your changes to be visible wherever used.  sbt does this rather well with no real thought or concern on your part. 
 
-That's **not** necessarily what happens with macros! Remember the macro code is expanded and run at compile-time. In a macro world, if you change Foo in File1.scala and recompile it (alone), you will get a spectacular and exotic exception that will mean very little to you.  What happened?!  The macro, with your old/original Foo definition in it, is still expanded in File2.scala, and there's no mechanism to track this dependency, so RType.of[Foo] will be trying to apply your old Foo against your new Foo, and BOOM!
+That's **not** necessarily what happens with macros! Remember the macro code is expanded and run at compile-time. In a macro world, if you change Foo in File1.scala and recompile it (alone), you will get a spectacular and exotic exception that will mean very little to you.  What happened?!  The macro, with your old/original Foo definition in it, is still expanded in File2.scala, and there's no mechanism to track this dependency, so RType.of[Foo] will be trying to apply your old expanded Foo macro code against your newly modified Foo class, and BOOM!
 
 Unfortunately there's not (that I have found) a good fix to make sbt aware of this dependency, so you need to ensure both these files are recompiled if Foo changes.  You'll be doing more re-compiling with macros.  It's a macro issue, not a scala-reflection issue.  Since macros are the only access to reflected class information in Scala 3, it's an "ism" we'll all have to live with, until such time as someone invents a way to track macro dependencies in sbt.
 
@@ -78,13 +77,13 @@ When serializing pet, ScalaJack would generate JSON with a type hint like this:
 {"_hint":"com.mystuff.Dog","name":"Spot","numLegs":4,"special":true}
 ```
 
-The hint tells ScalaJack which specific Pet class to materialize upon reading this JSON (we're expecting some Pet). So... you'll see here we just have a class name in the hint. How do we know the type of T?  If we do ```RType.of(Class.forName("com.mystuff.Dog"))``` we get some ScalaCaseClassRType with 'T' as the type of field special. How will we know the type of T?   We're going to have to tell it:
+The hint tells ScalaJack which specific Pet class to materialize upon reading this JSON (we're expecting some Pet). So... you'll see here we just have a class name in the hint. How do we know the type of T?  If we do ```RType.of(Class.forName("com.mystuff.Dog"))``` we get some ScalaClassRType with 'T' as the type of field special. How will we know the type of T?   We're going to have to tell it:
 
 ```scala
 scalajack.read[Pet[Boolean]](js)
 ```
 
-Pet[Boolean] is a parameterized trait. We get the concrete class value "com.mystuff.Dog" from the JSON. We need to resolve Dog ***in terms of*** Pet[Boolean] to find the correct type of 'special'.  (In Scala terminology, we're going to apply the Boolean type to T in the target class Dog.)
+Pet[Boolean] is a parameterized trait. We get the class "com.mystuff.Dog" from the JSON, but we will need to resolve Dog ***in terms of*** Pet[Boolean] to find the correct type of 'special'.  (In Scala terminology, we're going to apply the Boolean type to T in the target class Dog.)
 
 We accomplish this feat in scala-reflection like this:
 
@@ -92,7 +91,7 @@ We accomplish this feat in scala-reflection like this:
 val  resolved = RType.inTermsOf[Pet[Boolean]](Class.forName("com.mystuff.Dog"))
 ```
 
-This will return a ScalaCaseClassRType with field 'special' correctly typed to Boolean.
+This will return a ScalaClassRType with field 'special' correctly typed to Boolean.
 
 
 ## Scala.js Support (Experimental)
@@ -112,7 +111,7 @@ One of the biggest changes for scala-reflection 2.0+ is that all the old "Info" 
 
 > **NOTE:** If you get strange "cyclic dependency errors" this might mean your target class and your call to RType.of[] are in the same compilation unit (same file).  Scala 3 macro reflection doesn't like this.  Simple fix is to not define any classes you reflection within the same file as wherever you call RType.of[].
 
-Pre-2.x versions of scala-reflection provided a compiler plug-in.  Adding a plug into the compiler understandably gave some users pause, and since scala-reflection caches reflected information, keeping the added complexity of the plugin wasn't warranted.
+Pre-2.x versions of scala-reflection provided a compiler plug-in.  Adding a plug into the compiler understandably gave some users pause, and since scala-reflection caches reflected information, keeping the added complexity of the plugin wasn't warranted, and it has been removed in this version.
 
 scala-reflection 2.x now supports parameters in union or intersection types (eg. ```Foo[R,S](a: R|S)```), which was an unsupported feature in 1.x versions.
 
@@ -132,20 +131,21 @@ At this point the library can reflect on quite a lot of things in the Scala ecos
 * Option and Java Optional
 * Collections, incl. several Java Collections
 * Tuples
+* Match/dependent types
 
 See unit tests for detailed examples of usage.
 
 
 ## Acknowledgements
 
-I wish to thank three people who have helped make this library possible, with their patient explanations and help on gitter. Learning Scala 3 reflection internals was certainly a learning curve for me and these guys really helped me through it:
+I wish to thank three people who have helped make this library possible, with their patient explanations and help on forums. Learning Scala 3 reflection internals was certainly a learning curve for me and these guys really helped me through it:
 
 ```
 Guillaume Martres (@smarter)
 Paolo G. Giarrusso (@Blaisorblade)
 Nicolas Stucki (@nicolasstucki)
 ```
-Thanks also goes to pjfanning for his contributions to this project.
+Thanks also goes to pjfanning for multiple contributions to this project.
 
 ## Release Notes:
 * 2.0.0 - All-new refactor

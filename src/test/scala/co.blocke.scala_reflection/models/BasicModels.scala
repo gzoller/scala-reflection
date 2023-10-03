@@ -23,6 +23,14 @@ case class Prim(
     j: Any
 )
 
+// Match / dependent types
+type Elem[X] = X match {
+  case String => Char
+  case Array[t] => t
+  case Iterable[t] => t
+}
+case class Definitely( id: Elem[List[Int]], stuff: Elem[String] )
+
 case class SelfReferencing( a: String, b: SelfReferencing, c: Int, d: Option[SelfReferencing])
 
 // Sealed trait w/case classes and objects

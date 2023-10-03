@@ -332,7 +332,7 @@ class Parameters extends munit.FunSuite:
       |            x: List of: co.blocke.scala_reflection.models.CClassLevel2[Int]:
       |               fields ->
       |                  z: [Z] Int
-      |      u: co.blocke.scala_reflection.models.PClass:
+      |      u: co.blocke.scala_reflection.models.PClass[Short]:
       |         fields ->
       |            y: List of: Short
       |""".stripMargin)
@@ -345,7 +345,7 @@ class Parameters extends munit.FunSuite:
       |      t: co.blocke.scala_reflection.models.CClass[Int]:
       |         fields ->
       |            x: List of: Int
-      |      u: co.blocke.scala_reflection.models.PClass:
+      |      u: co.blocke.scala_reflection.models.PClass[Short]:
       |         fields ->
       |            y: List of: Short
       |""".stripMargin)
@@ -354,11 +354,22 @@ class Parameters extends munit.FunSuite:
   test("InTermsOf deep type substitution") {
     val result = RType.inTermsOf[Basis[List[Option[Int|Boolean]]]](ScalaClassRType("co.blocke.scala_reflection.models.Thingy2"))
     assertEquals( result.pretty, """co.blocke.scala_reflection.models.Thingy2[List[Option[Int | Boolean]]]:
-    |   fields ->
-    |      a: Int
-    |      b: String
-    |      c: [T] List of: Option of Union of:
-    |         left--Int
-    |         right--Boolean
-    |""".stripMargin)
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of: Option of Union of:
+      |         left--Int
+      |         right--Boolean
+      |""".stripMargin)
+  }
+
+  test("Parameterized class defined inside an object") {
+    val result = RType.of[Outside.Blah[Char]]
+    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Outside$Blah[Char]:
+      |   fields ->
+      |      a: co.blocke.scala_reflection.models.Outside$PersonZ[Char]:
+      |         fields ->
+      |            name: String
+      |            thing: [Z] Char
+      |""".stripMargin)
   }

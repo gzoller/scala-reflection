@@ -8,5 +8,7 @@ import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    val rt = RType.of[Foo[Boolean]]
+    val rt = RType.of[ParamChild[Boolean]]
     println(rt.pretty)
+
+    println("Done.")

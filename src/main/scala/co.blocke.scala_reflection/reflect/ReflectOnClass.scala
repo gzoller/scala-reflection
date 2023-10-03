@@ -157,14 +157,19 @@ object ReflectOnClass:
       else if symbol.flags.is(quotes.reflect.Flags.Enum) then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
         ScalaEnumRType(symbol.fullName, typeRef.classSymbol.get.children.map(_.name))
 
-          /*
       // === Java Class ===
       // User-written Java classes will have the source file.  Java library files will have <no file> for source
       else if symbol.flags.is(Flags.JavaDefined) then
-        // Reflecting Java classes requires the materialized Class, which may be available (e.g. Java collections) or not (e.g. user-written class).
-        // So for now just burp forth a proxy and we'll resolve the details at runtime.
-        JavaClassInfo(symbol.fullName, symbol.fullName, typeSymbols.toArray, appliedTob.map( at => RType.unwindType(quotes)(at.asInstanceOf[TypeRef])).toArray )
-        */
+        println("IS JAVA! "+symbol.fullName)
+        val nonConstructorFields: List[NonConstructorFieldInfo] = ReflectOnField.javaFields(quotes)(symbol)
+        JavaClassRType(
+          symbol.fullName, 
+          nonConstructorFields,
+          typeSymbols, 
+          typeSymbolValues, 
+          classAnnos,
+          symbol.tree.asInstanceOf[ClassDef].parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName)
+          )
 
       //===
       //===  Scala 3 Classes
@@ -193,7 +198,7 @@ object ReflectOnClass:
           }.toMap
         }
 
-        // All this mucking around in the constructor.... why not just get the case fields from the symbol?
+          // All this mucking around in the constructor.... why not just get the case fields from the symbol?
         // Because symbol's case fields lose the annotations!  Pulling from contstructor ensures they are retained.
         val tob = typeRef match {
           case AppliedType(t,tob) => tob
@@ -222,6 +227,7 @@ object ReflectOnClass:
         else 
           TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
 
+        // println(className+"  "+classDef.constructor.paramss)
         val constructorParams =  // Annoying "ism"... different param order dep on whether class is parameterized or not!
           if classDef.constructor.paramss.tail == Nil then
             classDef.constructor.paramss.head.params
@@ -272,38 +278,7 @@ object ReflectOnClass:
           // Include inherited methods (var & def), including inherited!
           // Produces (val <field>, method <field>_=)
           // val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
-          val nonConstructorFields: List[NonConstructorFieldInfo] = symbol.methodMembers.filter(_.name.endsWith("_=")).map{ setter =>
-            // Trying to get the setter... which could be a val (field) if declared is a var, or it could be a method 
-            // in the case of user-written getter/setter... OR it could be defined in the superclass
-            symbol.fieldMember(setter.name.dropRight(2)) match {
-              case dotty.tools.dotc.core.Symbols.NoSymbol => 
-                symbol.methodMember(setter.name.dropRight(2)) match {
-                  case Nil => 
-                    throw new ReflectException(s"Can't find field getter ${setter.name.dropRight(2)} in class ${symbol.fullName} or its superclass(es).")
-                  case getter => 
-                    (getter.head, setter)
-                }
-              case getter: Symbol => 
-                (getter, setter)
-            }
-          }.filterNot{ (getterSym, setterSym) => 
-            getterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore") ||
-              setterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore")
-          }.map{ case (getter, setter) =>   
-            // Pull out field annotations (either getter or setter can be annotated)
-            val varAnnos = (getter.annotations ++: setter.annotations).map{ a => 
-                val Apply(_, params) = a: @unchecked
-                (a.symbol.signature.resultSig, annoSymToString(quotes)(params))
-              }.toMap
-            val ftypeRepr = setter.tree.asInstanceOf[DefDef].paramss.head.params.head.asInstanceOf[ValDef].tpt.tpe
-            NonConstructorFieldInfo(
-              getter.name,
-              setter.name,
-              getter.isValDef,
-              RType.unwindType(quotes)(ftypeRepr),
-              varAnnos
-            )
-          }.sortBy(_.getterLabel)  // sorted for consistent ordering for testing ;-)
+          val nonConstructorFields: List[NonConstructorFieldInfo] = ReflectOnField.nonCaseScalaField(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
 
           // ensure all constructur fields are vals
           val constructorFields = symbol.declaredFields.filter( _.flags.is(Flags.ParamAccessor))

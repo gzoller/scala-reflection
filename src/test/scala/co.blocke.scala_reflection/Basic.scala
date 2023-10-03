@@ -198,3 +198,19 @@ class Basic extends munit.FunSuite:
         |                  name: String
         |""".stripMargin)
   }
+
+  test("match / dependent types") {
+    val result = RType.of[Definitely]
+    assertEquals(result.pretty, """co.blocke.scala_reflection.models.Definitely:
+        |   fields ->
+        |      id: Int
+        |      stuff: Char
+        |""".stripMargin)
+  }
+
+  test("Ensure caching (equals) works") {
+    val r0 = RType.of[Employee]
+    val r1 = RType.of[Employee]
+    assert(r0 == r1)
+    assert(r0.equals(r1))
+  }

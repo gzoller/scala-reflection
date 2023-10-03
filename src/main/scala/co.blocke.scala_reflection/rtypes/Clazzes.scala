@@ -4,7 +4,7 @@ package rtypes
 
 object Clazzes {
 
-  // ======= Class Names ======= 
+  // ======= Scala Class Names ======= 
   val BOOLEAN_CLASS = "scala.Boolean"
   val BYTE_CLASS = "scala.Byte"
   val CHAR_CLASS = "scala.Char"
@@ -46,7 +46,7 @@ object Clazzes {
 
   // Java-specific -- lots of wrapped/primitive type stuff going on
   val booleanClazz    = java.lang.Boolean.TYPE
-  val JBooleanClazz   = Class.forName("java.lang.Boolean")
+  val JBooleanClazz   = java.lang.Boolean.TYPE //Class.forName("java.lang.Boolean")
   val byteClazz       = java.lang.Byte.TYPE
   val JByteClazz      = Class.forName("java.lang.Byte")
   val charClazz       = java.lang.Character.TYPE

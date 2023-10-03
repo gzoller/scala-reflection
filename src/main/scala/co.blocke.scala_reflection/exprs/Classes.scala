@@ -13,6 +13,12 @@ object Classes:
     import q.reflect.*
     import Liftables.{TypeSymbolToExpr, TypedNameToExpr, ListTypeSymbolToExpr}
 
+    // This silly little piece of drama is sadly necessary to keep Scala's ADHD type-checkker happy.
+    // We need to take the incoming RType (z), which has some given type, and explicitly cast it to
+    // RType[_] to make Scala happy.  Sigh.  It works great when we do, so...
+    inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
+      '{ $z.asInstanceOf[RType[_]] }
+
     crt match {
 
       case sc: ScalaClassRType[T] => 
@@ -26,12 +32,6 @@ object Classes:
           val tt = tv.toType(quotes)
           ExprMaster.makeExpr(tv)(using q)(using tt).asInstanceOf[Expr[RType[_]]]
         )}
-
-        // This silly little piece of drama is sadly necessary to keep Scala's ADHD type-checkker happy.
-        // We need to take the incoming RType (z), which has some given type, and explicitly cast it to
-        // RType[_] to make Scala happy.  Sigh.  It works great when we do, so...
-        inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
-          '{ $z.asInstanceOf[RType[_]] }
 
         // Created lifted (Expr) list of our class' fields (FieldInfo)
         val caseFields: Expr[List[FieldInfo]] = 
@@ -59,11 +59,14 @@ object Classes:
               Apply(
                 Select.unique(New(TypeTree.of[NonConstructorFieldInfo]),"<init>"),
                 List(
+                  Expr(f.index).asTerm,
+                  Expr(f.getterLabel).asTerm, // name
                   Expr(f.getterLabel).asTerm,
                   Expr(f.setterLabel).asTerm,
                   Expr(f.getterIsVal).asTerm,
                   fieldTypeExpr.asTerm, 
-                  Expr(f.annotations).asTerm
+                  Expr(f.annotations).asTerm,
+                  Expr(f.originalSymbol).asTerm
                 )
               ).asExprOf[NonConstructorFieldInfo]              
             )}
@@ -100,8 +103,49 @@ object Classes:
                 sealedChildren.asTerm
             )
         ).asExprOf[RType[T]]
-    }
 
+
+      case jc: JavaClassRType[T] =>   
+        // Created lifted (Expr) list of our class' fields (FieldInfo)
+        val fields: Expr[List[FieldInfo]] = 
+            Expr.ofList{jc._fields.map( f => 
+              val fieldtt = f.fieldType.toType(quotes)
+              val fieldTypeExpr = stripType( ExprMaster.makeExpr(f.fieldType)(using q:Quotes)(using fieldtt) )
+              Apply(
+                Select.unique(New(TypeTree.of[NonConstructorFieldInfo]),"<init>"),
+                List(
+                  Expr(f.index).asTerm, 
+                  Expr(f.name).asTerm,
+                  Expr(f.asInstanceOf[NonConstructorFieldInfo].getterLabel).asTerm,
+                  Expr(f.asInstanceOf[NonConstructorFieldInfo].setterLabel).asTerm,
+                  Expr(f.asInstanceOf[NonConstructorFieldInfo].getterIsVal).asTerm,
+                  fieldTypeExpr.asTerm, 
+                  Expr(f.annotations).asTerm,
+                  Expr(f.originalSymbol).asTerm
+                )
+              ).asExprOf[FieldInfo]              
+            )}
+
+        val typeValues = Expr.ofList{jc.typeParamValues.map(tv =>
+          val tt = tv.toType(quotes)
+          ExprMaster.makeExpr(tv)(using q)(using tt).asInstanceOf[Expr[RType[_]]]
+        )}
+
+        Apply(
+          TypeApply(
+              Select.unique(New(TypeTree.of[JavaClassRType]),"<init>"),
+              List(TypeTree.of[T])
+          ),
+          List(
+              Expr(jc.name).asTerm,
+              fields.asTerm,
+              Expr(jc.typeParamSymbols).asTerm,
+              typeValues.asTerm,
+              Expr(jc._annotations).asTerm,
+              Expr(jc._mixins).asTerm
+          )
+      ).asExprOf[RType[T]]
+    }
 
 
 //===========================================================================================

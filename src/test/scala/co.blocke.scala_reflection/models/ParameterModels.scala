@@ -95,3 +95,8 @@ case class Thingy2[T]( a: Int, b: String, c: T) extends Basis[T]
 // Alias type substitution
 opaque type mystery = DuoTypes[Byte,Short]
 case class AliasTypeSub(a: mystery) 
+
+// Parameterized class defined inside an object
+object Outside:
+  case class PersonZ[Z](name:String, thing:Z)
+  case class Blah[T]( a: PersonZ[T] )

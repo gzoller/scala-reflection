@@ -58,46 +58,18 @@ case class ScalaFieldInfo(
 //------------------------------------------------------------
 
 case class NonConstructorFieldInfo(
+  index: Int,
+  name: String,
   getterLabel: String,
   setterLabel: String,
   getterIsVal: Boolean,
   fieldType:   RType[_],
-  annotations: Map[String,Map[String,String]]
-)
-
-//------------------------------------------------------------
-
-/*
-object JavaFieldInfo:
-  def fromBytes( bbuf: ByteBuffer ): JavaFieldInfo =
-    JavaFieldInfo(
-      bbuf.getInt(),
-      StringByteEngine.read(bbuf),
-      RTypeByteEngine.read(bbuf),
-      MapStringByteEngine.read(bbuf),
-      ObjectByteEngine.read(bbuf).asInstanceOf[Method],
-      ObjectByteEngine.read(bbuf).asInstanceOf[Method],
-      OptionStringByteEngine.read(bbuf).asInstanceOf[Option[TypeSymbol]]
-      )
-
-/* This is also used for plain-class getter/setter fields */
-case class JavaFieldInfo(
-  index:           Int,
-  name:            String,
-  fieldType:       RType,
-  annotations:     Map[String,Map[String,String]],
-  valueAccessor:   Method,
-  valueSetter:     Method,
-  originalSymbol:  Option[TypeSymbol]
+  annotations: Map[String,Map[String,String]],
+  originalSymbol: Option[TypeSymbol] = None
 ) extends FieldInfo:
-  lazy val defaultValue = None
-  def valueOf[T](target: T): Object = valueAccessor.invoke(target)
-  def setValue[T](target: T, theValue: Object) = valueSetter.invoke(target, theValue)
+
   def reIndex(i: Int): FieldInfo = this.copy(index = i)
-  def resolveTypeParams( paramMap: Map[TypeSymbol, RType] ): FieldInfo = 
-    fieldType match {
-      case ts: TypeSymbolInfo if paramMap.contains(ts.name.asInstanceOf[TypeSymbol]) => this.copy(fieldType = paramMap(ts.name.asInstanceOf[TypeSymbol]))
-      case art: AppliedRType => this.copy(fieldType = art.resolveTypeParams(paramMap))
-      case _ => this
-    }
-*/
+
+  lazy val defaultValue: Option[Object] = 
+    Some(fieldType.clazz.getMethod(getterLabel).invoke( fieldType.clazz.getDeclaredConstructor().newInstance() ))
+

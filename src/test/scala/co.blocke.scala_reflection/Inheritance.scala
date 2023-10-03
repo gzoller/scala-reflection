@@ -26,11 +26,11 @@ class Inheritance extends munit.FunSuite:
 
   test("Inheritance and Parameterized Classes") {
     val result = RType.of[ParamChild[Boolean]]
-    assertEquals( result.pretty, """ScalaClassInfo(co.blocke.scala_reflection.ParamChild):
-    |   fields:
-    |      (0)[T] thing: scala.Boolean
-    |   non-constructor fields:
-    |      (_)[T] cosa: scala.Boolean
-    |      (_)[T] item: scala.Boolean
-    |""".stripMargin)
+    assertEquals( result.pretty, """co.blocke.scala_reflection.models.ParamChild[Boolean]:
+      |   fields ->
+      |      thing: [T] Boolean
+      |   non-constructor fields (non-case class) ->
+      |      cosa: Boolean
+      |      item: Boolean
+      |""".stripMargin)
   }
