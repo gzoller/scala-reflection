@@ -116,7 +116,8 @@ case class JavaClassRType[R] (
     typeParamSymbols:   List[TypeSymbol],
     typeParamValues:    List[RType[_]],
     _annotations:       Map[String, Map[String,String]],
-    _mixins:            List[String]
+    _mixins:            List[String],
+    classType:          Option[Type[R]] = None   // Internal use only! (fixes broken Classloader for Java classes inside a macro)
   ) extends ClassRType[R]:
     
   val typedName: TypedName = name
@@ -124,9 +125,7 @@ case class JavaClassRType[R] (
   lazy val annotations = _annotations
   lazy val mixins = _mixins
 
-  lazy val clazz: Class[_] = 
-    println(">>> "+name)
-    Class.forName(name)
+  lazy val clazz: Class[_] = Class.forName(name)
 
   // private lazy val proxy =
   //   _proxy.getOrElse(impl.JavaClassInspector.inspectClass(infoClass, fullName, paramTypes).asInstanceOf[JavaClassInfoProxy])
@@ -138,7 +137,7 @@ case class JavaClassRType[R] (
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
-    val classType: quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]
+    val classType: quoted.Type[R] = this.classType.getOrElse(quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]])
     val classTypeRepr = TypeRepr.of[R](using classType)
     val fieldTypes = _fields.map{ f => 
       val oneFieldType = f.fieldType.toType(quotes)

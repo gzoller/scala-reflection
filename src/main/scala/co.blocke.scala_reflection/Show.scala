@@ -77,10 +77,15 @@ object Show:
 
     val normalColl: Regex = """^scala.collection.immutable.(\w+)$""".r
     val mutableColl: Regex = """^scala.collection.mutable.(\w+)$""".r
+    val javaUtil: Regex = """^java.util.(\w+)$""".r
+    val javaUtilConcurrent: Regex = """^java.util.concurrent.(\w+)$""".r
     final inline def cleanCollectionNames(rt: RType[_]): String =
         rt.name match {
             case normalColl(c) => c
             case mutableColl(c) => "mutable " + c
+            case javaUtil(c) => "Java "+c
+            case javaUtilConcurrent(c) => "Java concurrent "+c
+            case c => c
         }
 
     inline def showOfType(buf: StringBuilder, seenBefore: List[String], tabLevel: Int, label: String, rt: RType[_]) =
@@ -212,15 +217,6 @@ object Show:
                             buf.append(tabs(tabLevel+2))
                             buf.append(f.getterLabel+": ")
                             val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
-                            // f.defaultValue.map{ default => 
-                            //     if lastWasMultiLine then
-                            //         buf.append(tabs(tabLevel+3))
-                            //     else
-                            //         buf.append(" ")
-                            //     buf.append("(default value: "+clipDefault(default)+")")
-                            //     if lastWasMultiLine then
-                            //         buf.append("\n")
-                            // }
                             if !lastWasMultiLine then
                                 buf.append("\n")
                             if f.annotations.nonEmpty then
@@ -333,4 +329,66 @@ object Show:
             case t: Scala2RType[_] =>
                 buf.append(t.name+ " (Scala 2)")
                 (buf, false, seenBefore)
+
+            case t: JavaClassRType[_] =>
+                if seenBefore.contains(t.typedName.toString) then
+                    buf.append(t.name + " (seen before, details above)\n")
+                    (buf, true, seenBefore)
+                else
+                    buf.append(t.name)
+                    if t.typeParamValues.nonEmpty then
+                        buf.append(typeString(t.typeParamValues))
+                    else if t.typeParamSymbols.nonEmpty then
+                        buf.append( t.typeParamSymbols.map(_.toString).mkString("[",",","]"))
+                    buf.append(" (Java)")
+                    buf.append(":\n")
+                    buf.append(tabs(tabLevel+1))
+                    buf.append("fields ->\n")
+                    val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore){ (classesSeen, f) =>
+                        buf.append(tabs(tabLevel+2))
+                        buf.append(f.name)
+                        buf.append(": ")
+                        f.originalSymbol.map( os => buf.append("["+os+"] ") )
+                        val (_, lastWasMultiLine, classesSeenBefore) = _show(f.fieldType, buf, tabLevel+2, classesSeen)
+                        if !lastWasMultiLine then
+                            buf.append("\n")
+                        if f.annotations.nonEmpty then
+                            buf.append(tabs(tabLevel+3))
+                            buf.append("annotations -> " + f.annotations.toString + "\n")
+                        classesSeenBefore
+                    }
+
+                    if t.annotations.nonEmpty then
+                        buf.append(tabs(tabLevel+1))
+                        buf.append("annotations ->\n")
+                        buf.append(tabs(tabLevel+2))
+                        buf.append(t.annotations.toString+"\n")
+
+                    (buf, true, allClassesSeenUpToNow)
+
+            case t: JavaListRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+
+            case t: JavaQueueRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+
+            case t: JavaStackRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+
+            case t: JavaSetRType[_] =>
+                showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+
+            case t: JavaMapRType[_] =>
+                buf.append(cleanCollectionNames(t)+" of:\n")
+                buf.append(tabs(tabLevel+1))
+                buf.append("key: ")
+                val (_, lastWasMultiLine_1, classesSeen_1) = _show(t._elementType, buf, tabLevel+1, seenBefore)
+                if !lastWasMultiLine_1 then
+                    buf.append("\n")
+                buf.append(tabs(tabLevel+1))
+                buf.append("value: ")
+                val (_, lastWasMultiLine_2, classesSeen_2) = _show(t._elementType2, buf, tabLevel+1, classesSeen_1)
+                if !lastWasMultiLine_2 then
+                    buf.append("\n")
+                (buf, true, classesSeen_2)
         }

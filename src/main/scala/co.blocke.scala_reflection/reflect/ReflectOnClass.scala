@@ -160,15 +160,16 @@ object ReflectOnClass:
       // === Java Class ===
       // User-written Java classes will have the source file.  Java library files will have <no file> for source
       else if symbol.flags.is(Flags.JavaDefined) then
-        println("IS JAVA! "+symbol.fullName)
-        val nonConstructorFields: List[NonConstructorFieldInfo] = ReflectOnField.javaFields(quotes)(symbol)
+        val nonConstructorFields: List[NonConstructorFieldInfo] = ReflectOnField.javaFields(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
+        implicit val q = quotes
         JavaClassRType(
           symbol.fullName, 
           nonConstructorFields,
           typeSymbols, 
           typeSymbolValues, 
           classAnnos,
-          symbol.tree.asInstanceOf[ClassDef].parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName)
+          symbol.tree.asInstanceOf[ClassDef].parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName),
+          None
           )
 
       //===
@@ -227,7 +228,6 @@ object ReflectOnClass:
         else 
           TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
 
-        // println(className+"  "+classDef.constructor.paramss)
         val constructorParams =  // Annoying "ism"... different param order dep on whether class is parameterized or not!
           if classDef.constructor.paramss.tail == Nil then
             classDef.constructor.paramss.head.params
@@ -285,7 +285,7 @@ object ReflectOnClass:
             .zipWithIndex
             .map{ (oneField, idx) =>
               val valDef = constructorParams(idx).asInstanceOf[ValDef]
-              val fieldType = ReflectOnClass.unwindFieldRTypeWithTypeSubstitution(quotes)(
+              val fieldType = unwindFieldRTypeWithTypeSubstitution(quotes)(
                 valDef,
                 oneField,
                 resolveTypeSyms,
@@ -323,19 +323,15 @@ object ReflectOnClass:
     valDef: quotes.reflect.ValDef, 
     fieldSymbol: quotes.reflect.Symbol,
     resolveTypeSyms: Boolean,
-    typeRef: quotes.reflect.TypeRef): RType[_] = 
+    classTypeRef: quotes.reflect.TypeRef): RType[_] = 
       import quotes.reflect.*
 
-      scala.util.Try{
-        if resolveTypeSyms then
-          RType.unwindType(quotes)(typeRef.memberType(fieldSymbol)) match {
-            case NONE  => TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-            case other => other
-          }
-        else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then
-          TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-        else
-          RType.unwindType(quotes)(valDef.tpt.tpe.asInstanceOf[TypeRef], false)
-      }.toOption.getOrElse{
+      if resolveTypeSyms then
+        RType.unwindType(quotes)(classTypeRef.memberType(fieldSymbol)) match {
+          case NONE  => TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
+          case other => other
+        }
+      else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then
         TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-      }
+      else
+        RType.unwindType(quotes)(valDef.tpt.tpe, false)

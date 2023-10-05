@@ -57,11 +57,7 @@ object RType:
 
   def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
     import quotes.reflect.*
-    // println("::: of[]: "+TypeRepr.of[T])
     val rtype = unwindType(quotes)( TypeRepr.of[T] ).asInstanceOf[RType[T]]
-    // println("OK: "+rtype.pretty)
-    // println("-----")
-    // println(rtype)
     exprs.ExprMaster.makeExpr(rtype)
 
    

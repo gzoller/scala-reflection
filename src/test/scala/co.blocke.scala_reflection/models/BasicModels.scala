@@ -4,8 +4,10 @@ package models
 import co.blocke.reflect.* 
 
 
+// Basic Tasty classes
 case class Item(desc:String)
 case class Person(name:String, age:Int, item:Item, allDone: Boolean)
+
 
 case class HasDefaults( a: String = "wow", item: Item = Item("none"), c: Int = 5 )
 case class WithDefault(a: Int, b: String = "wow")
@@ -89,3 +91,21 @@ class FoomNC(val a: Int, val b: String, @FieldAnno(idx=0) c: Option[FoomNC]) {
 @ClassAnno(name="Foom")
 case class WithAnnotation(@FieldAnno(idx=5) id: String)
 
+// Java Collections
+case class JColl(
+  a: java.util.List[Int],
+  b: java.util.Optional[java.util.ArrayList[Int]],
+  c: java.util.Stack[String],
+  d: java.util.Queue[Map[Int,String]],
+  e: java.util.Set[Boolean],
+  f: java.util.Map[Int, String]
+)
+
+// Mixin tests
+trait SJCapture {
+  var captured: java.util.HashMap[String, _] =
+    new java.util.HashMap[String, Any]()
+}
+class SJCaptureJava extends SJCapture
+
+case class JJ(jFoo: JavaParam[Int])

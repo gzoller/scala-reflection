@@ -30,4 +30,20 @@ object Options:
                     optTypeExpr.asTerm
                 )
             ).asExprOf[RType[T]]
+
+        case javaOpt: JavaOptionalRType[_] =>
+            val tt = javaOpt._optionParamType.toType(quotes)
+            val optTypeExpr = stripType(ExprMaster.makeExpr(javaOpt._optionParamType)(using q)(using tt.asInstanceOf[Type[javaOpt._optionParamType.T]]).asInstanceOf[Expr[RType[javaOpt._optionParamType.T]]])
+
+            Apply(
+                TypeApply(
+                    Select.unique(New(TypeTree.of[JavaOptionalRType[T]]),"<init>"), 
+                    List(TypeTree.of[T])
+                ),
+                List(
+                    Expr(javaOpt.name).asTerm,
+                    Expr(javaOpt.typeParamSymbols).asTerm,
+                    optTypeExpr.asTerm
+                )
+            ).asExprOf[RType[T]]
     }

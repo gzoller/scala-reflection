@@ -214,3 +214,14 @@ class Basic extends munit.FunSuite:
     assert(r0 == r1)
     assert(r0.equals(r1))
   }
+
+  test("Confirm we can reflecton externally-compiled Scala class (eg library class)") {
+    val rt = RType.of[co.blocke.collection.immutable.ListZipper[Long]]
+    val result = RType.of[co.blocke.collection.immutable.ListZipper[Long]]
+    assertEquals(result.pretty, """co.blocke.collection.immutable.ListZipper[Long]:
+        |   fields ->
+        |      left: List of: Long
+        |      curFocus: Option of Long
+        |      right: List of: Long
+        |""".stripMargin)
+  }

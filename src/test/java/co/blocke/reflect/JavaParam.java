@@ -1,7 +1,7 @@
 package co.blocke.reflect;
 
 public class JavaParam<K> {
-  // public JavaParam() {}
+  public JavaParam() {}
 
   private K jThing;
   public K getJThing() { return jThing; }

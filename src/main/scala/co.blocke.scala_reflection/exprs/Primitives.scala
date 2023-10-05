@@ -19,4 +19,14 @@ object Primitives:
       case t: ShortRType => '{ ShortRType().asInstanceOf[RType[T]] }
       case t: StringRType => '{ StringRType().asInstanceOf[RType[T]] }
       case t: AnyRType => '{ AnyRType().asInstanceOf[RType[T]] }
+      case t: JavaBooleanRType => '{ JavaBooleanRType().asInstanceOf[RType[T]] }
+      case t: JavaByteRType => '{ JavaByteRType().asInstanceOf[RType[T]] }
+      case t: JavaCharacterRType => '{ JavaCharacterRType().asInstanceOf[RType[T]] }
+      case t: JavaDoubleRType => '{ JavaDoubleRType().asInstanceOf[RType[T]] }
+      case t: JavaFloatRType => '{ JavaFloatRType().asInstanceOf[RType[T]] }
+      case t: JavaIntegerRType => '{ JavaIntegerRType().asInstanceOf[RType[T]] }
+      case t: JavaLongRType => '{ JavaLongRType().asInstanceOf[RType[T]] }
+      case t: JavaShortRType => '{ JavaShortRType().asInstanceOf[RType[T]] }
+      case t: JavaObjectRType => '{ JavaObjectRType().asInstanceOf[RType[T]] }
+      case t: JavaNumberRType => '{ JavaNumberRType().asInstanceOf[RType[T]] }
     }

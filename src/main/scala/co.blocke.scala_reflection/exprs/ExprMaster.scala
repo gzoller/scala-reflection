@@ -35,6 +35,11 @@ object ExprMaster:
       case union: UnionRType[T]               => LeftRight.makeExpr(union)
       case alias: AliasRType[T]               => Alias.makeExpr(alias)
       case scala2: Scala2RType[T]             => '{ Scala2RType( ${Expr(scala2.name)} ).asInstanceOf[RType[T]] }
+      case javaList: JavaListRType[T]         => JavaList.makeExpr(javaList)
+      case javaQueue: JavaQueueRType[T]       => JavaQueue.makeExpr(javaQueue)
+      case javaStack: JavaStackRType[T]       => JavaStack.makeExpr(javaStack)
+      case javaSet: JavaSetRType[T]           => JavaSet.makeExpr(javaSet)
+      case javaMap: JavaMapRType[T]           => JavaMap.makeExpr(javaMap)
       case selfRef: SelfRefRType[T]           => SelfRef.makeExpr(selfRef)
       case obj: ObjectRType                   => '{ ObjectRType( ${Expr(obj.name)} ).asInstanceOf[RType[T]] }
       case unknown: UnknownRType[T]           => '{ UnknownRType( ${Expr(unknown.name)} ).asInstanceOf[RType[T]] }

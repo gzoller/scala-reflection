@@ -14,7 +14,7 @@ object Seq:
         '{ $z.asInstanceOf[RType[_]] }
 
     val tt = seq._elementType.toType(quotes)
-    val optTypeExpr = stripType(ExprMaster.makeExpr(seq._elementType)(using q)(using tt.asInstanceOf[Type[seq._elementType.T]]).asInstanceOf[Expr[RType[seq._elementType.T]]])
+    val seqTypeExpr = stripType(ExprMaster.makeExpr(seq._elementType)(using q)(using tt.asInstanceOf[Type[seq._elementType.T]]).asInstanceOf[Expr[RType[seq._elementType.T]]])
 
     Apply(
         TypeApply(
@@ -24,6 +24,6 @@ object Seq:
         List(
             Expr(seq.name).asTerm,
             Expr(seq.typeParamSymbols).asTerm,
-            optTypeExpr.asTerm
+            seqTypeExpr.asTerm
         )
     ).asExprOf[RType[T]]

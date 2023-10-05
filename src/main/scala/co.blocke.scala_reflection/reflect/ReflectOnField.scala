@@ -89,7 +89,7 @@ object ReflectOnField:
 
 
   // Reflect on any fields in a Scala plain class (non-case class) that are NOT in the constructor, i.e. defined in the body
-  def javaFields[Q](quotes: Quotes)( symbol: quotes.reflect.Symbol ): List[NonConstructorFieldInfo] = 
+  def javaFields[Q](quotes: Quotes)( symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr ): List[NonConstructorFieldInfo] = 
     import quotes.reflect.* 
 
     val allMethods = symbol.methodMembers
@@ -100,25 +100,31 @@ object ReflectOnField:
         val chars = g.name.drop(3).toCharArray()
         chars(0) = chars(0).toLower
         (String(chars), g, s.get)
-    }.zipWithIndex.map{ case((fieldName, g, s),i) => 
-      val fieldType = s.tree match {
+    }.filterNot{ (_, getterSym, setterSym) => 
+      getterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore") ||
+        setterSym.annotations.map(_.tpe.typeSymbol.fullName).contains("co.blocke.scala_reflection.Ignore")
+    }.zipWithIndex.map{ case((fieldName, getter, setter),i) => 
+      val fieldType = setter.tree match {
         case dd: DefDef => dd.paramss.head.params.head match {
-          case v: ValDef => RType.unwindType(quotes)(v.tpt.tpe)
+          case v: ValDef => applyTypeToField(quotes)(getter, classRepr)
           case t: TypeDef => UnknownRType("--1--")
         }
       }
+      val varAnnos = (getter.annotations ++: setter.annotations).map{ a => 
+          val Apply(_, params) = a: @unchecked
+          (a.symbol.signature.resultSig, annoSymToString(quotes)(params))
+        }.toMap
       NonConstructorFieldInfo(
         i,
         fieldName,
-        g.name,
-        s.name,
+        getter.name,
+        setter.name,
         false,
         fieldType,
-        // RType.unwindType(quotes)(s.),
-        Map.empty[String,Map[String,String]],
+        varAnnos,
         None
       )
-    }
+    }.sortBy(_.getterLabel)  // sorted for consistent ordering for testing ;-)
 
 
   def applyTypeToField(quotes: Quotes)(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr): RType[_] =
