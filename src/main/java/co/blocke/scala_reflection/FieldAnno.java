@@ -1,4 +1,4 @@
-package co.blocke.reflect;
+package co.blocke.scala_reflection;
 
 import java.lang.annotation.*;
 

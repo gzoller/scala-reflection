@@ -1,15 +1,13 @@
 package co.blocke.scala_reflection
 package models
 
-import co.blocke.reflect.* 
-
+import co.blocke.reflect.*
 
 // Basic Tasty classes
-case class Item(desc:String)
-case class Person(name:String, age:Int, item:Item, allDone: Boolean)
+case class Item(desc: String)
+case class Person(name: String, age: Int, item: Item, allDone: Boolean)
 
-
-case class HasDefaults( a: String = "wow", item: Item = Item("none"), c: Int = 5 )
+case class HasDefaults(a: String = "wow", item: Item = Item("none"), c: Int = 5)
 case class WithDefault(a: Int, b: String = "wow")
 
 case class Prim(
@@ -27,13 +25,13 @@ case class Prim(
 
 // Match / dependent types
 type Elem[X] = X match {
-  case String => Char
-  case Array[t] => t
+  case String      => Char
+  case Array[t]    => t
   case Iterable[t] => t
 }
-case class Definitely( id: Elem[List[Int]], stuff: Elem[String] )
+case class Definitely(id: Elem[List[Int]], stuff: Elem[String])
 
-case class SelfReferencing( a: String, b: SelfReferencing, c: Int, d: Option[SelfReferencing])
+case class SelfReferencing(a: String, b: SelfReferencing, c: Int, d: Option[SelfReferencing])
 
 // Sealed trait w/case classes and objects
 sealed trait Vehicle
@@ -61,7 +59,7 @@ opaque type EMP_ID = Int
 case class Employee(eId: EMP_ID, age: Int)
 
 // Value classes
-case class IdUser(id: Int) extends AnyVal  // value class
+case class IdUser(id: Int) extends AnyVal // value class
 case class Employee2(eId: IdUser, age: Int)
 
 // @Skip_Reflection
@@ -71,39 +69,39 @@ case class SkipMe(a: Int, b: String)
 // Self-referencing
 case class Shape(id: Int, parent: Option[Shape])
 case class Person2(name: String, age: Int, boss: Person2)
-case class Drawer[T]( id: Int, nextInChain: Option[Drawer[T]], thing: T)
+case class Drawer[T](id: Int, nextInChain: Option[Drawer[T]], thing: T)
 
 //-------------------<< Non-Case Classes ---------------
 
 // Non-Case Scala class handling
-class FoomNC(val a: Int, val b: String, @FieldAnno(idx=0) c: Option[FoomNC]) {
-  @FieldAnno(idx=5) @DBKey var blah: Boolean = false
+class FoomNC(val a: Int, val b: String, @FieldAnno(idx = 0) c: Option[FoomNC]) {
+  @FieldAnno(idx = 5) @DBKey var blah: Boolean = false
   @Ignore var hey: Int = 2
   private var cantSee: Boolean = true
   val nope: Float = 1.2
 
   private var _age = 0
   def age = _age
-  @FieldAnno(idx=2) def age_=(g: Int): Unit = _age = g
+  @FieldAnno(idx = 2) def age_=(g: Int): Unit = _age = g
 }
 
 // Object/field Annotations
-@ClassAnno(name="Foom")
-case class WithAnnotation(@FieldAnno(idx=5) id: String)
+@ClassAnno(name = "Foom")
+case class WithAnnotation(@FieldAnno(idx = 5) id: String)
 
 // Java Collections
 case class JColl(
-  a: java.util.List[Int],
-  b: java.util.Optional[java.util.ArrayList[Int]],
-  c: java.util.Stack[String],
-  d: java.util.Queue[Map[Int,String]],
-  e: java.util.Set[Boolean],
-  f: java.util.Map[Int, String]
+    a: java.util.List[Int],
+    b: java.util.Optional[java.util.ArrayList[Int]],
+    c: java.util.Stack[String],
+    d: java.util.Queue[Map[Int, String]],
+    e: java.util.Set[Boolean],
+    f: java.util.Map[Int, String]
 )
 
 // Mixin tests
 trait SJCapture {
-  var captured: java.util.HashMap[String, _] =
+  var captured: java.util.HashMap[String, ?] =
     new java.util.HashMap[String, Any]()
 }
 class SJCaptureJava extends SJCapture

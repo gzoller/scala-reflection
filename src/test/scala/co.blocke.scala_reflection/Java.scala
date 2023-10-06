@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 
 import munit.*
 import models.*
-import co.blocke.reflect.* 
+import co.blocke.reflect.*
 import co.blocke.scala_reflection.rtypes.JavaClassRType
 
 class Java extends munit.FunSuite:
@@ -11,7 +11,9 @@ class Java extends munit.FunSuite:
 
   test("basic Java collections") {
     val result = RType.of[JColl]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.JColl:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.JColl:
       |   fields ->
       |      a: Java List of: Int
       |      b: Optional of Java ArrayList of: Int
@@ -23,30 +25,39 @@ class Java extends munit.FunSuite:
       |      f: Java Map of:
       |         key: Int
       |         value: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Simple parameter substitution") {
     val result = RType.of[JavaParam[String]]
-    assertEquals( result.pretty, """co.blocke.reflect.JavaParam[String] (Java):
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.JavaParam[String] (Java):
       |   fields ->
       |      jThing: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Nested Java classes") {
     val result = RType.of[co.blocke.reflect.You]
-    assertEquals( result.pretty, """co.blocke.reflect.You (Java):
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.You (Java):
       |   fields ->
       |      sayHey: co.blocke.reflect.Hey (Java):
       |         fields ->
       |            jString: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Java collection types") {
     val result = RType.of[JavaCollections]
-    assertEquals( result.pretty, """co.blocke.reflect.JavaCollections (Java):
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.JavaCollections (Java):
       |   fields ->
       |      hMap: Java HashMap of:
       |         key: String
@@ -57,12 +68,15 @@ class Java extends munit.FunSuite:
       |      myTree: Java TreeSet of: String
       |      nested: Array of: Java List of: Integer
       |      pushPop: Java Stack of: Long
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Detect parameterized Java class") {
-    val result = RType.of("co.blocke.reflect.ParamAnno") 
-    assertEquals( result.pretty, """co.blocke.reflect.ParamAnno[T] (Java):
+    val result = RType.of("co.blocke.reflect.ParamAnno")
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.ParamAnno[T] (Java):
       |   fields ->
       |      age: T
       |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 2))
@@ -70,39 +84,46 @@ class Java extends munit.FunSuite:
       |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 1))
       |   annotations ->
       |      Map(co.blocke.reflect.ClassAnno -> Map(name -> Foom))
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("reflect basic with capture") {
     val result = RType.of[co.blocke.reflect.Person]
-    println(result)
-    assertEquals( result.pretty, """co.blocke.reflect.Person (Java):
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.Person (Java):
       |   fields ->
       |      age: Int
       |      name: String
       |      other: Int
-      |""".stripMargin)
+      |""".stripMargin
+    )
     assert(result.asInstanceOf[JavaClassRType[_]].mixins.contains("co.blocke.scala_reflection.models.SJCaptureJava"))
   }
 
   test("Java parameterized class field member") {
     val result = RType.of[co.blocke.reflect.JavaParamHolder]
-    assertEquals( result.pretty, """co.blocke.reflect.JavaParamHolder (Java):
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.JavaParamHolder (Java):
       |   fields ->
       |      jFoo: co.blocke.reflect.JavaParam[Integer] (Java):
       |         fields ->
       |            jThing: Integer
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Java parameterized class field member (Wildcard)") {
-    println("HERE: "+classOf[JavaParam[Boolean]])
-    println(Class.forName("co.blocke.reflect.JavaParam"))
     val result = RType.of[co.blocke.reflect.JavaParamHolder2]
-    assertEquals( result.pretty, """co.blocke.reflect.JavaParamHolder2 (Java):
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.JavaParamHolder2 (Java):
       |   fields ->
       |      jFoo: co.blocke.reflect.JavaParam[Object] (Java):
       |         fields ->
       |            jThing: K
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }

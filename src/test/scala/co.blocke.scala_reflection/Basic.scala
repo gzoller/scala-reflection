@@ -7,7 +7,9 @@ class Basic extends munit.FunSuite:
 
   test("Class of all primitives") {
     val result = RType.of[Prim]
-    assertEquals(result.pretty, """co.blocke.scala_reflection.models.Prim:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Prim:
         |   fields ->
         |      a: Boolean
         |      b: Byte
@@ -19,13 +21,16 @@ class Basic extends munit.FunSuite:
         |      h: Short
         |      i: String
         |      j: Any
-        |""".stripMargin)
+        |""".stripMargin
+    )
     assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.Prim")
   }
 
   test("Simple class having nested class as a parameter") {
     val result = RType.of[Person]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Person:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Person:
         |   fields ->
         |      name: String
         |      age: Int
@@ -33,13 +38,16 @@ class Basic extends munit.FunSuite:
         |         fields ->
         |            desc: String
         |      allDone: Boolean
-        |""".stripMargin)
+        |""".stripMargin
+    )
     assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.Person")
   }
 
   test("Class having default values for its parameters") {
     val result = RType.of[HasDefaults]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.HasDefaults:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.HasDefaults:
         |   fields ->
         |      a: String (default value: wow)
         |      item: co.blocke.scala_reflection.models.Item:
@@ -47,25 +55,31 @@ class Basic extends munit.FunSuite:
         |            desc: String
         |         (default value: Item(none))
         |      c: Int (default value: 5)
-        |""".stripMargin)
-    assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.HasDefaults")    
+        |""".stripMargin
+    )
+    assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.HasDefaults")
   }
 
   test("Class having self-referencing members") {
-    val result = RType.of[SelfReferencing]  
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.SelfReferencing:
+    val result = RType.of[SelfReferencing]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.SelfReferencing:
         |   fields ->
         |      a: String
         |      b: co.blocke.scala_reflection.models.SelfReferencing (recursive self-reference)
         |      c: Int
         |      d: Option of co.blocke.scala_reflection.models.SelfReferencing (recursive self-reference)
-        |""".stripMargin)
-    assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.SelfReferencing")    
+        |""".stripMargin
+    )
+    assertEquals(result.clazz.getName, "co.blocke.scala_reflection.models.SelfReferencing")
   }
 
   test("sealed trait with case classes") {
     val result = RType.of[VehicleHolder]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.VehicleHolder:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.VehicleHolder:
         |   fields ->
         |      v: co.blocke.scala_reflection.models.Vehicle (sealed trait):
         |         children ->
@@ -79,70 +93,88 @@ class Basic extends munit.FunSuite:
         |            co.blocke.scala_reflection.models.Plane:
         |               fields ->
         |                  numberOfEngines: Int
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("sealed trait with case objects") {
     val result = RType.of[FlavorHolder]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.FlavorHolder:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.FlavorHolder:
         |   fields ->
         |      f: co.blocke.scala_reflection.models.Flavor (sealed trait):
         |         children ->
         |            co.blocke.scala_reflection.models.Vanilla (object)
         |            co.blocke.scala_reflection.models.Chocolate (object)
         |            co.blocke.scala_reflection.models.Bourbon (object)
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("handle opaque type alias") {
     val result = RType.of[Employee]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Employee:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Employee:
         |   fields ->
         |      eId: alias EMP_ID defined as Int
         |      age: Int
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("Scala 2.x class") {
     val result = RType.of[scala.math.BigDecimal]
-    assertEquals( result.pretty, "scala.math.BigDecimal (Scala 2)")
+    assertEquals(result.pretty, "scala.math.BigDecimal (Scala 2)")
   }
 
   test("support value classes") {
     val result = RType.of[Employee2]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Employee2:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Employee2:
         |   fields ->
         |      eId: co.blocke.scala_reflection.models.IdUser (value class):
         |         fields ->
         |            id: Int
         |      age: Int
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("Skip_Reflection annotation works") {
     val result = RType.of[SkipMe]
-    assertEquals( result.pretty.stripLineEnd, """unknown type: co.blocke.scala_reflection.models.SkipMe""")
+    assertEquals(result.pretty.stripLineEnd, """unknown type: co.blocke.scala_reflection.models.SkipMe""")
   }
 
   test("Self-referencing types (non-parameterized") {
     val result = RType.of[Shape]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Shape:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Shape:
         |   fields ->
         |      id: Int
         |      parent: Option of co.blocke.scala_reflection.models.Shape (recursive self-reference)
-        |""".stripMargin)
+        |""".stripMargin
+    )
     val result2 = RType.of[Person2]
-    assertEquals( result2.pretty, """co.blocke.scala_reflection.models.Person2:
+    assertEquals(
+      result2.pretty,
+      """co.blocke.scala_reflection.models.Person2:
         |   fields ->
         |      name: String
         |      age: Int
         |      boss: co.blocke.scala_reflection.models.Person2 (recursive self-reference)
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("Self-referencing types (parameterized") {
     val result = RType.of[Drawer[Shape]]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Drawer[Shape]:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Drawer[Shape]:
         |   fields ->
         |      id: Int
         |      nextInChain: Option of co.blocke.scala_reflection.models.Drawer (recursive self-reference)
@@ -150,12 +182,15 @@ class Basic extends munit.FunSuite:
         |         fields ->
         |            id: Int
         |            parent: Option of co.blocke.scala_reflection.models.Shape (recursive self-reference)
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("Simple non-case class") {
     val result = RType.of[FoomNC]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.FoomNC:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.FoomNC:
         |   fields ->
         |      a: Int
         |      b: String
@@ -166,23 +201,28 @@ class Basic extends munit.FunSuite:
         |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 2))
         |      blah: Boolean
         |         annotations -> Map(co.blocke.reflect.DBKey -> Map(), co.blocke.reflect.FieldAnno -> Map(idx -> 5))
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("capture field and class annotations") {
-    val result = RType.of[WithAnnotation] 
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.WithAnnotation:
+    val result = RType.of[WithAnnotation]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.WithAnnotation:
         |   fields ->
         |      id: String
         |         annotations -> Map(co.blocke.reflect.FieldAnno -> Map(idx -> 5))
         |   annotations ->
         |      Map(co.blocke.reflect.ClassAnno -> Map(name -> Foom))
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("sealed abstract class with case class") {
     val result = RType.of[PetOwner]
-    assertEquals(result.pretty,
+    assertEquals(
+      result.pretty,
       """co.blocke.scala_reflection.models.PetOwner:
         |   fields ->
         |      owner: String
@@ -196,16 +236,20 @@ class Basic extends munit.FunSuite:
         |            co.blocke.scala_reflection.models.Cat:
         |               fields ->
         |                  name: String
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("match / dependent types") {
     val result = RType.of[Definitely]
-    assertEquals(result.pretty, """co.blocke.scala_reflection.models.Definitely:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Definitely:
         |   fields ->
         |      id: Int
         |      stuff: Char
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   test("Ensure caching (equals) works") {
@@ -218,10 +262,13 @@ class Basic extends munit.FunSuite:
   test("Confirm we can reflecton externally-compiled Scala class (eg library class)") {
     val rt = RType.of[co.blocke.collection.immutable.ListZipper[Long]]
     val result = RType.of[co.blocke.collection.immutable.ListZipper[Long]]
-    assertEquals(result.pretty, """co.blocke.collection.immutable.ListZipper[Long]:
+    assertEquals(
+      result.pretty,
+      """co.blocke.collection.immutable.ListZipper[Long]:
         |   fields ->
         |      left: List of: Long
         |      curFocus: Option of Long
         |      right: List of: Long
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }

@@ -12,7 +12,7 @@ object WeekDay extends Enumeration {
   val Saturday = Value(6)
   val Sunday = Value(-3)
 }
-import WeekDay._
+import WeekDay.*
 
 // Scala 3 Enum
 enum Month {
@@ -22,9 +22,9 @@ enum Month {
 case class Birthday(m: Month, d: WeekDay)
 
 enum Color(val rgb: Int) {
-  case Red extends Color(0xFF0000)
-  case Green extends Color(0x00FF00)
-  case Blue extends Color(0x0000FF)
+  case Red extends Color(0xff0000)
+  case Green extends Color(0x00ff00)
+  case Blue extends Color(0x0000ff)
   case Mix(mix: Int) extends Color(mix)
 }
 

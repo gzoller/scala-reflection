@@ -1,8 +1,9 @@
-
 package co.blocke.scala_reflection;
 
 import java.lang.annotation.*;
 
 @Target({ElementType.TYPE})
-@Retention(RetentionPolicy.CLASS)
-public @interface Skip_Reflection{}
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ClassAnno {
+    String name();
+}

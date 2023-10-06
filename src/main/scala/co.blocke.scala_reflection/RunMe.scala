@@ -8,7 +8,11 @@ import co.blocke.scala_reflection.*
 
 object RunMe extends App:
 
-    val rt = RType.of[Foom[Long]]
-    println(rt.pretty)
+  println("\n\n")
+  val rt = RType.ofJS[Person[Bogus]]
+  println(rt)
 
-    println("Done.")
+  println("\n\n")
+  println(RType.of[Person[Long]].pretty)
+
+  println("Done.")

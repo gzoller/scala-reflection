@@ -6,24 +6,28 @@ import rtypes.*
 
 object JavaList:
 
-  def makeExpr[T](jlist: JavaListRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
+  def makeExpr[T](jlist: JavaListRType[T])(using q: Quotes)(using Type[T]): Expr[RType[T]] =
     import q.reflect.*
     import Liftables.TypeSymbolToExpr
 
-    inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
-        '{ $z.asInstanceOf[RType[_]] }
+    inline def stripType(z: Expr[RType[_]])(using q: Quotes): Expr[RType[_]] =
+      '{ $z.asInstanceOf[RType[_]] }
 
-    val tt = jlist._elementType.toType(quotes)
-    val jlistTypeExpr = stripType(ExprMaster.makeExpr(jlist._elementType)(using q)(using tt.asInstanceOf[Type[jlist._elementType.T]]).asInstanceOf[Expr[RType[jlist._elementType.T]]])
+    val tt = jlist.elementType.toType(quotes)
+    val jlistTypeExpr = stripType(
+      ExprMaster
+        .makeExpr(jlist.elementType)(using q)(using tt.asInstanceOf[Type[jlist.elementType.T]])
+        .asInstanceOf[Expr[RType[jlist.elementType.T]]]
+    )
 
     Apply(
-        TypeApply(
-            Select.unique(New(TypeTree.of[JavaListRType[T]]),"<init>"), 
-            List(TypeTree.of[T])
-        ),
-        List(
-            Expr(jlist.name).asTerm,
-            Expr(jlist.typeParamSymbols).asTerm,
-            jlistTypeExpr.asTerm
-        )
+      TypeApply(
+        Select.unique(New(TypeTree.of[JavaListRType[T]]), "<init>"),
+        List(TypeTree.of[T])
+      ),
+      List(
+        Expr(jlist.name).asTerm,
+        Expr(jlist.typeParamSymbols).asTerm,
+        jlistTypeExpr.asTerm
+      )
     ).asExprOf[RType[T]]

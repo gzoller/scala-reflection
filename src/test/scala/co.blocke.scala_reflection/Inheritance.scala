@@ -7,7 +7,9 @@ class Inheritance extends munit.FunSuite:
 
   test("Inheritance and Annotations") {
     val result = RType.of[InheritSimpleChild]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.InheritSimpleChild:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.InheritSimpleChild:
       |   fields ->
       |      extra: String
       |      one: String
@@ -21,16 +23,20 @@ class Inheritance extends munit.FunSuite:
       |      three: Boolean
       |      two: Int
       |         annotations -> Map(co.blocke.reflect.Change -> Map(name -> foobar), co.blocke.reflect.DBKey -> Map(index -> 1))
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Inheritance and Parameterized Classes") {
     val result = RType.of[ParamChild[Boolean]]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.ParamChild[Boolean]:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.ParamChild[Boolean]:
       |   fields ->
       |      thing: [T] Boolean
       |   non-constructor fields (non-case class) ->
       |      cosa: Boolean
       |      item: Boolean
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }

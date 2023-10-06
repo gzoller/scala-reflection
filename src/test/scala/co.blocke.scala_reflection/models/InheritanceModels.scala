@@ -1,12 +1,11 @@
 package co.blocke.scala_reflection
 package models
 
-import co.blocke.reflect.* 
-
+import co.blocke.reflect.*
 
 // Inheritance and Annotations
 class InheritSimpleBase(
-    @DBKey(index = 50)@Change(name = "bogus") val one:String= "blather"
+    @DBKey(index = 50) @Change(name = "bogus") val one: String = "blather"
 ) {
   // Public data member
   @DBKey(index = 1) @Change(name = "foobar") var two: Int = 5
@@ -31,10 +30,7 @@ class InheritSimpleBase(
   def unused_=(a: Double): Unit = _unused = a
 }
 
-class InheritSimpleChild(
-    val extra: String,
-    @Change(name = "uno") override val one:String)
-  extends InheritSimpleBase(one) {
+class InheritSimpleChild(val extra: String, @Change(name = "uno") override val one: String) extends InheritSimpleBase(one) {
   @DBKey(index = 99) var foo: Int = 39
   @Ignore var bogus: String = ""
 

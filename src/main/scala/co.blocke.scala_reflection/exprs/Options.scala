@@ -6,44 +6,51 @@ import rtypes.*
 
 object Options:
 
-  def makeExpr[T](opt: OptionRType[T])(using q:Quotes)(using Type[T]): Expr[RType[T]] = 
+  def makeExpr[T](opt: OptionRType[T])(using q: Quotes)(using Type[T]): Expr[RType[T]] =
     import q.reflect.*
     import Liftables.TypeSymbolToExpr
 
-    inline def stripType( z: Expr[RType[_]])(using q:Quotes): Expr[RType[_]] =
-        '{ $z.asInstanceOf[RType[_]] }
+    inline def stripType(z: Expr[RType[_]])(using q: Quotes): Expr[RType[_]] =
+      '{ $z.asInstanceOf[RType[_]] }
 
     opt match {
-        case scalaOpt: ScalaOptionRType[_] =>
+      case scalaOpt: ScalaOptionRType[?] =>
+        val tt = scalaOpt.optionParamType.toType(quotes)
+        val optTypeExpr = stripType(
+          ExprMaster
+            .makeExpr(scalaOpt.optionParamType)(using q)(using tt.asInstanceOf[Type[scalaOpt.optionParamType.T]])
+            .asInstanceOf[Expr[RType[scalaOpt.optionParamType.T]]]
+        )
 
-            val tt = scalaOpt._optionParamType.toType(quotes)
-            val optTypeExpr = stripType(ExprMaster.makeExpr(scalaOpt._optionParamType)(using q)(using tt.asInstanceOf[Type[scalaOpt._optionParamType.T]]).asInstanceOf[Expr[RType[scalaOpt._optionParamType.T]]])
+        Apply(
+          TypeApply(
+            Select.unique(New(TypeTree.of[ScalaOptionRType[T]]), "<init>"),
+            List(TypeTree.of[T])
+          ),
+          List(
+            Expr(scalaOpt.name).asTerm,
+            Expr(scalaOpt.typeParamSymbols).asTerm,
+            optTypeExpr.asTerm
+          )
+        ).asExprOf[RType[T]]
 
-            Apply(
-                TypeApply(
-                    Select.unique(New(TypeTree.of[ScalaOptionRType[T]]),"<init>"), 
-                    List(TypeTree.of[T])
-                ),
-                List(
-                    Expr(scalaOpt.name).asTerm,
-                    Expr(scalaOpt.typeParamSymbols).asTerm,
-                    optTypeExpr.asTerm
-                )
-            ).asExprOf[RType[T]]
+      case javaOpt: JavaOptionalRType[?] =>
+        val tt = javaOpt.optionParamType.toType(quotes)
+        val optTypeExpr = stripType(
+          ExprMaster
+            .makeExpr(javaOpt.optionParamType)(using q)(using tt.asInstanceOf[Type[javaOpt.optionParamType.T]])
+            .asInstanceOf[Expr[RType[javaOpt.optionParamType.T]]]
+        )
 
-        case javaOpt: JavaOptionalRType[_] =>
-            val tt = javaOpt._optionParamType.toType(quotes)
-            val optTypeExpr = stripType(ExprMaster.makeExpr(javaOpt._optionParamType)(using q)(using tt.asInstanceOf[Type[javaOpt._optionParamType.T]]).asInstanceOf[Expr[RType[javaOpt._optionParamType.T]]])
-
-            Apply(
-                TypeApply(
-                    Select.unique(New(TypeTree.of[JavaOptionalRType[T]]),"<init>"), 
-                    List(TypeTree.of[T])
-                ),
-                List(
-                    Expr(javaOpt.name).asTerm,
-                    Expr(javaOpt.typeParamSymbols).asTerm,
-                    optTypeExpr.asTerm
-                )
-            ).asExprOf[RType[T]]
+        Apply(
+          TypeApply(
+            Select.unique(New(TypeTree.of[JavaOptionalRType[T]]), "<init>"),
+            List(TypeTree.of[T])
+          ),
+          List(
+            Expr(javaOpt.name).asTerm,
+            Expr(javaOpt.typeParamSymbols).asTerm,
+            optTypeExpr.asTerm
+          )
+        ).asExprOf[RType[T]]
     }

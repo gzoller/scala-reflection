@@ -1,15 +1,29 @@
 package co.blocke.scala_reflection
 package rtypes
 
-case class JavaStackRType[R] (
-  name: String,
-  typeParamSymbols: List[TypeSymbol],
-  _elementType: RType[_],
-) extends RType[R] with CollectionRType[R]:
+import scala.quoted.Quotes
+import reflect.{JsonField, JsonObjectBuilder}
 
-  val typedName: TypedName = name + "[" + _elementType.typedName + "]"
+case class JavaStackRType[R](
+    name: String,
+    typeParamSymbols: List[TypeSymbol],
+    elementType: RType[?]
+) extends RType[R]
+    with CollectionRType[R]:
+
+  val typedName: TypedName = name + "[" + elementType.typedName + "]"
   def selectLimit: Int = 1
 
-  lazy val clazz: Class[_] = Class.forName(name)
+  lazy val clazz: Class[?] = Class.forName(name)
 
-  lazy val elementType: RType[_] = _elementType
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaStackRType"),
+        JsonField("name", this.name),
+        JsonField("typedName", this.typedName),
+        JsonField("typeParamSymbols", this.typeParamSymbols),
+        JsonField("elementType", this.elementType)
+      )
+    )

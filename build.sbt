@@ -1,4 +1,7 @@
 import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
+import scoverage.ScoverageKeys._
+
+lazy val isCI = sys.env.get("CI").contains("true")
 
 inThisBuild(List(
   organization := "co.blocke",
@@ -17,7 +20,9 @@ inThisBuild(List(
       "",
       url("https://github.com/pjfanning")
     )
-  )
+  ),
+  coverageMinimumStmtTotal    := 92,
+  coverageFailOnMinimum       := true
 ))
 
 name := "scala-reflection"
@@ -36,12 +41,13 @@ lazy val root = project
     Compile / doc / sources := Seq(),
     //sources in (Compile, doc) := Seq(),
     Test / parallelExecution := false,
+    scalafmtOnCompile := !isCI,
     libraryDependencies ++= Seq(
       "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
       "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
       "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
       "org.scalameta"  %% "munit"                  % "1.0.0-M9" % Test,
-      "co.blocke" %% "listzipper" % "0.1.6" % Test
+      "co.blocke"      %% "listzipper"             % "0.1.6" % Test
     )
   )
 

@@ -9,89 +9,118 @@ class Collections extends munit.FunSuite:
 
   test("Scala List") {
     val result = RType.of[Coll1]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll1:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll1:
       |   fields ->
       |      a: List of: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Scala Set") {
     val result = RType.of[Coll2]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll2:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll2:
       |   fields ->
       |      a: HashSet of: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Scala Map 1") {
     val result = RType.of[Coll3]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll3:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll3:
       |   fields ->
       |      a: Map of:
       |         key: String
       |         value: Float
-      |""".stripMargin)  
+      |""".stripMargin
+    )
   }
 
   test("Scala Map 2") {
     val result = RType.of[Coll4]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll4:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll4:
       |   fields ->
       |      a: ListMap of:
       |         key: String
       |         value: Boolean
-      |""".stripMargin)  
+      |""".stripMargin
+    )
   }
 
   test("Scala mutable List") {
     val result = RType.of[Coll1m]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll1m:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll1m:
       |   fields ->
       |      a: mutable ListBuffer of: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Scala mutable Set") {
     val result = RType.of[Coll2m]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll2m:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll2m:
       |   fields ->
       |      a: mutable HashSet of: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Scala mutable Map 1") {
     val result = RType.of[Coll3m]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll3m:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll3m:
       |   fields ->
       |      a: mutable Map of:
       |         key: String
       |         value: Float
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Scala mutable Map 2") {
     val result = RType.of[Coll4m]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.Coll4m:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Coll4m:
       |   fields ->
       |      a: mutable HashMap of:
       |         key: String
       |         value: Boolean
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Nested Collections") {
     val result = RType.of[NestedColl]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.NestedColl:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.NestedColl:
       |   fields ->
       |      a: Map of:
       |         key: String
       |         value: List of: Option of Int
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Tuples") {
     val result = RType.of[TupleTurtle[Boolean]]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.TupleTurtle[Boolean]:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.TupleTurtle[Boolean]:
       |   fields ->
       |      t: Tuple of:
       |         0: Int
@@ -101,12 +130,15 @@ class Collections extends munit.FunSuite:
       |            fields ->
       |               a: Option of Int
       |               b: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }
 
   test("Scala Arrays") {
     val result = RType.of[WithScalaArray]
-    assertEquals( result.pretty, """co.blocke.scala_reflection.models.WithScalaArray:
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.WithScalaArray:
       |   fields ->
       |      list: Array of: Array of: Char
       |      x1: Array of: Boolean
@@ -118,5 +150,6 @@ class Collections extends munit.FunSuite:
       |      x7: Array of: Long
       |      x8: Array of: Short
       |      x9: Array of: String
-      |""".stripMargin)
+      |""".stripMargin
+    )
   }

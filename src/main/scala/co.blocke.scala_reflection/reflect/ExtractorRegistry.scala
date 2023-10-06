@@ -1,11 +1,11 @@
 package co.blocke.scala_reflection
 package reflect
 
-import extractors.* 
+import extractors.*
 
 object ExtractorRegistry:
 
-  lazy val extractors: List[TypeExtractor[_]] = 
+  lazy val extractors: List[TypeExtractor[_]] =
     List(
       OptionExtractor(),
       EitherExtractor(),

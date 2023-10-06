@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 
 /** Mnemonic symbol for a type--typically a paramaterized type, e.g. Foo[T], where T is the symbol */
-opaque type TypeSymbol = String 
+opaque type TypeSymbol = String
 given listOstring2TypeSymbol: Conversion[List[String], List[TypeSymbol]] with
   def apply(x: List[String]): List[TypeSymbol] = x.asInstanceOf[List[TypeSymbol]]
 
