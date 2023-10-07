@@ -107,3 +107,14 @@ trait SJCapture {
 class SJCaptureJava extends SJCapture
 
 case class JJ(jFoo: JavaParam[Int])
+
+trait Blah[T]:
+  val x: T
+
+case class UberJS[T](
+    a: Option[List[Either[Int, Boolean]]],
+    b: java.util.HashMap[String, Int | Long],
+    c: Option[UberJS[Int]],
+    x: T
+) extends Blah[T]:
+  type S = String

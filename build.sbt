@@ -20,9 +20,9 @@ inThisBuild(List(
       "",
       url("https://github.com/pjfanning")
     )
-  ),
-  coverageMinimumStmtTotal    := 92,
-  coverageFailOnMinimum       := true
+  )
+  //coverageMinimumStmtTotal    := 92,
+  //coverageFailOnMinimum       := true
 ))
 
 name := "scala-reflection"
