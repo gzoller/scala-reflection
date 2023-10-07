@@ -118,8 +118,12 @@ object Classes:
         val fields: Expr[List[FieldInfo]] =
           Expr.ofList {
             jc.fields.map(f =>
-              val fieldtt = f.fieldType.toType(quotes)
-              val fieldTypeExpr = stripType(ExprMaster.makeExpr(f.fieldType)(using q: Quotes)(using fieldtt))
+              val fieldTypeExpr = f.fieldType match {
+                case e: JavaEnumRType[?] => e.expr.get // special case: pre-cooked Expr
+                case _ =>
+                  val fieldtt = f.fieldType.toType(quotes)
+                  stripType(ExprMaster.makeExpr(f.fieldType)(using q: Quotes)(using fieldtt))
+              }
               Apply(
                 Select.unique(New(TypeTree.of[NonConstructorFieldInfo]), "<init>"),
                 List(

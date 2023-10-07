@@ -34,4 +34,18 @@ object Enums:
             Expr(s.values).asTerm
           )
         ).asExprOf[RType[T]]
+
+      case j: JavaEnumRType[?] => // Java Enum
+        Apply(
+          TypeApply(
+            Select.unique(New(TypeTree.of[JavaEnumRType[T]]), "<init>"),
+            List(TypeTree.of[T])
+          ),
+          List(
+            Expr(j.name).asTerm,
+            Expr(j.values).asTerm,
+            Expr(None).asTerm
+          )
+        ).asExprOf[RType[T]]
+
     }

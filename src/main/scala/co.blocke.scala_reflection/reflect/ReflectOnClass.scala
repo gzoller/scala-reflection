@@ -159,13 +159,6 @@ object ReflectOnClass:
               TraitRType(className, traitFields)
           }
 
-      // ===
-      // ===  Enums
-      // ===
-      else if symbol.flags.is(quotes.reflect.Flags.Enum)
-      then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
-        ScalaEnumRType(symbol.fullName, typeRef.classSymbol.get.children.map(_.name))
-
       // === Java Class ===
       // User-written Java classes will have the source file.  Java library files will have <no file> for source
       else if symbol.flags.is(Flags.JavaDefined) then
@@ -180,6 +173,13 @@ object ReflectOnClass:
           symbol.tree.asInstanceOf[ClassDef].parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName),
           Some(typeRef.asType.asInstanceOf[Type[T]])
         )
+
+      // ===
+      // ===  Enums
+      // ===
+      else if symbol.flags.is(quotes.reflect.Flags.Enum)
+      then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
+        ScalaEnumRType(symbol.fullName, typeRef.classSymbol.get.children.map(_.name))
 
       // ===
       // ===  Scala 3 Classes

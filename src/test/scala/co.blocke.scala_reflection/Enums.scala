@@ -5,15 +5,16 @@ import rtypes.*
 
 class Enums extends munit.FunSuite:
 
-  /*
   test("Java Enums") {
     val result = RType.of[co.blocke.reflect.JavaEnum]
-    assertEquals( result.show(), """JavaClassInfo(co.blocke.reflect.JavaEnum):
-    |   fields:
-    |      (0) color: JavaEnumInfo(co.blocke.reflect.Color)
-    |""".stripMargin)
+    assertEquals(
+      result.pretty,
+      """co.blocke.reflect.JavaEnum (Java):
+      |   fields ->
+      |      color: Enum (Java) having values (RED,GREEN,BLUE)
+      |""".stripMargin
+    )
   }
-   */
 
   test("Scala Enums (old and new)") {
     val result = RType.of[Birthday]

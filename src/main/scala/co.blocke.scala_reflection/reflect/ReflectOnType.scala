@@ -41,7 +41,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
       // Most types will have a classSymbol and will be handled here...
       case Some(classSymbol) =>
         // Handle gobbled non-class scala.Enumeration.Value (old 2.x Enumeration class values)
-        val (is2xEnumeration, className) = classSymbol.fullName match {
+        val (is2xEnumeration, isJavaEnum, className) = classSymbol.fullName match {
           case raw if raw == Clazzes.ENUMERATION_CLASS =>
             val enumerationClass = typeRef.typeSymbol.fullName
             if enumerationClass == Clazzes.ENUMERATION_CLASS then
@@ -52,12 +52,14 @@ object ReflectOnType: // extends NonCaseClassReflection:
                 .moduleClass
                 .fullName
                 .dropRight(1) // chop the '$' off the end!
-              (true, enumClassName)
+              (true, false, enumClassName)
             else
               // If caller defined a type member (type X = Value) inside their Enumeration class
-              (true, enumerationClass.dropRight(enumerationClass.length - enumerationClass.lastIndexOf('$')))
+              (true, false, enumerationClass.dropRight(enumerationClass.length - enumerationClass.lastIndexOf('$')))
+          case _ if classSymbol.flags.is(Flags.JavaDefined) && classSymbol.flags.is(Flags.Enum) => // trap Java Enum so it doesn't go into ReflectOnClass
+            (false, true, classSymbol.fullName)
           case _ =>
-            (false, classSymbol.fullName)
+            (false, false, classSymbol.fullName)
         }
 
         typeRef match {
@@ -88,8 +90,18 @@ object ReflectOnType: // extends NonCaseClassReflection:
               case a if a == defn.AnyClass =>
                 AnyRType().asInstanceOf[RType[T]] // Any type
 
-              case cs => // Non-parameterized classes
+              case cs if !isJavaEnum => // Non-parameterized classes
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
+
+              case _: Symbol => // Java Enum
+                val enumRT = JavaEnumRType(
+                  aType.classSymbol.get.fullName,
+                  aType.classSymbol.get.children.map(_.name)
+                )
+                val fieldTypeExpr = stripType( // pre-cook the Expr while we have all the juicy type information (Java only)
+                  exprs.ExprMaster.makeExpr(enumRT.asInstanceOf[RType[T]])(using quotes)(using aType.asType.asInstanceOf[Type[T]])
+                )(using quotes)
+                enumRT.copy(expr = Some(fieldTypeExpr)).asInstanceOf[RType[T]]
             }
 
           // Union Type (sometimes it pops up down here for some reason... hmm...)

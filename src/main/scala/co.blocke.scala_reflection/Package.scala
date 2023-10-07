@@ -11,3 +11,9 @@ given string2typedname: Conversion[String, TypedName] with
   def apply(x: String): TypedName = x.asInstanceOf[TypedName]
 
 class ReflectException(msg: String) extends Exception(msg)
+
+// This silly little piece of drama is sadly necessary to keep Scala's ADHD type-checker happy.
+// We need to take the incoming RType (z), which has some given type, and explicitly cast it to
+// RType[_] to make Scala happy.  Sigh.  It works great when we do, so...
+inline def stripType(z: scala.quoted.Expr[RType[_]])(using q: scala.quoted.Quotes): scala.quoted.Expr[RType[_]] =
+  '{ $z.asInstanceOf[RType[_]] }

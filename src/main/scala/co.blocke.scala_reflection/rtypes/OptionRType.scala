@@ -58,7 +58,8 @@ case class JavaOptionalRType[R](
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
-    val optType: quoted.Type[R] = super.toType(quotes)
+    val optType: quoted.Type[R] =
+      super.toType(quotes).asInstanceOf[quoted.Type[R]]
     val paramType: quoted.Type[optionParamType.T] = optionParamType.toType(quotes)
     val optTypeRepr = TypeRepr.of[R](using optType)
     val paramTypeRepr = TypeRepr.of[optionParamType.T](using paramType)

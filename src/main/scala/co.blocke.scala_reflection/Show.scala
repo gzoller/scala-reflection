@@ -284,6 +284,10 @@ object Show:
         buf.append("Enum (Scala 3) having values " + t.values.mkString("(", ",", ")"))
         (buf, false, seenBefore)
 
+      case t: JavaEnumRType[?] =>
+        buf.append("Enum (Java) having values " + t.values.mkString("(", ",", ")"))
+        (buf, false, seenBefore)
+
       case t: ObjectRType =>
         buf.append(showSimpleName(t))
         buf.append(" (object)")

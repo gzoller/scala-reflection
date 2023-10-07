@@ -123,7 +123,7 @@ case class JavaClassRType[R](
     typeParamValues: List[RType[_]],
     annotations: Map[String, Map[String, String]],
     mixins: List[String],
-    classType: Option[Type[R]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
+    classType: Option[Type[_]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
 ) extends ClassRType[R]:
 
   val typedName: TypedName = name
@@ -134,9 +134,9 @@ case class JavaClassRType[R](
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
-    val classType: quoted.Type[R] =
-      this.classType.getOrElse(quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]])
-    val classTypeRepr = TypeRepr.of[R](using classType)
+    val classType: quoted.Type[?] =
+      this.classType.getOrElse(quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType)
+    val classTypeRepr = TypeRepr.of[R](using classType.asInstanceOf[quoted.Type[R]])
     val fieldTypes = fields.map { f =>
       val oneFieldType = f.fieldType.toType(quotes)
       TypeRepr.of[f.fieldType.T](using oneFieldType)

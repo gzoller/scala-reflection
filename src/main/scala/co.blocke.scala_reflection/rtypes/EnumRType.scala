@@ -6,7 +6,7 @@ import reflect.{JsonField, JsonObjectBuilder}
 
 /** Something to smooth the differences between the 2.x Enumeration class and the 3.x Enum class
   */
-trait EnumRType[T] extends RType[T]:
+trait EnumRType[R] extends RType[R]:
   lazy val clazz: Class[?]
   val values: List[String]
 
@@ -26,10 +26,10 @@ trait EnumRType[T] extends RType[T]:
 
 //---------------------------------------------------------< Scala 3 Enum
 
-case class ScalaEnumRType[T](
+case class ScalaEnumRType[R](
     name: String,
     values: List[String]
-) extends EnumRType[T]:
+) extends EnumRType[R]:
   val typedName: TypedName = name
   lazy val clazz: Class[?] = Class.forName(name)
   def ordinal(v: String): Option[Int] = values.indexOf(v) match {
@@ -42,10 +42,10 @@ case class ScalaEnumRType[T](
 
 //---------------------------------------------------------< Scala 2 Enumeration
 
-case class ScalaEnumerationRType[T](
+case class ScalaEnumerationRType[R](
     name: String,
     values: List[String]
-) extends EnumRType[T]:
+) extends EnumRType[R]:
   val typedName: TypedName = name
 
   lazy val byName: Map[String, Int] =
@@ -65,28 +65,22 @@ case class ScalaEnumerationRType[T](
 
 //---------------------------------------------------------< Java Enumeration
 
-/*
-object JavaEnumInfo:
-  def fromBytes( bbuf: ByteBuffer ): JavaEnumInfo =
-    JavaEnumInfo(
-      StringByteEngine.read(bbuf)
-      )
+// When we get here: we can use class.getEnumConstants() to return array of T, the valid values of a Java enum
+case class JavaEnumRType[R](
+    name: String,
+    values: List[String],
+    expr: Option[scala.quoted.Expr[R]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
+) extends EnumRType[R]:
+  val typedName: TypedName = name
+  lazy val clazz: Class[?] = Class.forName(name)
 
-      // When we get here: we can use class.getEnumConstants() to return array of T, the valid values of a Java enum
-case class JavaEnumInfo protected[scala_reflection](
-  name: String,
-) extends RType:
-  val fullName = name
-  lazy val infoClass: Class[_] = Class.forName(name)
+  def ordinal(v: String): Option[Int] = values.indexOf(v) match {
+    case -1 => None
+    case i  => Some(i)
+  }
+  def valueAt(i: Int): Option[String] =
+    if i < 0 || i >= values.size then None
+    else Some(values(i))
 
-  def show(tab: Int = 0, seenBefore: List[String] = Nil, suppressIndent: Boolean = false, modified: Boolean = false): String =
-    val newTab = {if suppressIndent then tab else tab+1}
-    {if(!suppressIndent) tabs(tab) else ""} + this.getClass.getSimpleName +s"(${infoClass.getName})\n"
-
-  def toBytes( bbuf: ByteBuffer ): Unit =
-    bbuf.put( JAVA_ENUM_INFO )
-    StringByteEngine.write(bbuf, name)
-
-  def jsSerialize(sb: StringBuffer): Unit =
-    sb.append(s"""{"kind":"Java Enum","name":"$name","fullName":"$fullName"}""")
- */
+  override def toType(quotes: Quotes): quoted.Type[R] =
+    quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]

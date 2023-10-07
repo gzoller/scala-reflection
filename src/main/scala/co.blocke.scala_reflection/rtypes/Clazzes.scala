@@ -70,6 +70,7 @@ object Clazzes {
   val JQueueClazz = classOf[java.util.Queue[_]]
   val JSetClazz = classOf[java.util.Set[_]]
   val JStackClazz = classOf[java.util.Stack[_]]
+  val JEnumClazz = classOf[java.lang.Enum[_]]
   val JNumberClazz = Class.forName("java.lang.Number")
 
   // Class Ops

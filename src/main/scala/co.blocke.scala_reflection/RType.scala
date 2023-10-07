@@ -72,19 +72,6 @@ object RType:
 
   def ofJSImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[String] =
     import quotes.reflect.*
-    // val sb = new StringBuilder()
-    // val b = Bogus("bogus", Map("a" -> 3, "b" -> 5), 15)
-    // Bogus( name: String, ok: Boolean, count: Long )
-    // JsonObjectBuilder(quotes)(
-    //   sb,
-    //   List(
-    //     JsonField("name", b.name),
-    //     JsonField("ok", b.ok),
-    //     JsonField("count", b.count)
-    //   )
-    // )
-    // Expr(sb.toString)
-
     val rtype = unwindType(quotes)(TypeRepr.of[T]).asInstanceOf[RType[T]]
     val sb = new StringBuilder()
     rtype.asJson(sb)
