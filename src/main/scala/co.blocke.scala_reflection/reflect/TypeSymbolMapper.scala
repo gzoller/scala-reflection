@@ -2,8 +2,7 @@ package co.blocke.scala_reflection
 package reflect
 
 import scala.quoted.*
-import rtypes.*
-import javax.management.ReflectionException
+import rtypeRefs.*
 
 /** The goal of TypeSymbolFinder is to deep-dive through a class and find where in the type tree each type parameter is located.
   * For example:
@@ -33,13 +32,17 @@ object TypeSymbolMapper:
 
   def mapTypeSymbolsForClass(
       quotes: Quotes
-  )(classDef: quotes.reflect.ClassDef, paramSymbols: List[TypeSymbol]): Map[String, List[List[Int]]] =
+  )(classDef: quotes.reflect.ClassDef, paramSymbols: List[TypeSymbol])(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): Map[String, List[List[Int]]] =
     import quotes.reflect.*
 
+    implicit val q = quotes
     classDef.parents
       .map(_.asInstanceOf[TypeTree].tpe)
       .collect { case a: AppliedType => // for each AppliedType ancestor of this class...
-        val extendsType = RType.unwindType(quotes)(a)
+        val extendsType =
+          a.asType match
+            case '[t] =>
+              reflect.ReflectOnType[t](quotes)(a)
         val initialMap = paramSymbols.map(ts => TypeRecord(ts, Nil))
         val result = navLevel(extendsType, -1, initialMap) match {
           case Left(r) =>
@@ -51,12 +54,12 @@ object TypeSymbolMapper:
       .toMap
 
   private def navLevel(
-      rt: RType[?],
+      rt: RTypeRef[?],
       index: Int,
       paramList: List[TypeRecord]
   ): Either[List[TypeRecord], List[TypeRecord]] = // Left => More to do, Right => complete
     rt match {
-      case ap: AppliedRType =>
+      case ap: AppliedRef =>
         val initialList =
           if index < 0 then paramList
           else paramList.map(_.pushPath(index)) // add current path to all un-found symbols
@@ -74,7 +77,7 @@ object TypeSymbolMapper:
         if numLeftToFind == 0 then Right(cleanedList)
         else Left(cleanedList)
 
-      case ts: TypeSymbolRType[?] =>
+      case ts: TypeSymbolRef[?] =>
         paramList.indexOf2(ts.name.asInstanceOf[TypeSymbol]) match {
           case i if (i >= 0 && !paramList(i).isFound) =>
             Left(paramList.updated(i, paramList(i).pushPath(index, true)))
@@ -90,39 +93,42 @@ object TypeSymbolMapper:
   // T will be a fully-typed trait (w/concrete types, not type symbols).  The goal is to use the
   // type map to figure out what the concrete Types for each of class's type parameters should be,
   // per the given trait.
-  def deepApply(classRT: ScalaClassRType[?], traitRT: TraitRType[?])(using q: Quotes): List[q.reflect.TypeRepr] =
+  def deepApply(classRT: ScalaClassRef[?], traitRT: TraitRef[?])(using q: Quotes): List[q.reflect.TypeRepr] =
     import q.reflect.*
 
     // This nonsense is required because if you have type parameters with a union or intersection, wrapped in some
     // other AppliedType (like List[Int|String]), the And/Or types get demoted to Object, which blows up.
     // Need to rebuild the TypeRepr tree with the proper AndType/OrType.  <sigh>
-    def rebuildAppliedType(rt: RType[?]): TypeRepr =
+    def rebuildAppliedType(rt: RTypeRef[?]): TypeRepr =
       rt match {
-        case u: UnionRType[?] =>
-          OrType(rebuildAppliedType(u.leftType), rebuildAppliedType(u.rightType))
+        case u: LeftRightRef[?] if u.lrkind == LRKind.UNION =>
+          OrType(rebuildAppliedType(u.leftRef), rebuildAppliedType(u.rightRef))
 
-        case i: IntersectionRType[?] =>
-          AndType(rebuildAppliedType(i.leftType), rebuildAppliedType(i.rightType))
+        case i: LeftRightRef[?] if i.lrkind == LRKind.INTERSECTION =>
+          AndType(rebuildAppliedType(i.leftRef), rebuildAppliedType(i.rightRef))
 
-        case a: AppliedRType =>
-          implicit val tt = a.toType(q)
-          TypeRepr.of[a.T] match {
-            case AppliedType(t, tob) =>
-              val paramReprs = (0 to a.selectLimit - 1).map(i => rebuildAppliedType(a.select(i))).toList
-              AppliedType(t, paramReprs)
-          }
+        case a: AppliedRef =>
+          a.refType match
+            case '[u] =>
+              TypeRepr.of[u] match {
+                case AppliedType(t, tob) =>
+                  val paramReprs = (0 to a.selectLimit - 1).map(i => rebuildAppliedType(a.select(i))).toList
+                  AppliedType(t, paramReprs)
+              }
 
         case _ =>
-          implicit val tt = rt.toType(q)
-          TypeRepr.of[rt.T]
+          rt.refType match
+            case '[t] =>
+              TypeRepr.of[t]
       }
 
-    def runPath(path: List[Int], rt: RType[?]): TypeRepr =
+    def runPath(path: List[Int], rt: RTypeRef[?]): TypeRepr =
       rt match {
-        case x if !x.isInstanceOf[AppliedRType] =>
-          implicit val tt = rt.toType(q)
-          TypeRepr.of[rt.T]
-        case a: AppliedRType =>
+        case x if !x.isInstanceOf[AppliedRef] =>
+          rt.refType match
+            case '[t] =>
+              TypeRepr.of[t]
+        case a: AppliedRef =>
           path match {
             case Nil =>
               TypeRepr.of[Any] // If we can't map a type parameter, we default to Any-type

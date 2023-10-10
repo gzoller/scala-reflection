@@ -2,31 +2,17 @@ package co.blocke.scala_reflection
 package rtypes
 
 import scala.quoted.*
-import scala.reflect.ClassTag
-import reflect.{JsonField, JsonObjectBuilder}
+import util.{JsonField, JsonObjectBuilder}
 
 /** Base information we keep for all class fields, regardless of whether Scala or Java
   */
-trait FieldInfo extends Serializable:
+trait FieldInfo:
   val index: Int
   val name: String
   val fieldType: RType[?]
   val originalSymbol: Option[TypeSymbol]
   val annotations: Map[String, Map[String, String]]
   lazy val defaultValue: Option[Object]
-
-  def reIndex(i: Int): FieldInfo
-
-  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
-    JsonObjectBuilder(quotes)(
-      sb,
-      List(
-        JsonField("name", this.name),
-        JsonField("fieldType", this.fieldType),
-        JsonField("originalSymbol", this.originalSymbol),
-        JsonField("annotations", this.annotations)
-      )
-    )
 
 //------------------------------------------------------------
 
@@ -47,10 +33,8 @@ case class ScalaFieldInfo(
     annotations: Map[String, Map[String, String]],
     defaultValueAccessorName: Option[(String, String)], // (companion class name, method)
     originalSymbol: Option[TypeSymbol],
-    isNonValConstructorField: Boolean = false
+    isNonValConstructorField: Boolean = false // meaningful for non-case classes
 ) extends FieldInfo:
-
-  def reIndex(i: Int): FieldInfo = this.copy(index = i)
 
   /** Default values of constructor fields, where present. This is a rare case where the clunky Java reflection way of getting
     *  this information is better... we can get the default values and conveniently store them with the RType, vs some separate
@@ -79,4 +63,5 @@ case class NonConstructorFieldInfo(
   def reIndex(i: Int): FieldInfo = this.copy(index = i)
 
   lazy val defaultValue: Option[Object] =
-    Some(fieldType.clazz.getMethod(getterLabel).invoke(fieldType.clazz.getDeclaredConstructor().newInstance()))
+    val clazz = Class.forName(fieldType.name)
+    Some(clazz.getMethod(getterLabel).invoke(clazz.getDeclaredConstructor().newInstance()))

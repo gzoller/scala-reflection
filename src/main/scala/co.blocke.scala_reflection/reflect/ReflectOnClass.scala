@@ -3,7 +3,7 @@ package reflect
 
 import scala.quoted.*
 import scala.util.matching.Regex
-import rtypes.*
+import rtypeRefs.*
 
 /** This is the workhorse of Scala reflection.  Dive into all the Scala-internal bits in the reflection API, extract the
   * juicy bits, and construct our (hopefully) simpler RTypes.
@@ -15,7 +15,7 @@ object ReflectOnClass:
       typedName: TypedName,
       resolveTypeSyms: Boolean,
       appliedTob: List[quotes.reflect.TypeRepr] = Nil
-  ): RType[T] =
+  )(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
     // ===
@@ -28,7 +28,15 @@ object ReflectOnClass:
     val symbol = typeRef.classSymbol.get
     val (typeSymbols, typeSymbolValues) = symbol.primaryConstructor.paramSymss match {
       case List(paramSyms: List[Symbol], _) =>
-        (paramSyms.map(_.name.asInstanceOf[TypeSymbol]), typeRef.typeArgs.map(RType.unwindType(quotes)(_)))
+        (
+          paramSyms.map(_.name.asInstanceOf[TypeSymbol]),
+          typeRef.typeArgs.map { argType =>
+            implicit val q = quotes
+            argType.asType match
+              case '[t] =>
+                reflect.ReflectOnType[t](quotes)(argType)
+          }
+        )
       case _ => (Nil, Nil)
     }
 
@@ -51,7 +59,7 @@ object ReflectOnClass:
     }.toMap
 
     // Is this class annotated to skip reflection?   If so, return UnknownInfo
-    if classAnnos.contains("co.blocke.scala_reflection.Ignore") then UnknownRType(symbol.fullName)
+    if classAnnos.contains("co.blocke.scala_reflection.Ignore") then UnknownRef[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
     else
 
       // ===
@@ -62,7 +70,8 @@ object ReflectOnClass:
 
       // sealed children, if any
       val isSealed = symbol.flags.is(quotes.reflect.Flags.Sealed)
-      val sealedChildrenRTypes =
+      val sealedChildrenRTypes = Nil
+      /*
         if isSealed then
           symbol.children.map { c =>
             c.tree match {
@@ -76,17 +85,23 @@ object ReflectOnClass:
             }
           }
         else Nil
+       */
 
       // === Scala 2 Classes ===
-      if symbol.flags.is(quotes.reflect.Flags.Scala2x) then Scala2RType(symbol.fullName)
+      /*
+      if symbol.flags.is(quotes.reflect.Flags.Scala2x) then
+        Scala2RType(symbol.fullName)
+
       else if symbol.flags.is(quotes.reflect.Flags.Trait) then
+       */
+      if symbol.flags.is(quotes.reflect.Flags.Trait) then
 
         if isSealed then
 
           // ===
           // ===  Sealed Traits
           // ===
-          SealedTraitRType(className, sealedChildrenRTypes)
+          SealedTraitRef(className, sealedChildrenRTypes)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
         else
 
           // ===
@@ -94,19 +109,26 @@ object ReflectOnClass:
           // ===
           typeRef match {
             case AppliedType(t, tob) => // parameterized trait
+              implicit val q = quotes
               val actualParamTypes = tob.map { oneTob =>
                 scala.util
                   .Try {
-                    if resolveTypeSyms then RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef])
-                    else if oneTob.asInstanceOf[quotes.reflect.TypeRef].typeSymbol.flags.is(Flags.Param) then TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
-                    else RType.unwindType(quotes)(oneTob.asInstanceOf[quotes.reflect.TypeRef], false)
+                    if resolveTypeSyms then
+                      oneTob.asType match
+                        case '[t] =>
+                          reflect.ReflectOnType[t](quotes)(oneTob)
+                    else if oneTob.asInstanceOf[quotes.reflect.TypeRef].typeSymbol.flags.is(Flags.Param) then TypeSymbolRef(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)(using quotes)
+                    else
+                      oneTob.asType match
+                        case '[t] =>
+                          reflect.ReflectOnType[t](quotes)(oneTob, false)
                   }
                   .toOption
                   .getOrElse {
-                    TypeSymbolRType(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)
+                    TypeSymbolRef(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)(using quotes)
                   }
               }
-              val paramMap: Map[TypeSymbol, RType[_]] = typeSymbols.zip(actualParamTypes).toMap
+              val paramMap: Map[TypeSymbol, RTypeRef[_]] = typeSymbols.zip(actualParamTypes).toMap
 
               val traitFields = symbol.declaredFields.zipWithIndex.map { (f, index) =>
                 val fieldType =
@@ -114,27 +136,32 @@ object ReflectOnClass:
                   // so T -> W.  We need resolveTypeParams to sew down for deeper nested types like List.  Ugh.
                   scala.util
                     .Try {
-                      if resolveTypeSyms then RType.unwindType(quotes)(typeRef.memberType(f))
+                      if resolveTypeSyms then
+                        typeRef.memberType(f).asType match
+                          case '[t] =>
+                            reflect.ReflectOnType[t](quotes)(typeRef.memberType(f))
                       else
                         f.tree match {
                           case vd: ValDef if vd.tpt.tpe.typeSymbol.flags.is(Flags.Param) =>
                             paramMap.getOrElse(
                               vd.tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
-                              RType.unwindType(quotes)(
-                                vd.tpt.tpe
-                              ) // .asInstanceOf[AppliedRType].resolveTypeParams(paramMap)
+                              vd.tpt.tpe.asType match
+                                case '[t] =>
+                                  reflect.ReflectOnType[t](quotes)(vd.tpt.tpe)
                             )
                           case _ =>
-                            RType.unwindType(quotes)(typeRef.memberType(f), false)
+                            typeRef.memberType(f).asType match
+                              case '[t] =>
+                                reflect.ReflectOnType[t](quotes)(typeRef.memberType(f), false)
                         }
                     }
                     .toOption
                     .getOrElse {
                       paramMap.getOrElse(
                         f.tree.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
-                        RType.unwindType(quotes)(
-                          f.tree.asInstanceOf[ValDef].tpt.tpe
-                        ) // .asInstanceOf[AppliedRType].resolveTypeParams(paramMap)
+                        f.tree.asInstanceOf[ValDef].tpt.tpe.asType match
+                          case '[t] =>
+                            reflect.ReflectOnType[t](quotes)(f.tree.asInstanceOf[ValDef].tpt.tpe)
                       )
                     }
                 val typeSym =
@@ -142,23 +169,47 @@ object ReflectOnClass:
                     case ts if typeSymbols.contains(ts) => Some(ts)
                     case _                              => None
                   }
-                ScalaFieldInfo(index, f.name, fieldType, Map.empty[String, Map[String, String]], None, typeSym, true)
+                ScalaFieldInfoRef(
+                  index,
+                  f.name,
+                  fieldType,
+                  Map.empty[String, Map[String, String]],
+                  None,
+                  typeSym,
+                  true
+                )(using quotes)
               }
-              TraitRType(
+              TraitRef[T](
                 className,
+                util.TypedName(quotes)(typeRef),
                 traitFields,
                 typeSymbols,
                 typeSymbolValues
-              )
+              )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
+
             case _ =>
+              implicit val q = quotes
+
               // non-parameterized trait
               val traitFields = symbol.tree.asInstanceOf[ClassDef].body.collect { case valDef: ValDef =>
-                val fieldType = RType.unwindType(quotes)(typeRef.memberType(valDef.symbol))
-                ScalaFieldInfo(-1, valDef.name, fieldType, Map.empty[String, Map[String, String]], None, None, true)
+                val fieldType =
+                  typeRef.memberType(valDef.symbol).asType match
+                    case '[t] =>
+                      reflect.ReflectOnType[t](quotes)(typeRef.memberType(valDef.symbol))
+                ScalaFieldInfoRef(
+                  -1,
+                  valDef.name,
+                  fieldType,
+                  Map.empty[String, Map[String, String]],
+                  None,
+                  None,
+                  true
+                )(using quotes)
               }
-              TraitRType(className, traitFields)
+              TraitRef[T](className, util.TypedName(quotes)(typeRef), traitFields)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
           }
 
+          /*
       // === Java Class ===
       // User-written Java classes will have the source file.  Java library files will have <no file> for source
       else if symbol.flags.is(Flags.JavaDefined) then
@@ -180,6 +231,7 @@ object ReflectOnClass:
       else if symbol.flags.is(quotes.reflect.Flags.Enum)
       then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
         ScalaEnumRType(symbol.fullName, typeRef.classSymbol.get.children.map(_.name))
+           */
 
       // ===
       // ===  Scala 3 Classes
@@ -194,11 +246,11 @@ object ReflectOnClass:
           case Some(tt: TypeTree) if !isValueClass && tt.tpe.classSymbol.get.fullName != "java.lang.Object" =>
             ReflectOnClass(quotes)(
               tt.tpe.asInstanceOf[TypeRef],
-              RType.typeName(quotes)(tt.tpe),
+              util.TypedName(quotes)(tt.tpe),
               resolveTypeSyms
             ) match {
-              case ci: ClassRType[?] => Some(ci) // Any kind of class
-              case _                 => None // e.g. Unknown
+              case ci: ClassRef[?] => Some(ci) // Any kind of class
+              case _               => None // e.g. Unknown
             }
           case _ => None
         }
@@ -219,21 +271,25 @@ object ReflectOnClass:
           case AppliedType(t, tob) => tob
           case _                   => Nil
         }
+        implicit val q = quotes
         val typeMembers = classDef.body.collect {
           case TypeDef(typeName, typeTree) if typeSymbols.contains(typeTree.asInstanceOf[TypeTree].tpe.typeSymbol.name) =>
             val pos = typeSymbols.indexOf(typeTree.asInstanceOf[TypeTree].tpe.typeSymbol.name)
-            TypeMemberRType(
-              typeName,
-              typeSymbols(pos),
-              RType.unwindType(quotes)(tob(pos).asInstanceOf[TypeRepr])
-            )
+            tob(pos).asType match
+              case '[t] =>
+                TypeMemberRef(
+                  typeSymbols(pos).toString,
+                  reflect.ReflectOnType[t](quotes)(tob(pos).asInstanceOf[TypeRepr])
+                )(using quotes)(using Type.of[Any](using quotes))
+
           case TypeDef(typeName, typeTree) if !typeSymbols.contains(typeName) => // type memebers not used in the constructor
             val tt = typeTree.asInstanceOf[TypeTree].tpe
-            TypeMemberRType(
-              typeName,
-              typeName.asInstanceOf[TypeSymbol],
-              RType.unwindType(quotes)(tt) // tob(pos).asInstanceOf[TypeRepr])
-            )
+            tt.asType match
+              case '[t] =>
+                TypeMemberRef(
+                  typeName,
+                  reflect.ReflectOnType[t](quotes)(tt)
+                )(using quotes)(using Type.of[Any](using quotes))
         }
 
         // compute type param paths for parameterized class
@@ -245,24 +301,32 @@ object ReflectOnClass:
           if classDef.constructor.paramss.tail == Nil then classDef.constructor.paramss.head.params
           else classDef.constructor.paramss.tail.head.params
 
-        if symbol.flags.is(quotes.reflect.Flags.Case) then
+        if symbol.flags.is(Flags.Case) then
 
           // ===
           // ===  Case Classes
           // ===
-          val caseFields = constructorParams.zipWithIndex.map { (definition, idx) =>
+          val caseFields: List[FieldInfoRef] = constructorParams.zipWithIndex.map { (definition, idx) =>
             val valDef = definition.asInstanceOf[ValDef]
-            val fieldRType = unwindFieldRTypeWithTypeSubstitution(quotes)(
-              valDef,
-              symbol.caseFields(idx),
-              resolveTypeSyms,
-              typeRef
-            )
-            val fieldtt = valDef.tpt.tpe.asType.asInstanceOf[Type[fieldRType.T]]
-            ReflectOnField(quotes)(fieldRType, valDef, idx, dad, fieldDefaultMethods)(using fieldtt)
+            implicit val q = quotes
+            valDef.tpt.tpe.asType match
+              case '[t] =>
+                val fieldRef = unwindFieldRTypeWithTypeSubstitution[t](quotes)(
+                  valDef,
+                  symbol.caseFields(idx),
+                  resolveTypeSyms,
+                  typeRef
+                )
+                ReflectOnField(quotes)(
+                  fieldRef.asInstanceOf[RTypeRef[_]],
+                  valDef,
+                  idx,
+                  dad,
+                  fieldDefaultMethods
+                )
           }
 
-          ScalaClassRType(
+          ScalaClassRef[T](
             className,
             typedName,
             typeSymbols,
@@ -278,7 +342,11 @@ object ReflectOnClass:
             typeParamPaths,
             Nil,
             sealedChildrenRTypes
-          )
+          )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
+        else
+          UnknownRef[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
+
+          /*
         else
 
           // ===
@@ -331,23 +399,25 @@ object ReflectOnClass:
             nonConstructorFields,
             sealedChildrenRTypes
           )
+           */
 
       // === Other kinds of classes (non-case Scala) ===
-      else UnknownRType(symbol.fullName)
+      else UnknownRef[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
   // Unwind RType for given constructor field--and do type subsititution if available (ie T->String)
-  def unwindFieldRTypeWithTypeSubstitution(quotes: Quotes)(
+  def unwindFieldRTypeWithTypeSubstitution[U](quotes: Quotes)(
       valDef: quotes.reflect.ValDef,
       fieldSymbol: quotes.reflect.Symbol,
       resolveTypeSyms: Boolean,
       classTypeRef: quotes.reflect.TypeRef
-  ): RType[?] =
+  )(using utt: Type[U])(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[?] =
     import quotes.reflect.*
 
     if resolveTypeSyms then
-      RType.unwindType(quotes)(classTypeRef.memberType(fieldSymbol)) match {
-        case NONE  => TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
+      reflect.ReflectOnType[U](quotes)(classTypeRef.memberType(fieldSymbol)) match {
+        case tsym if tsym.name == NONE =>
+          TypeSymbolRef(valDef.tpt.tpe.typeSymbol.name)(using quotes)
         case other => other
       }
-    else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then TypeSymbolRType(valDef.tpt.tpe.typeSymbol.name)
-    else RType.unwindType(quotes)(valDef.tpt.tpe, false)
+    else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then TypeSymbolRef(valDef.tpt.tpe.typeSymbol.name)(using quotes)
+    else reflect.ReflectOnType[U](quotes)(valDef.tpt.tpe, false)

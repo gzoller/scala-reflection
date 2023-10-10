@@ -2,19 +2,19 @@ package co.blocke.scala_reflection
 package reflect
 
 import scala.quoted.*
-import rtypes.*
+import rtypeRefs.*
 
 object ReflectOnField:
 
   // Scala case class field reflection
-  def apply[Q](quotes: Quotes)(
-      fieldType: RType[Q],
+  def apply(quotes: Quotes)(
+      fieldType: RTypeRef[?],
       valDef: quotes.reflect.ValDef,
       index: Int,
-      dad: Option[ClassRType[_]],
+      dad: Option[ClassRef[_]],
       fieldDefaultMethods: Map[Int, (String, String)],
       isNonValConstructorField: Boolean = false
-  )(using Type[Q]): FieldInfo =
+  ): FieldInfoRef =
     import quotes.reflect.*
 
     // Get any field annotations (from body of class--they're not on the constructor fields)
@@ -36,7 +36,7 @@ object ReflectOnField:
     val isTypeParam = valTypeRef.typeSymbol.flags.is(quotes.reflect.Flags.Param)
     val originalTypeSymbol = if isTypeParam then Some(valTypeRef.name.asInstanceOf[TypeSymbol]) else None
 
-    ScalaFieldInfo(
+    ScalaFieldInfoRef(
       index,
       valDef.name,
       fieldType,
@@ -44,8 +44,9 @@ object ReflectOnField:
       fieldDefaultMethods.get(index),
       originalTypeSymbol,
       isNonValConstructorField
-    )
+    )(using quotes)
 
+/*
   // Reflect on any fields in a Scala plain class (non-case class) that are NOT in the constructor, i.e. defined in the body
   def nonCaseScalaField[Q](
       quotes: Quotes
@@ -97,7 +98,9 @@ object ReflectOnField:
         )
       }
       .sortBy(_.getterLabel) // sorted for consistent ordering for testing ;-)
+ */
 
+/*
   // Reflect on any fields in a Scala plain class (non-case class) that are NOT in the constructor, i.e. defined in the body
   def javaFields[Q](
       quotes: Quotes
@@ -159,3 +162,4 @@ object ReflectOnField:
             RType.unwindType(quotes)(b.underlying)
         }
     }
+ */
