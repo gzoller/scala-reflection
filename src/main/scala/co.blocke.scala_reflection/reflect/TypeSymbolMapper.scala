@@ -77,7 +77,7 @@ object TypeSymbolMapper:
         if numLeftToFind == 0 then Right(cleanedList)
         else Left(cleanedList)
 
-      case ts: TypeSymbolRef[?] =>
+      case ts: TypeSymbolRef =>
         paramList.indexOf2(ts.name.asInstanceOf[TypeSymbol]) match {
           case i if (i >= 0 && !paramList(i).isFound) =>
             Left(paramList.updated(i, paramList(i).pushPath(index, true)))

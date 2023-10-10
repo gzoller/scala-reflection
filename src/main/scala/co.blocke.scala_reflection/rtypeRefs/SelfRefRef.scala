@@ -11,32 +11,33 @@ import util.{JsonField, JsonObjectBuilder}
   *  When one of these is encountered in the wild, just re-Reflect on the infoClass and you'll get the non-SelfRef (i.e. normal) RType
   */
 case class SelfRefRef[R](
-  name: String, 
-  typedName: TypedName
-  )(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]:
-    import quotes.reflect.*
-    import Liftables.TypedNameToExpr
+    name: String,
+    typedName: TypedName
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]:
+  import quotes.reflect.*
+  import Liftables.TypedNameToExpr
 
-    val refType = tt
+  val refType = tt
 
-    val expr = 
-        Apply(
-            TypeApply(
-                Select.unique(New(TypeTree.of[SelfRefRType[R]]), "<init>"),
-                List(TypeTree.of[R])
-            ),
-            List(
-                Expr(name).asTerm,
-                Expr(typedName).asTerm
-            )
-        ).asExprOf[RType[R]]
-
-    def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
-      JsonObjectBuilder(quotes)(
-        sb,
-        List(
-          JsonField("rtype", "SelfRefRType"),
-          JsonField("name", this.name),
-          JsonField("typedName", this.typedName)
-        )
+  val expr =
+    Apply(
+      TypeApply(
+        Select.unique(New(TypeTree.of[SelfRefRType[R]]), "<init>"),
+        List(TypeTree.of[R])
+      ),
+      List(
+        Expr(name).asTerm,
+        Expr(typedName).asTerm
       )
+    ).asExprOf[RType[R]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "SelfRefRType"),
+        JsonField("name", this.name),
+        JsonField("typedName", this.typedName)
+      )
+    )

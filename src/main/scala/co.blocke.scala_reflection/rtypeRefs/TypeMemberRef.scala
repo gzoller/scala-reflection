@@ -8,20 +8,21 @@ import util.{JsonField, JsonObjectBuilder}
 case class TypeMemberRef(
     name: String,
     memberType: RTypeRef[?]
-) (using quotes: Quotes)(using tt: Type[Any]) extends RTypeRef[Any]:
+)(using quotes: Quotes)(using tt: Type[Any])
+    extends RTypeRef[Any]:
   import quotes.reflect.*
 
-  val typedName: TypedName = name 
+  val typedName: TypedName = name
   val refType = tt
 
   val expr =
-      Apply(
-        Select.unique(New(TypeTree.of[TypeMemberRType]), "<init>"),
-        List(
-            Expr(name).asTerm,
-            memberType.expr.asTerm
-        )
-      ).asExprOf[RType[Any]]
+    Apply(
+      Select.unique(New(TypeTree.of[TypeMemberRType]), "<init>"),
+      List(
+        Expr(name).asTerm,
+        memberType.expr.asTerm
+      )
+    ).asExprOf[RType[Any]]
 
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
     JsonObjectBuilder(quotes)(

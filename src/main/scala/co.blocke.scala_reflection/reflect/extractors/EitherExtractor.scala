@@ -2,9 +2,8 @@ package co.blocke.scala_reflection
 package reflect
 package extractors
 
-import rtypeRefs.{TypeSymbolRef, LeftRightRef}
+import rtypeRefs.{LeftRightRef, TypeSymbolRef}
 import scala.quoted.*
-
 
 case class EitherExtractor() extends TypeExtractor[LeftRightRef[_]]:
 
@@ -20,18 +19,14 @@ case class EitherExtractor() extends TypeExtractor[LeftRightRef[_]]:
     val leftRef =
       tob(0).asType match
         case '[t] =>
-          if tob(0).typeSymbol.flags.is(quotes.reflect.Flags.Param) then 
-            TypeSymbolRef(tob(0).typeSymbol.name)(using quotes)(using tob(0).asType.asInstanceOf[Type[t]])
-          else
-            reflect.ReflectOnType[t](quotes)(tob(0), false)
+          if tob(0).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(0).typeSymbol.name)(using quotes)(using Type.of[Any])
+          else reflect.ReflectOnType[t](quotes)(tob(0), false)
 
     val rightRef =
       tob(1).asType match
         case '[t] =>
-          if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then 
-            TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using tob(1).asType.asInstanceOf[Type[t]])
-          else
-            reflect.ReflectOnType[t](quotes)(tob(1), false)
+          if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
+          else reflect.ReflectOnType[t](quotes)(tob(1), false)
 
     LeftRightRef(
       t.classSymbol.get.fullName,

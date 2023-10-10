@@ -5,24 +5,23 @@ import rtypes.UnknownRType
 import scala.quoted.*
 import util.{JsonField, JsonObjectBuilder}
 
-
 case class UnknownRef[R](name: String)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]:
   import quotes.reflect.*
 
   val typedName: TypedName = name
   val refType = tt
 
-  val expr = 
+  val expr =
     Apply(
-        TypeApply(
-            Select.unique(New(TypeTree.of[UnknownRType[R]]), "<init>"),
-            List(TypeTree.of[R])
-        ),
-        List(
-            Expr(name).asTerm
-        )
+      TypeApply(
+        Select.unique(New(TypeTree.of[UnknownRType[R]]), "<init>"),
+        List(TypeTree.of[R])
+      ),
+      List(
+        Expr(name).asTerm
+      )
     ).asExprOf[RType[R]]
-    
+
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
     JsonObjectBuilder(quotes)(
       sb,

@@ -11,9 +11,11 @@ case class TraitRef[R](
     fields: List[FieldInfoRef],
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
     typeParamValues: List[RTypeRef[_]] = Nil // Like Int, Boolean
-)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R] with AppliedRef:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]
+    with AppliedRef:
   import quotes.reflect.*
-  import Liftables.{TypedNameToExpr, ListTypeSymbolToExpr}
+  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
 
   val refType = tt
 
@@ -22,7 +24,7 @@ case class TraitRef[R](
     if i >= 0 && i < selectLimit then typeParamValues(i)
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
-  val expr = 
+  val expr =
     Apply(
       TypeApply(
         Select.unique(New(TypeTree.of[TraitRType]), "<init>"),
@@ -31,9 +33,9 @@ case class TraitRef[R](
       List(
         Expr(name).asTerm,
         Expr(typedName).asTerm,
-        Expr.ofList( fields.map(_.expr) ).asTerm,
+        Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(typeParamSymbols).asTerm,
-        Expr.ofList( typeParamValues.map(_.expr) ).asTerm
+        Expr.ofList(typeParamValues.map(_.expr)).asTerm
       )
     ).asExprOf[RType[R]]
 

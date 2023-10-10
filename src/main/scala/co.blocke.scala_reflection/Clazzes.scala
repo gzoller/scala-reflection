@@ -5,16 +5,16 @@ import co.blocke.scala_reflection.rtypes.IntersectionRType
 object Clazzes:
 
   // ======= Scala Class Names =======
-  val BOOLEAN_CLASS     = "scala.Boolean"
-  val BYTE_CLASS        = "scala.Byte"
-  val CHAR_CLASS        = "scala.Char"
-  val DOUBLE_CLASS      = "scala.Double"
-  val FLOAT_CLASS       = "scala.Float"
-  val INT_CLASS         = "scala.Int"
-  val LONG_CLASS        = "scala.Long"
-  val SHORT_CLASS       = "scala.Short"
-  val STRING_CLASS      = "java.lang.String"
-  val ANY_CLASS         = "scala.Any"
+  val BOOLEAN_CLASS = "scala.Boolean"
+  val BYTE_CLASS = "scala.Byte"
+  val CHAR_CLASS = "scala.Char"
+  val DOUBLE_CLASS = "scala.Double"
+  val FLOAT_CLASS = "scala.Float"
+  val INT_CLASS = "scala.Int"
+  val LONG_CLASS = "scala.Long"
+  val SHORT_CLASS = "scala.Short"
+  val STRING_CLASS = "java.lang.String"
+  val ANY_CLASS = "scala.Any"
   val ENUMERATION_CLASS = "scala.Enumeration.Value"
 
   /** Union and intersection types are only denoted internally as scala.Matchable, which is so generic it isn't helpful.
@@ -83,4 +83,4 @@ object Clazzes:
     def =:=(other: Class[?]): Boolean = c == other
     def <:<(other: Class[?]): Boolean = other.isAssignableFrom(c)
 }
-*/
+   */

@@ -37,16 +37,18 @@ object ReflectOnType: // extends NonCaseClassReflection:
         val className = aType.asInstanceOf[TypeRef] match {
           case AndType(_, _)                               => Clazzes.INTERSECTION_CLASS
           case OrType(_, _)                                => Clazzes.UNION_CLASS
-          case _: dotty.tools.dotc.core.Types.WildcardType => "scala.Any"
+          case _: dotty.tools.dotc.core.Types.WildcardType => Clazzes.ANY_CLASS
           case normal                                      => normal.classSymbol.get.fullName
         }
 
-        if seenBefore.get(tname) == Some(true) then SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
-        else
-          seenBefore.put(tname, true)
-          val result = reflectOnType[T](quotes)(aType, "foom".asInstanceOf[TypedName], resolveTypeSyms)
-          seenBefore.put(tname, false)
-          result
+        className match
+          case Clazzes.ANY_CLASS                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case _ if seenBefore.get(tname) == Some(true) => SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
+          case _ =>
+            seenBefore.put(tname, true)
+            val result = reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+            seenBefore.put(tname, false)
+            result
       }
       .asInstanceOf[RTypeRef[T]]
 
@@ -140,23 +142,25 @@ object ReflectOnType: // extends NonCaseClassReflection:
           // Traits and classes w/type parameters are *not* here... they're AppliedTypes
           // ----------------------------------------
           case named: dotty.tools.dotc.core.Types.NamedType =>
+            implicit val q = quotes
             val isTypeParam = typeRef.typeSymbol.flags.is(Flags.Param) // Is 'T' or a "real" type?  (true if T)
             classSymbol match {
 
-              /*
               case cs if isTypeParam =>
-                TypeSymbolRType(typeRef.name) // TypeSymbols Foo[T] have typeRef of Any
+                TypeSymbolRef(typeRef.name)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
 
+              /*
               case cs if is2xEnumeration =>
                 val enumerationClassSymbol = typeRef.qualifier.termSymbol.moduleClass
                 ScalaEnumerationRType(
                   className,
                   enumerationClassSymbol.declaredFields.map(_.name)
                 )
+               */
 
               case a if a == defn.AnyClass =>
-                AnyRType().asInstanceOf[RType[T]] // Any type
-               */
+                implicit val q = quotes
+                PrimitiveRef[Any](ANY_CLASS)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
 
               case cs if !isJavaEnum => // Non-parameterized classes
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)

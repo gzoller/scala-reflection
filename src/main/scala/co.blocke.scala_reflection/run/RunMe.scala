@@ -1,20 +1,12 @@
 package co.blocke.scala_reflection
 package run
 
-
-// case class Person(name: String, age: Int, boss: Option[String])
-case class Person(name: String, age: Int, boss: String | Long)
-
-trait Printable[Z]:
-  val doc: String
-  val numPages: Z
-
-
 object RunMe extends App:
 
   println("\n\n")
-  val rt = RType.of[Printable[Long]]
+  // val rt = RType.of("co.blocke.scala_reflection.run.Flyer")
+  val rt = RType.inTermsOf[Printable[Int]]("co.blocke.scala_reflection.run.Flyer")
   println(rt.pretty)
-  println("\n"+rt)
+  println("\n" + rt)
 
   println("Done.")

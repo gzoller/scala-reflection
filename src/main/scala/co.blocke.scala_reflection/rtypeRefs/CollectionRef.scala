@@ -12,7 +12,5 @@ trait CollectionRef[R] extends AppliedRef:
   val selectLimit: Int = 1
 
   def select(i: Int): RTypeRef[?] =
-    if i == 0 then 
-      elementRef
-    else 
-      throw new ReflectException(s"AppliedType select index $i out of range for ${self.name}")
+    if i == 0 then elementRef
+    else throw new ReflectException(s"AppliedType select index $i out of range for ${self.name}")

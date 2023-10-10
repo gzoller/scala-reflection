@@ -19,10 +19,8 @@ case class OptionExtractor() extends TypeExtractor[ScalaOptionRef[_]]:
     val optionOfRef =
       tob.head.asType match
         case '[u] =>
-          if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then 
-            TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using tob(0).asType.asInstanceOf[Type[u]])
-          else
-            reflect.ReflectOnType[u](quotes)(tob.head, false)
+          if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
+          else reflect.ReflectOnType[u](quotes)(tob.head, false)
 
     ScalaOptionRef(
       t.classSymbol.get.fullName,

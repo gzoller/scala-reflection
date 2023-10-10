@@ -5,7 +5,6 @@ import scala.quoted.*
 import rtypes.ScalaClassRType
 import util.{JsonField, JsonObjectBuilder}
 
-
 trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
   val name: String
   val fields: List[FieldInfoRef]
@@ -16,11 +15,8 @@ trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
 
   def selectLimit: Int = typeParamSymbols.size
   def select(i: Int): RTypeRef[?] =
-    if i >= 0 && i < selectLimit then 
-      typeParamValues(i)
-    else 
-      throw new ReflectException(s"AppliedType select index $i out of range for ${name}")
-
+    if i >= 0 && i < selectLimit then typeParamValues(i)
+    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
 //------------------------------------------------------------------------------
 
@@ -40,13 +36,14 @@ case class ScalaClassRef[R](
     typeParamPaths: Map[String, List[List[Int]]] = Map.empty[String, List[List[Int]]], // Trait/Class name -> List of Int (path) for each type param
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
     sealedChildren: List[RTypeRef[_]] = Nil // Populated only if this is a sealed class or abstract class
-)(using quotes: Quotes)(using tt: Type[R]) extends ClassRef[R]:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends ClassRef[R]:
   import quotes.reflect.*
-  import Liftables.{TypedNameToExpr, ListTypeSymbolToExpr, TypeSymbolToExpr}
+  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr, TypeSymbolToExpr}
 
   val refType = tt
 
-  val expr = 
+  val expr =
     Apply(
       TypeApply(
         Select.unique(New(TypeTree.of[ScalaClassRType]), "<init>"),
@@ -56,20 +53,20 @@ case class ScalaClassRef[R](
         Expr(name).asTerm,
         Expr(typedName).asTerm,
         Expr(typeParamSymbols).asTerm,
-        Expr.ofList( typeParamValues.map(_.expr) ).asTerm,
-        Expr.ofList( typeMembers.map(_.expr) ).asTerm,
-        Expr.ofList( fields.map(_.expr) ).asTerm,
+        Expr.ofList(typeParamValues.map(_.expr)).asTerm,
+        Expr.ofList(typeMembers.map(_.expr)).asTerm,
+        Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(annotations).asTerm,
         Expr(mixins).asTerm,
         Expr(isAppliedType).asTerm,
         Expr(isValueClass).asTerm,
         Expr(isCaseClass).asTerm,
         Expr(isAbstractClass).asTerm,
-        Expr.ofList( nonConstructorFields.map(_.expr) ).asTerm,
-        Expr.ofList( sealedChildren.map(_.expr) ).asTerm
+        Expr.ofList(nonConstructorFields.map(_.expr)).asTerm,
+        Expr.ofList(sealedChildren.map(_.expr)).asTerm
       )
     ).asExprOf[RType[R]]
-    
+
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
     JsonObjectBuilder(quotes)(
       sb,
@@ -92,14 +89,13 @@ case class ScalaClassRef[R](
       )
     )
 
-
 //------------------------------------------------------------------------------
 
 /** Java class reflection has a special problem... we need the class file, which isn't available during compilation (i.e. inside a macro).
   *  So we need an internal-use-only field (classType) where we store Type[T] for the Java class--which we know during reflection.
   */
 
-  /*
+/*
 case class JavaClassRType[R](
     name: String,
     fields: List[FieldInfo],
@@ -141,4 +137,4 @@ case class JavaClassRType[R](
         JsonField("mixins", this.mixins)
       )
     )
-*/
+ */

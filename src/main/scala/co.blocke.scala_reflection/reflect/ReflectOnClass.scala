@@ -18,6 +18,8 @@ object ReflectOnClass:
   )(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
+    implicit val q = quotes
+
     // ===
     // ===  Preparation
     // ===
@@ -31,7 +33,6 @@ object ReflectOnClass:
         (
           paramSyms.map(_.name.asInstanceOf[TypeSymbol]),
           typeRef.typeArgs.map { argType =>
-            implicit val q = quotes
             argType.asType match
               case '[t] =>
                 reflect.ReflectOnType[t](quotes)(argType)
@@ -109,7 +110,6 @@ object ReflectOnClass:
           // ===
           typeRef match {
             case AppliedType(t, tob) => // parameterized trait
-              implicit val q = quotes
               val actualParamTypes = tob.map { oneTob =>
                 scala.util
                   .Try {
@@ -188,8 +188,6 @@ object ReflectOnClass:
               )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
             case _ =>
-              implicit val q = quotes
-
               // non-parameterized trait
               val traitFields = symbol.tree.asInstanceOf[ClassDef].body.collect { case valDef: ValDef =>
                 val fieldType =
@@ -241,17 +239,19 @@ object ReflectOnClass:
 
         val isValueClass = typeRef.baseClasses.contains(Symbol.classSymbol("scala.AnyVal"))
 
-        // Get superclasses
+        // Get direct superclasses (for reflecting field annotations)
         val dad = classDef.parents.headOption match {
           case Some(tt: TypeTree) if !isValueClass && tt.tpe.classSymbol.get.fullName != "java.lang.Object" =>
-            ReflectOnClass(quotes)(
-              tt.tpe.asInstanceOf[TypeRef],
-              util.TypedName(quotes)(tt.tpe),
-              resolveTypeSyms
-            ) match {
-              case ci: ClassRef[?] => Some(ci) // Any kind of class
-              case _               => None // e.g. Unknown
-            }
+            tt.tpe.asType match
+              case '[t] =>
+                ReflectOnClass[t](quotes)(
+                  tt.tpe.asInstanceOf[TypeRef],
+                  util.TypedName(quotes)(tt.tpe),
+                  resolveTypeSyms
+                ) match {
+                  case ci: ClassRef[?] => Some(ci) // Any kind of class
+                  case _               => None // e.g. Unknown
+                }
           case _ => None
         }
 
@@ -271,7 +271,6 @@ object ReflectOnClass:
           case AppliedType(t, tob) => tob
           case _                   => Nil
         }
-        implicit val q = quotes
         val typeMembers = classDef.body.collect {
           case TypeDef(typeName, typeTree) if typeSymbols.contains(typeTree.asInstanceOf[TypeTree].tpe.typeSymbol.name) =>
             val pos = typeSymbols.indexOf(typeTree.asInstanceOf[TypeTree].tpe.typeSymbol.name)
@@ -279,7 +278,7 @@ object ReflectOnClass:
               case '[t] =>
                 TypeMemberRef(
                   typeSymbols(pos).toString,
-                  reflect.ReflectOnType[t](quotes)(tob(pos).asInstanceOf[TypeRepr])
+                  reflect.ReflectOnType[t](quotes)(tob(pos))
                 )(using quotes)(using Type.of[Any](using quotes))
 
           case TypeDef(typeName, typeTree) if !typeSymbols.contains(typeName) => // type memebers not used in the constructor
@@ -308,7 +307,6 @@ object ReflectOnClass:
           // ===
           val caseFields: List[FieldInfoRef] = constructorParams.zipWithIndex.map { (definition, idx) =>
             val valDef = definition.asInstanceOf[ValDef]
-            implicit val q = quotes
             valDef.tpt.tpe.asType match
               case '[t] =>
                 val fieldRef = unwindFieldRTypeWithTypeSubstitution[t](quotes)(
@@ -413,11 +411,12 @@ object ReflectOnClass:
   )(using utt: Type[U])(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[?] =
     import quotes.reflect.*
 
+    implicit val q = quotes
     if resolveTypeSyms then
       reflect.ReflectOnType[U](quotes)(classTypeRef.memberType(fieldSymbol)) match {
         case tsym if tsym.name == NONE =>
-          TypeSymbolRef(valDef.tpt.tpe.typeSymbol.name)(using quotes)
+          TypeSymbolRef(valDef.tpt.tpe.typeSymbol.name)(using quotes)(using Type.of[Any])
         case other => other
       }
-    else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then TypeSymbolRef(valDef.tpt.tpe.typeSymbol.name)(using quotes)
+    else if valDef.tpt.tpe.typeSymbol.flags.is(Flags.Param) then TypeSymbolRef(valDef.tpt.tpe.typeSymbol.name)(using quotes)(using Type.of[Any])
     else reflect.ReflectOnType[U](quotes)(valDef.tpt.tpe, false)

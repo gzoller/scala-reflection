@@ -2,9 +2,8 @@ package co.blocke.scala_reflection
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.{FieldInfo, ScalaFieldInfo, NonConstructorFieldInfo}
+import rtypes.{FieldInfo, NonConstructorFieldInfo, ScalaFieldInfo}
 import util.{JsonField, JsonObjectBuilder}
-
 
 /** Base information we keep for all class fields, regardless of whether Scala or Java
   */
@@ -28,9 +27,7 @@ trait FieldInfoRef:
       )
     )
 
-    
 //------------------------------------------------------------
-
 
 /** Describes reflected information we gleen from a Scala class field
   *
@@ -49,12 +46,13 @@ case class ScalaFieldInfoRef(
     annotations: Map[String, Map[String, String]],
     defaultValueAccessorName: Option[(String, String)], // (companion class name, method)
     originalSymbol: Option[TypeSymbol],
-    isNonValConstructorField: Boolean = false  // meaningful for non-case classes
-)(using quotes: Quotes) extends FieldInfoRef:
+    isNonValConstructorField: Boolean = false // meaningful for non-case classes
+)(using quotes: Quotes)
+    extends FieldInfoRef:
   import quotes.reflect.*
   import Liftables.OptTypeSymbolToExpr
 
-  val expr = 
+  val expr =
     Apply(
       Select.unique(New(TypeTree.of[ScalaFieldInfo]), "<init>"),
       List(
@@ -68,9 +66,7 @@ case class ScalaFieldInfoRef(
       )
     ).asExprOf[FieldInfo]
 
-
 //------------------------------------------------------------
-
 
 case class NonConstructorFieldInfoRef(
     index: Int,
@@ -81,7 +77,8 @@ case class NonConstructorFieldInfoRef(
     fieldRef: RTypeRef[?],
     annotations: Map[String, Map[String, String]],
     originalSymbol: Option[TypeSymbol] = None
-)(using quotes: Quotes) extends FieldInfoRef:
+)(using quotes: Quotes)
+    extends FieldInfoRef:
   import quotes.reflect.*
   import Liftables.OptTypeSymbolToExpr
 

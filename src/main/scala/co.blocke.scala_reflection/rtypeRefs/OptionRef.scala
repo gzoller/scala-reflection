@@ -32,26 +32,27 @@ case class ScalaOptionRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     optionParamType: RTypeRef[?]
-)(using quotes: Quotes)(using tt: Type[R]) extends OptionRef[R]:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends OptionRef[R]:
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr
 
   val typedName: TypedName = name + "[" + optionParamType.typedName + "]"
   val refType = tt
 
-  val expr = 
+  val expr =
     Apply(
-        TypeApply(
-            Select.unique(New(TypeTree.of[ScalaOptionRType[R]]), "<init>"),
-            List(TypeTree.of[R])
-        ),
-        List(
-            Expr(name).asTerm,
-            Expr(typeParamSymbols).asTerm,
-            optionParamType.expr.asTerm
-        )
+      TypeApply(
+        Select.unique(New(TypeTree.of[ScalaOptionRType[R]]), "<init>"),
+        List(TypeTree.of[R])
+      ),
+      List(
+        Expr(name).asTerm,
+        Expr(typeParamSymbols).asTerm,
+        optionParamType.expr.asTerm
+      )
     ).asExprOf[RType[R]]
-  
+
 //-------------------
 
 /*
@@ -72,4 +73,4 @@ case class JavaOptionalRType[R](
     val optTypeRepr = TypeRepr.of[R](using optType)
     val paramTypeRepr = TypeRepr.of[optionParamType.T](using paramType)
     AppliedType(optTypeRepr, List(paramTypeRepr)).asType.asInstanceOf[quoted.Type[R]]
-*/
+ */

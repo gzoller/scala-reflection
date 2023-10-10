@@ -3,7 +3,6 @@ package util
 
 import scala.quoted.Quotes
 
-
 object TypedName:
 
   // Need a full name inclusive of type parameters and correcting for Enumeration's class name erasure.
