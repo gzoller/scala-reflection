@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.ScalaClassRType
+import rtypes.{JavaClassRType, NonConstructorFieldInfo, ScalaClassRType, TypeMemberRType}
 import util.{JsonField, JsonObjectBuilder}
 
 trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
@@ -54,7 +54,7 @@ case class ScalaClassRef[R](
         Expr(typedName).asTerm,
         Expr(typeParamSymbols).asTerm,
         Expr.ofList(typeParamValues.map(_.expr)).asTerm,
-        Expr.ofList(typeMembers.map(_.expr)).asTerm,
+        Expr.ofList(typeMembers.map(_.expr.asInstanceOf[Expr[TypeMemberRType]])).asTerm,
         Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(annotations).asTerm,
         Expr(mixins).asTerm,
@@ -62,7 +62,7 @@ case class ScalaClassRef[R](
         Expr(isValueClass).asTerm,
         Expr(isCaseClass).asTerm,
         Expr(isAbstractClass).asTerm,
-        Expr.ofList(nonConstructorFields.map(_.expr)).asTerm,
+        Expr.ofList(nonConstructorFields.map(_.expr.asInstanceOf[Expr[NonConstructorFieldInfo]])).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm
       )
     ).asExprOf[RType[R]]
@@ -95,33 +95,37 @@ case class ScalaClassRef[R](
   *  So we need an internal-use-only field (classType) where we store Type[T] for the Java class--which we know during reflection.
   */
 
-/*
-case class JavaClassRType[R](
+case class JavaClassRef[R](
     name: String,
-    fields: List[FieldInfo],
+    fields: List[FieldInfoRef],
     typeParamSymbols: List[TypeSymbol],
-    typeParamValues: List[RType[_]],
+    typeParamValues: List[RTypeRef[_]],
     annotations: Map[String, Map[String, String]],
-    mixins: List[String],
-    classType: Option[Type[_]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
-) extends ClassRType[R]:
+    mixins: List[String]
+    // classType: Option[Type[_]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
+)(using quotes: Quotes)(using tt: Type[R])
+    extends ClassRef[R]:
+  import quotes.reflect.*
+  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr, TypeSymbolToExpr}
 
   val typedName: TypedName = name
+  val refType = tt
 
-  lazy val clazz: Class[?] = Class.forName(name)
-
-  override def isAppliedType: Boolean = !typeParamSymbols.isEmpty
-
-  override def toType(quotes: Quotes): quoted.Type[R] =
-    import quotes.reflect.*
-    val classType: quoted.Type[?] =
-      this.classType.getOrElse(quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType)
-    val classTypeRepr = TypeRepr.of[R](using classType.asInstanceOf[quoted.Type[R]])
-    val fieldTypes = fields.map { f =>
-      val oneFieldType = f.fieldType.toType(quotes)
-      TypeRepr.of[f.fieldType.T](using oneFieldType)
-    }
-    AppliedType(classTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
+  val expr =
+    Apply(
+      TypeApply(
+        Select.unique(New(TypeTree.of[JavaClassRType]), "<init>"),
+        List(TypeTree.of[R])
+      ),
+      List(
+        Expr(name).asTerm,
+        Expr.ofList(fields.map(_.expr)).asTerm,
+        Expr(typeParamSymbols).asTerm,
+        Expr.ofList(typeParamValues.map(_.expr)).asTerm,
+        Expr(annotations).asTerm,
+        Expr(mixins).asTerm
+      )
+    ).asExprOf[RType[R]]
 
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
     JsonObjectBuilder(quotes)(
@@ -137,4 +141,3 @@ case class JavaClassRType[R](
         JsonField("mixins", this.mixins)
       )
     )
- */

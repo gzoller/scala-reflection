@@ -33,11 +33,16 @@ object ReflectOnClass:
         (
           paramSyms.map(_.name.asInstanceOf[TypeSymbol]),
           typeRef.typeArgs.map { argType =>
-            argType.asType match
+            val argType2 = argType match {
+              case TypeBounds(upper, lower) => lower // for some reason, some type members are expressed internally as TypeBounds...
+              case _                        => argType
+            }
+            argType2.asType match
               case '[t] =>
-                reflect.ReflectOnType[t](quotes)(argType)
+                reflect.ReflectOnType[t](quotes)(argType2)
           }
         )
+
       case _ => (Nil, Nil)
     }
 
@@ -71,31 +76,26 @@ object ReflectOnClass:
 
       // sealed children, if any
       val isSealed = symbol.flags.is(quotes.reflect.Flags.Sealed)
-      val sealedChildrenRTypes = Nil
-      /*
+      val sealedChildrenRTypes =
         if isSealed then
           symbol.children.map { c =>
             c.tree match {
               case vd: ValDef =>
-                RType.unwindType(quotes)(vd.tpt.tpe)
-                ObjectRType(vd.symbol.fullName) // sealed object implementation
+                ObjectRef(vd.symbol.fullName) // sealed object implementation
               case _ => // sealed case class implementation
                 val typeDef: dotty.tools.dotc.ast.Trees.TypeDef[?] =
                   c.tree.asInstanceOf[dotty.tools.dotc.ast.Trees.TypeDef[_]]
-                RType.unwindType(quotes)(typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr])
+                val typeDefRepr = typeDef.typeOpt.asInstanceOf[quotes.reflect.TypeRepr]
+                typeDefRepr.asType match
+                  case '[t] =>
+                    ReflectOnType[t](quotes)(typeDefRepr)
             }
           }
         else Nil
-       */
 
       // === Scala 2 Classes ===
-      /*
-      if symbol.flags.is(quotes.reflect.Flags.Scala2x) then
-        Scala2RType(symbol.fullName)
-
+      if symbol.flags.is(quotes.reflect.Flags.Scala2x) then Scala2Ref[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
       else if symbol.flags.is(quotes.reflect.Flags.Trait) then
-       */
-      if symbol.flags.is(quotes.reflect.Flags.Trait) then
 
         if isSealed then
 
@@ -207,29 +207,25 @@ object ReflectOnClass:
               TraitRef[T](className, util.TypedName(quotes)(typeRef), traitFields)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
           }
 
-          /*
       // === Java Class ===
       // User-written Java classes will have the source file.  Java library files will have <no file> for source
       else if symbol.flags.is(Flags.JavaDefined) then
-        val nonConstructorFields: List[NonConstructorFieldInfo] =
-          ReflectOnField.javaFields(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
-        JavaClassRType(
+        val nonConstructorFields = ReflectOnField.javaFields(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
+        JavaClassRef[T](
           symbol.fullName,
-          nonConstructorFields,
+          nonConstructorFields.asInstanceOf[List[FieldInfoRef]],
           typeSymbols,
           typeSymbolValues,
           classAnnos,
-          symbol.tree.asInstanceOf[ClassDef].parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName),
-          Some(typeRef.asType.asInstanceOf[Type[T]])
-        )
+          symbol.tree.asInstanceOf[ClassDef].parents.map(_.asInstanceOf[TypeTree].tpe.classSymbol.get.fullName)
+        )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
       // ===
       // ===  Enums
       // ===
       else if symbol.flags.is(quotes.reflect.Flags.Enum)
       then // Found top-level enum (i.e. not part of a class), e.g. member of a collection
-        ScalaEnumRType(symbol.fullName, typeRef.classSymbol.get.children.map(_.name))
-           */
+        ScalaEnumRef[T](symbol.fullName, typeRef.classSymbol.get.children.map(_.name))(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
       // ===
       // ===  Scala 3 Classes
@@ -283,11 +279,15 @@ object ReflectOnClass:
 
           case TypeDef(typeName, typeTree) if !typeSymbols.contains(typeName) => // type memebers not used in the constructor
             val tt = typeTree.asInstanceOf[TypeTree].tpe
-            tt.asType match
+            val tt2 = tt match {
+              case TypeBounds(upper, _) => upper // for some reason, some type members are expressed internally as TypeBounds...
+              case _                    => tt
+            }
+            tt2.asType match
               case '[t] =>
                 TypeMemberRef(
                   typeName,
-                  reflect.ReflectOnType[t](quotes)(tt)
+                  reflect.ReflectOnType[t](quotes)(tt2)
                 )(using quotes)(using Type.of[Any](using quotes))
         }
 
@@ -342,10 +342,6 @@ object ReflectOnClass:
             sealedChildrenRTypes
           )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
         else
-          UnknownRef[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
-
-          /*
-        else
 
           // ===
           // ===  Non-Case Classes
@@ -353,8 +349,7 @@ object ReflectOnClass:
 
           // Include inherited methods (var & def), including inherited!
           // Produces (val <field>, method <field>_=)
-          // val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
-          val nonConstructorFields: List[NonConstructorFieldInfo] =
+          val nonConstructorFields =
             ReflectOnField.nonCaseScalaField(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
 
           // ensure all constructur fields are vals
@@ -369,7 +364,6 @@ object ReflectOnClass:
                 resolveTypeSyms,
                 typeRef
               )
-              val fieldtt = fieldType.toType(quotes)
               ReflectOnField(quotes)(
                 fieldType,
                 valDef,
@@ -377,10 +371,10 @@ object ReflectOnClass:
                 dad,
                 fieldDefaultMethods,
                 oneField.flags.is(Flags.PrivateLocal)
-              )(using fieldtt)
+              )
             }
 
-          ScalaClassRType(
+          ScalaClassRef[T](
             className,
             typedName,
             typeSymbols,
@@ -396,8 +390,7 @@ object ReflectOnClass:
             typeParamPaths,
             nonConstructorFields,
             sealedChildrenRTypes
-          )
-           */
+          )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
       // === Other kinds of classes (non-case Scala) ===
       else UnknownRef[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])

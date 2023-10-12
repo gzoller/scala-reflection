@@ -46,16 +46,14 @@ object ReflectOnField:
       isNonValConstructorField
     )(using quotes)
 
-/*
   // Reflect on any fields in a Scala plain class (non-case class) that are NOT in the constructor, i.e. defined in the body
   def nonCaseScalaField[Q](
       quotes: Quotes
-  )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr): List[NonConstructorFieldInfo] =
+  )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): List[NonConstructorFieldInfoRef] =
     import quotes.reflect.*
 
     // Include inherited methods (var & def), including inherited!
     // Produces (val <field>, method <field>_=)
-    // val varAnnos = scala.collection.mutable.Map.empty[String,Map[String, Map[String,String]]]
     symbol.methodMembers
       .filter(_.name.endsWith("_="))
       .map { setter =>
@@ -87,7 +85,7 @@ object ReflectOnField:
           (a.symbol.signature.resultSig, annoSymToString(quotes)(params))
         }.toMap
 
-        NonConstructorFieldInfo(
+        NonConstructorFieldInfoRef(
           i,
           getter.name, // field name is same as getter method name
           getter.name,
@@ -95,16 +93,14 @@ object ReflectOnField:
           getter.isValDef,
           applyTypeToField(quotes)(getter, classRepr),
           varAnnos
-        )
+        )(using quotes)
       }
       .sortBy(_.getterLabel) // sorted for consistent ordering for testing ;-)
- */
 
-/*
   // Reflect on any fields in a Scala plain class (non-case class) that are NOT in the constructor, i.e. defined in the body
   def javaFields[Q](
       quotes: Quotes
-  )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr): List[NonConstructorFieldInfo] =
+  )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): List[NonConstructorFieldInfoRef] =
     import quotes.reflect.*
 
     val allMethods = symbol.methodMembers
@@ -128,14 +124,14 @@ object ReflectOnField:
           case dd: DefDef =>
             dd.paramss.head.params.head match {
               case v: ValDef  => applyTypeToField(quotes)(getter, classRepr)
-              case t: TypeDef => UnknownRType("--1--")
+              case t: TypeDef => UnknownRef[Q]("Where do we go from here?")(using quotes)(using classRepr.asType.asInstanceOf[Type[Q]])
             }
         }
         val varAnnos = (getter.annotations ++: setter.annotations).map { a =>
           val Apply(_, params) = a: @unchecked
           (a.symbol.signature.resultSig, annoSymToString(quotes)(params))
         }.toMap
-        NonConstructorFieldInfo(
+        NonConstructorFieldInfoRef(
           i,
           fieldName,
           getter.name,
@@ -144,22 +140,28 @@ object ReflectOnField:
           fieldType,
           varAnnos,
           None
-        )
+        )(using quotes)
       }
       .sortBy(_.getterLabel) // sorted for consistent ordering for testing ;-)
 
-  def applyTypeToField(quotes: Quotes)(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr): RType[?] =
+  def applyTypeToField(quotes: Quotes)(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[?] =
     import quotes.reflect.*
 
+    implicit val q = quotes
     symbol.tree match {
       case v: ValDef =>
-        RType.unwindType(quotes)(classRepr.memberType(symbol))
+        classRepr.memberType(symbol).asType match
+          case '[t] =>
+            ReflectOnType[t](quotes)(classRepr.memberType(symbol))
       case d: DefDef =>
         classRepr.memberType(symbol) match {
           case m: MethodType => // normal method w/parens
-            RType.unwindType(quotes)(m.resType)
+            m.resType.asType match
+              case '[t] =>
+                ReflectOnType[t](quotes)(m.resType)
           case b: ByNameType => // ExprType, which is a method (like a setter) with no parens
-            RType.unwindType(quotes)(b.underlying)
+            b.underlying.asType match
+              case '[t] =>
+                ReflectOnType[t](quotes)(b.underlying)
         }
     }
- */

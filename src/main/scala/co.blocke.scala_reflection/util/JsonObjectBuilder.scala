@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 package util
 
 import scala.quoted.*
+import rtypeRefs.FieldInfoRef
 
 // Utility classes to help generate JSON from RTypes--used by ScalaJS
 
@@ -34,6 +35,7 @@ object JsonObjectBuilder:
 
   private def matchOneType(quotes: Quotes)(sb: StringBuilder, repr: quotes.reflect.TypeRepr, item: Any): Unit =
     import quotes.reflect.*
+    println("JS: " + repr.typeSymbol.name + " >> " + item)
     repr.typeSymbol.name match {
       case "String" | "TypedName" | "TypeSymbol" => sb.append(s"\"${item.toString}\"")
 
@@ -73,9 +75,9 @@ object JsonObjectBuilder:
               matchOneType(quotes)(sb, tob.head, item.asInstanceOf[Option[_]].get)
           }
 
-      // case "FieldInfo" | "NonConstructorFieldInfo" =>
-      //   item.asInstanceOf[FieldInfo].asJson(sb)(using quotes)
+      case "FieldInfoRef" | "NonConstructorFieldInfoRef" | "ScalaFieldInfoRef" =>
+        item.asInstanceOf[FieldInfoRef].asJson(sb)(using quotes)
 
-      case _ => // Careful!  This is a bold assumption that everything else is RType[_]!
+      case _ => // Careful!  This is a bold assumption that everything else is RTypeRef[_]!
         item.asInstanceOf[RTypeRef[_]].asJson(sb)(using quotes)
     }

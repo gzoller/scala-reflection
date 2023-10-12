@@ -41,46 +41,13 @@ case class ScalaClassRType[R](
 /** Java class reflection has a special problem... we need the class file, which isn't available during compilation (i.e. inside a macro).
   *  So we need an internal-use-only field (classType) where we store Type[T] for the Java class--which we know during reflection.
   */
-/*`
 case class JavaClassRType[R](
     name: String,
     fields: List[FieldInfo],
     typeParamSymbols: List[TypeSymbol],
     typeParamValues: List[RType[_]],
     annotations: Map[String, Map[String, String]],
-    mixins: List[String],
-    classType: Option[Type[_]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
+    mixins: List[String]
 ) extends ClassRType[R]:
 
   val typedName: TypedName = name
-
-  lazy val clazz: Class[?] = Class.forName(name)
-
-  override def isAppliedType: Boolean = !typeParamSymbols.isEmpty
-
-  override def toType(quotes: Quotes): quoted.Type[R] =
-    import quotes.reflect.*
-    val classType: quoted.Type[?] =
-      this.classType.getOrElse(quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType)
-    val classTypeRepr = TypeRepr.of[R](using classType.asInstanceOf[quoted.Type[R]])
-    val fieldTypes = fields.map { f =>
-      val oneFieldType = f.fieldType.toType(quotes)
-      TypeRepr.of[f.fieldType.T](using oneFieldType)
-    }
-    AppliedType(classTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
-
-  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
-    JsonObjectBuilder(quotes)(
-      sb,
-      List(
-        JsonField("rtype", "JavaClassRType"),
-        JsonField("name", this.name),
-        JsonField("typedName", this.typedName),
-        JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("typeParamValues", this.typeParamValues),
-        JsonField("fields", this.fields),
-        JsonField("annotations", this.annotations),
-        JsonField("mixins", this.mixins)
-      )
-    )
- */

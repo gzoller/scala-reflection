@@ -12,17 +12,7 @@ import rtypeRefs.*
 object ReflectOnType: // extends NonCaseClassReflection:
 
   // Pre-bake primitive types w/cached builder functions
-  import rtypeRefs.*
-  import Clazzes.*
-  private val IntFn = (quotes: Quotes) => PrimitiveRef[Int](INT_CLASS)(using quotes)(using Type.of[Int](using quotes))
-  private val LongFn = (quotes: Quotes) => PrimitiveRef[Long](LONG_CLASS)(using quotes)(using Type.of[Long](using quotes))
-  private val StringFn = (quotes: Quotes) => PrimitiveRef[String](STRING_CLASS)(using quotes)(using Type.of[String](using quotes))
-
-  private val primFnMap = Map(
-    INT_CLASS.asInstanceOf[TypedName] -> IntFn,
-    LONG_CLASS.asInstanceOf[TypedName] -> LongFn,
-    STRING_CLASS.asInstanceOf[TypedName] -> StringFn
-  )
+  private val primFnMap = PrimitiveRef.primFnMap
 
   def apply[T](
       quotes: Quotes
@@ -129,14 +119,15 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         typeRef match {
-          /*
           // Scala3 opaque type alias
           // ----------------------------------------
-          case named: dotty.tools.dotc.core.Types.NamedType if classSymbol == Symbol.classSymbol("scala.Any") && typeRef.isOpaqueAlias =>
+          case named: dotty.tools.dotc.core.Types.NamedType if classSymbol == Symbol.classSymbol(Clazzes.ANY_CLASS) && typeRef.isOpaqueAlias =>
+            implicit val q = quotes
             val translucentSuperType = typeRef.translucentSuperType
-            val wrappedType = RType.unwindType(quotes)(translucentSuperType)
-            AliasRType(typeRef.show, wrappedType).asInstanceOf[RType[T]]
-           */
+            val wrappedType = translucentSuperType.asType match
+              case '[t] =>
+                reflect.ReflectOnType[t](quotes)(translucentSuperType)
+            AliasRef[T](typeRef.show, wrappedType)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
 
           // Scala3 Tasty-equipped type incl. primitive types
           // Traits and classes w/type parameters are *not* here... they're AppliedTypes
@@ -149,33 +140,25 @@ object ReflectOnType: // extends NonCaseClassReflection:
               case cs if isTypeParam =>
                 TypeSymbolRef(typeRef.name)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
 
-              /*
               case cs if is2xEnumeration =>
                 val enumerationClassSymbol = typeRef.qualifier.termSymbol.moduleClass
-                ScalaEnumerationRType(
+                ScalaEnumerationRef(
                   className,
                   enumerationClassSymbol.declaredFields.map(_.name)
-                )
-               */
+                )(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
 
               case a if a == defn.AnyClass =>
                 implicit val q = quotes
-                PrimitiveRef[Any](ANY_CLASS)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
+                PrimitiveRef[Any](Clazzes.ANY_CLASS)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
 
               case cs if !isJavaEnum => // Non-parameterized classes
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
 
-              /*
               case _: Symbol => // Java Enum
-                val enumRT = JavaEnumRType(
+                JavaEnumRef(
                   aType.classSymbol.get.fullName,
                   aType.classSymbol.get.children.map(_.name)
-                )
-                val fieldTypeExpr = stripType( // pre-cook the Expr while we have all the juicy type information (Java only)
-                  exprs.ExprMaster.makeExpr(enumRT.asInstanceOf[RType[T]])(using quotes)(using aType.asType.asInstanceOf[Type[T]])
-                )(using quotes)
-                enumRT.copy(expr = Some(fieldTypeExpr)).asInstanceOf[RType[T]]
-               */
+                )(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
             }
 
           // Union Type (sometimes it pops up down here for some reason... hmm...)

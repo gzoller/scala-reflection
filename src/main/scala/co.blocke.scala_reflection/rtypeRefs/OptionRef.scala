@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.ScalaOptionRType
+import rtypes.{JavaOptionalRType, ScalaOptionRType}
 import util.{JsonField, JsonObjectBuilder}
 
 trait OptionRef[R] extends RTypeRef[R] with AppliedRef:
@@ -55,22 +55,27 @@ case class ScalaOptionRef[R](
 
 //-------------------
 
-/*
-case class JavaOptionalRType[R](
+case class JavaOptionalRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
-    optionParamType: RType[?]
-) extends OptionRType[R]:
+    optionParamType: RTypeRef[?]
+)(using quotes: Quotes)(using tt: Type[R])
+    extends OptionRef[R]:
+  import quotes.reflect.*
+  import Liftables.ListTypeSymbolToExpr
 
   val typedName: TypedName = name + "[" + optionParamType.typedName + "]"
-  lazy val clazz: Class[?] = Class.forName(name)
+  val refType = tt
 
-  override def toType(quotes: Quotes): quoted.Type[R] =
-    import quotes.reflect.*
-    val optType: quoted.Type[R] =
-      super.toType(quotes).asInstanceOf[quoted.Type[R]]
-    val paramType: quoted.Type[optionParamType.T] = optionParamType.toType(quotes)
-    val optTypeRepr = TypeRepr.of[R](using optType)
-    val paramTypeRepr = TypeRepr.of[optionParamType.T](using paramType)
-    AppliedType(optTypeRepr, List(paramTypeRepr)).asType.asInstanceOf[quoted.Type[R]]
- */
+  val expr =
+    Apply(
+      TypeApply(
+        Select.unique(New(TypeTree.of[JavaOptionalRType[R]]), "<init>"),
+        List(TypeTree.of[R])
+      ),
+      List(
+        Expr(name).asTerm,
+        Expr(typeParamSymbols).asTerm,
+        optionParamType.expr.asTerm
+      )
+    ).asExprOf[RType[R]]

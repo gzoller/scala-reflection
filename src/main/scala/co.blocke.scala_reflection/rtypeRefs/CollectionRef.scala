@@ -7,8 +7,9 @@ import scala.quoted.Quotes
 trait CollectionRef[R] extends AppliedRef:
   self: RTypeRef[R] =>
 
-  val elementRef: RTypeRef[?]
+  val typedName: TypedName = name + "[" + elementRef.typedName + "]"
 
+  val elementRef: RTypeRef[?]
   val selectLimit: Int = 1
 
   def select(i: Int): RTypeRef[?] =

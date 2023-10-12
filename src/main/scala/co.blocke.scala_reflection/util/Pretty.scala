@@ -1,4 +1,5 @@
 package co.blocke.scala_reflection
+package util
 
 import rtypes.*
 import java.lang.StringBuilder
@@ -47,16 +48,14 @@ object Pretty:
         buf.append(" & ")
         _typeString(i.rightType, buf)
 
-      /*
       case t: TupleRType[?] =>
         buf.append("(")
-        (0 to t.selectLimit - 1).map { i =>
-          _typeString(t.select(i), buf)
+        t.typeParamValues.map { v =>
+          _typeString(v, buf)
           buf.append(",")
         }
         buf.setCharAt(buf.length() - 1, ')')
         buf
-       */
 
       case a: AppliedRType => // parameterized thing
         buf.append(pureTypeName(a.name))
@@ -110,7 +109,6 @@ object Pretty:
       case t: OptionRType[?] =>
         showOfType(buf, seenBefore, tabLevel, showSimpleName(t) + " of ", t.optionParamType)
 
-      /*
       case t: TryRType[?] =>
         showOfType(buf, seenBefore, tabLevel, "Try of ", t.tryType)
 
@@ -122,7 +120,7 @@ object Pretty:
 
       case t: TupleRType[?] =>
         buf.append("Tuple of:\n")
-        val allClassesSeenUpToNow = t.tupleTypes.zipWithIndex.foldLeft(seenBefore) { case (classesSeen, (rt, i)) =>
+        val allClassesSeenUpToNow = t.typeParamValues.zipWithIndex.foldLeft(seenBefore) { case (classesSeen, (rt, i)) =>
           buf.append(tabs(tabLevel + 1))
           buf.append(s"$i: ")
           val (_, lastWasMultiLine, classesSeenBefore) = _pretty(rt, buf, tabLevel + 1, classesSeen)
@@ -142,7 +140,6 @@ object Pretty:
         val (_, lastWasMultiLine_2, classesSeen_2) = _pretty(t.elementType2, buf, tabLevel + 1, classesSeen_1)
         if !lastWasMultiLine_2 then buf.append("\n")
         (buf, true, classesSeen_2)
-       */
 
       case t: LeftRightRType =>
         buf.append(showSimpleName(t) + " of:\n")
@@ -280,7 +277,6 @@ object Pretty:
           }
           (buf, true, allClassesSeenUpToNow)
 
-      /*
       case t: ScalaEnumerationRType[?] =>
         buf.append("Enumeration (Scala 2) having values " + t.values.mkString("(", ",", ")"))
         (buf, false, seenBefore)
@@ -297,13 +293,11 @@ object Pretty:
         buf.append(showSimpleName(t))
         buf.append(" (object)")
         (buf, false, seenBefore)
-       */
 
       case t: UnknownRType[?] =>
         buf.append("unknown type: " + t.name)
         (buf, false, seenBefore)
 
-      /*
       case t: AliasRType[?] =>
         showOfType(buf, seenBefore, tabLevel, s"alias ${lastPart(t.definedType)} defined as ", t.unwrappedType)
 
@@ -367,5 +361,4 @@ object Pretty:
         val (_, lastWasMultiLine_2, classesSeen_2) = _pretty(t.elementType2, buf, tabLevel + 1, classesSeen_1)
         if !lastWasMultiLine_2 then buf.append("\n")
         (buf, true, classesSeen_2)
-       */
     }

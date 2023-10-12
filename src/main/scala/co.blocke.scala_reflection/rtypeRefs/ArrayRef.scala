@@ -19,8 +19,6 @@ case class ArrayRef[R](
     extends RTypeRef[R]
     with CollectionRef[R]:
   import quotes.reflect.*
-
-  val typedName: TypedName = name + "[" + elementRef.typedName + "]"
   val refType = tt
 
   val expr =

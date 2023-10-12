@@ -5,8 +5,11 @@ import scala.quoted.*
 import rtypes.{EitherRType, IntersectionRType, UnionRType}
 import util.{JsonField, JsonObjectBuilder}
 
-enum LRKind {
-  case EITHER, INTERSECTION, UNION
+enum LRKind(name: String) {
+  case EITHER extends LRKind("EitherRType")
+  case INTERSECTION extends LRKind("IntersectionRType")
+  case UNION extends LRKind("UnionRType")
+  override def toString(): String = this.name
 }
 
 /** Marker trait for all Scala/Java left/right types (either, intersection, union) */
@@ -67,7 +70,7 @@ case class LeftRightRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", lrkind),
+        JsonField("rtype", lrkind.toString),
         JsonField("name", name),
         JsonField("typedName", typedName),
         JsonField("typeParamSymbols", typeParamSymbols),
