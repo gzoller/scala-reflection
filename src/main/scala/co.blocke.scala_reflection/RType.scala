@@ -1,12 +1,16 @@
 package co.blocke.scala_reflection
 
 import scala.quoted.*
-import rtypeRefs.{ScalaClassRef, SelfRefRef, TraitRef, UnknownRef}
+import reflect.rtypeRefs.{ScalaClassRef, SelfRefRef, TraitRef, UnknownRef}
 
 trait RType[R]:
   type T = R // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
   val name: String
   val typedName: TypedName
+
+  lazy val clazz = Class.forName(name)
+  def toType(quotes: Quotes): quoted.Type[R] =
+    quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[Type[R]]
 
   def pretty: String = util.Pretty(this)
   // Stuff needed for equality tests, proper behavior in a Map, etc...
@@ -27,7 +31,9 @@ object RType:
     reflect.ReflectOnType[T](quotes)(TypeRepr.of[T])(using scala.collection.mutable.Map.empty[TypedName, Boolean]).expr
     // val z = reflect.ReflectOnType[T](quotes)(TypeRepr.of[T])(using scala.collection.mutable.Map.empty[TypedName, Boolean])
     // println("Z: " + z)
-    // z.expr
+    // val e = z.expr
+    // println("\n\n>> " + e.show)
+    // e
 
   // ------------------------
   //  <<  NON-MACRO ENTRY >>  (Tasty Inspection)
@@ -39,7 +45,7 @@ object RType:
     rtypeCache.getOrElse(
       className, {
         val newRType = {
-          val fn = (quotes: Quotes) ?=> reflect.ReflectOnType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(className)))(using scala.collection.mutable.Map.empty[TypedName, Boolean]).expr
+          val fn = (quotes: Quotes) ?=> reflect.ReflectOnType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)(using scala.collection.mutable.Map.empty[TypedName, Boolean]).expr
           run(fn)
         }.asInstanceOf[RType[?]]
         rtypeCache.synchronized {
@@ -49,90 +55,41 @@ object RType:
       }
     )
 
-  inline def echo(inline msg: String): String = ${ echoImpl('{ msg }) }
-
-  def echoImpl(msgExpr: Expr[String])(using quotes: Quotes): Expr[String] =
-    import quotes.reflect.*
-    // '{ "Hello!  Your message is: " + $msgExpr }
-    Expr("Hello!  Your message is: " + msgExpr.value.get)
-
-  def ito[T](className: String): RType[?] =
+  // ------------------------
+  //  <<  NON-MACRO ENTRY: inTermsOf >>  (Tasty Inspection)
+  // ------------------------
+  inline def inTermsOf[T](className: String): RType[?] =
     import scala.quoted.staging.*
-    given Compiler = Compiler.make(getClass.getClassLoader)
+    of[T] match {
+      case traitRType: rtypes.TraitRType[?] =>
+        given Compiler = Compiler.make(getClass.getClassLoader)
+        val fn = (quotes: Quotes) ?=> {
+          import quotes.reflect.*
 
-    val newRType = {
-      val fn = (quotes: Quotes) ?=> {
-        import quotes.reflect.*
+          val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
 
-        val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
+          // Get paths for types
+          val t1 = System.currentTimeMillis()
+          val clazz = Class.forName(className)
+          val symbol = TypeRepr.typeConstructorOf(clazz).typeSymbol
+          val typeSymbols = symbol.primaryConstructor.paramSymss.head.map(_.name.asInstanceOf[TypeSymbol])
+          val classDef = symbol.tree.asInstanceOf[ClassDef]
+          val paths = reflect.TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)(using seenBefore)
+          val t2 = System.currentTimeMillis()
 
-        val r = TypeRepr.of[T]
-        // val ctx = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx
-        // val scope = ctx.scope.asInstanceOf[scala.quoted.runtime.impl.Scope]
-        // val typeTree = TypeTree.of[T].asInstanceOf[dotty.tools.dotc.ast.tpd.Tree]
-        // val tt = new scala.quoted.runtime.impl.TypeImpl(typeTree, scope).asInstanceOf[Type[T]]
-
-        // import scala.reflect.runtime.universe.*
-        // implicit val tt: TypeTag[T] = implicitly[TypeTag[T]]
-        // implicit val z: Type[T] = Type.of[T]
-
-        val traitRef = reflect.ReflectOnType[T](quotes)(TypeRepr.of[T](using Type.of[T]))(using seenBefore).asInstanceOf[TraitRef[T]]
-
-        val classTypeRepr = TypeRepr.typeConstructorOf(Class.forName(className))
-        val classRef = classTypeRepr.asType match
-          case '[t] =>
-            reflect.ReflectOnType[t](quotes)(classTypeRepr)(using seenBefore).asInstanceOf[ScalaClassRef[_]]
-        val typeParamTypes = reflect.TypeSymbolMapper.deepApply(classRef, traitRef)(using quotes)
-        val applied = classTypeRepr.appliedTo(typeParamTypes)
-        applied.asType match
-          case '[t] =>
-            reflect.ReflectOnType[t](quotes)(applied)(using seenBefore).expr.asInstanceOf[Expr[RType[T]]]
-      }
-      run[RType[T]](fn)
-    }.asInstanceOf[RType[?]]
-    if !rtypeCache.contains(className) then
-      rtypeCache.synchronized {
-        rtypeCache.put(className, newRType)
-      }
-    newRType
-
-  // ------------------------------
-  //  <<  MACRO ENTRY: inTermsOf >>
-  // ------------------------------
-  inline def inTermsOf[T](clazzName: String): RType[T] = ${ inTermsOfImpl[T]('clazzName) }
-
-  // def unpack(str: Expr[String])(using quotes: Quotes): Expr[String] =
-  //   '{ $str }
-
-  def inTermsOfImpl[T](classNameExpr: Expr[String])(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
-    import quotes.reflect.*
-    val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
-    val traitRef = reflect.ReflectOnType[T](quotes)(TypeRepr.of[T])(using seenBefore).asInstanceOf[TraitRef[_]]
-    val classTypeRepr = TypeRepr.typeConstructorOf(Class.forName(classNameExpr.value.get))
-    val classRef = classTypeRepr.asType match
-      case '[t] =>
-        reflect.ReflectOnType[t](quotes)(classTypeRepr)(using seenBefore).asInstanceOf[ScalaClassRef[_]]
-    val typeParamTypes = reflect.TypeSymbolMapper.deepApply(classRef, traitRef)(using quotes)
-    val applied = classTypeRepr.appliedTo(typeParamTypes)
-    applied.asType match
-      case '[t] =>
-        reflect.ReflectOnType[t](quotes)(applied)(using seenBefore).expr.asInstanceOf[Expr[RType[T]]]
-
-  /*
-  def inTermsOfImpl[T](classNameExpr: Expr[String])(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
-    import quotes.reflect.*
-    val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
-    val traitRef = reflect.ReflectOnType[T](quotes)(TypeRepr.of[T])(using seenBefore).asInstanceOf[TraitRef[_]]
-    val classTypeRepr = TypeRepr.typeConstructorOf(Class.forName(classNameExpr.value.get))
-    val classRef = classTypeRepr.asType match
-      case '[t] =>
-        reflect.ReflectOnType[t](quotes)(classTypeRepr)(using seenBefore).asInstanceOf[ScalaClassRef[_]]
-    val typeParamTypes = reflect.TypeSymbolMapper.deepApply(classRef, traitRef)(using quotes)
-    val applied = classTypeRepr.appliedTo(typeParamTypes)
-    applied.asType match
-      case '[t] =>
-        reflect.ReflectOnType[t](quotes)(applied)(using seenBefore).expr.asInstanceOf[Expr[RType[T]]]
-   */
+          // Now apply these paths against traitRType
+          val t3 = System.currentTimeMillis()
+          val typeParamTypes = reflect.TypeSymbolMapper.deepApply(paths, typeSymbols, traitRType)(using quotes)
+          val classQuotedTypeRepr = TypeRepr.typeConstructorOf(clazz)
+          val q = reflect.ReflectOnType(quotes)(classQuotedTypeRepr.appliedTo(typeParamTypes))(using seenBefore).expr
+          val t4 = System.currentTimeMillis()
+          println("Class Path Time: " + (t2 - t1))
+          println("Run Path Time  : " + (t4 - t3))
+          q
+        }
+        run(fn)
+      case x => throw new ReflectException(s"${x.name} is not of type trait")
+    }
 
   // ------------------------------
   //  <<  MACRO ENTRY: ScalaJS >> (EXPERIMENTAL)

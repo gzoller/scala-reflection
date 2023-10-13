@@ -20,18 +20,21 @@ case class EitherExtractor() extends TypeExtractor[LeftRightRef[_]]:
       tob(0).asType match
         case '[t] =>
           if tob(0).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(0).typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[t](quotes)(tob(0), false)
+          else reflect.ReflectOnType[t](quotes)(tob(0))
 
     val rightRef =
       tob(1).asType match
         case '[t] =>
           if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[t](quotes)(tob(1), false)
+          else reflect.ReflectOnType[t](quotes)(tob(1))
 
-    LeftRightRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      leftRef,
-      rightRef,
-      rtypeRefs.LRKind.EITHER
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        LeftRightRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          leftRef,
+          rightRef,
+          rtypeRefs.LRKind.EITHER
+        ).asInstanceOf[RTypeRef[R]]

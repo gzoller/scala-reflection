@@ -113,10 +113,10 @@ object Pretty:
         showOfType(buf, seenBefore, tabLevel, "Try of ", t.tryType)
 
       case t: SeqRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: ArrayRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, "Array of: ", t.elementType)
+        showOfType(buf, seenBefore, tabLevel, "Array of ", t.elementType)
 
       case t: TupleRType[?] =>
         buf.append("Tuple of:\n")
@@ -141,7 +141,7 @@ object Pretty:
         if !lastWasMultiLine_2 then buf.append("\n")
         (buf, true, classesSeen_2)
 
-      case t: LeftRightRType =>
+      case t: LeftRightRType[?] =>
         buf.append(showSimpleName(t) + " of:\n")
         buf.append(tabs(tabLevel + 1))
         buf.append("left--")
@@ -213,7 +213,7 @@ object Pretty:
             t.typeMembers.foldLeft(allClassesSeenUpToNow2) { (classesSeen, f) =>
               buf.append(tabs(tabLevel + 2))
               buf.append(f.name + ": ")
-              buf.append("[" + f.name + "] ")
+              f.typeSymbol.map(s => buf.append("[" + s + "] "))
               val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f.memberType, buf, tabLevel + 2, classesSeen)
               if !lastWasMultiLine then buf.append("\n")
               classesSeenBefore
@@ -339,16 +339,16 @@ object Pretty:
           (buf, true, allClassesSeenUpToNow)
 
       case t: JavaListRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaQueueRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaStackRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaSetRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of: ", t.elementType)
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaMapRType[?] =>
         buf.append(cleanCollectionNames(t) + " of:\n")

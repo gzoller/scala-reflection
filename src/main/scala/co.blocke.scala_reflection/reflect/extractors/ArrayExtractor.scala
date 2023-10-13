@@ -25,27 +25,29 @@ case class ArrayExtractor() extends TypeExtractor[ArrayRef[_]]:
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
           else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    ArrayRef(
-      mangleArrayClassName(elementRef),
-      typeParamSymbols,
-      elementRef
-    ).asInstanceOf[RTypeRef[R]]
-
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        ArrayRef[t](
+          mangleArrayClassName(elementRef),
+          typeParamSymbols,
+          elementRef
+        ).asInstanceOf[RTypeRef[R]]
 
   private def mangleArrayClassName(ref: RTypeRef[?]): String =
     val mangled = ref match {
       case _: TypeSymbolRef => "Ljava.lang.Object;"
-      case c: ArrayRef[?]      => mangleArrayClassName(c.elementRef)
+      case c: ArrayRef[?]   => mangleArrayClassName(c.elementRef)
       // case c: rtypes.JavaArrayInfo => mangleArrayClassName(c.elementType)
-      case p: PrimitiveRef[_] if p.name == BOOLEAN_CLASS => "Z"
-      case p: PrimitiveRef[_] if p.name == BYTE_CLASS    => "B"
-      case p: PrimitiveRef[_] if p.name == CHAR_CLASS    => "C"
-      case p: PrimitiveRef[_] if p.name == DOUBLE_CLASS  => "D"
-      case p: PrimitiveRef[_] if p.name == FLOAT_CLASS   => "F"
-      case p: PrimitiveRef[_] if p.name == INT_CLASS     => "I"
-      case p: PrimitiveRef[_] if p.name == LONG_CLASS    => "J"
-      case p: PrimitiveRef[_] if p.name == SHORT_CLASS   => "S"
-      case p: PrimitiveRef[_] if p.name == ANY_CLASS     => "Ljava.lang.Object;"
+      case p: PrimitiveRef[?] if p.name == BOOLEAN_CLASS => "Z"
+      case p: PrimitiveRef[?] if p.name == BYTE_CLASS    => "B"
+      case p: PrimitiveRef[?] if p.name == CHAR_CLASS    => "C"
+      case p: PrimitiveRef[?] if p.name == DOUBLE_CLASS  => "D"
+      case p: PrimitiveRef[?] if p.name == FLOAT_CLASS   => "F"
+      case p: PrimitiveRef[?] if p.name == INT_CLASS     => "I"
+      case p: PrimitiveRef[?] if p.name == LONG_CLASS    => "J"
+      case p: PrimitiveRef[?] if p.name == SHORT_CLASS   => "S"
+      case p: PrimitiveRef[?] if p.name == ANY_CLASS     => "Ljava.lang.Object;"
       case c                                             => "L" + c.name + ";"
     }
     "[" + mangled

@@ -22,10 +22,13 @@ case class JavaQueueExtractor() extends TypeExtractor[JavaQueueRef[_]]:
       tob.head.asType match
         case '[u] =>
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[u](quotes)(tob.head, false)
+          else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    JavaQueueRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      elementRef
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        JavaQueueRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          elementRef
+        ).asInstanceOf[RTypeRef[R]]

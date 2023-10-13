@@ -22,16 +22,19 @@ case class JavaMapExtractor() extends TypeExtractor[JavaMapRef[_]]:
       tob(0).asType match
         case '[u] =>
           if tob(0).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(0).typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[u](quotes)(tob(0), false)
+          else reflect.ReflectOnType[u](quotes)(tob(0))
     val elementRef2 =
       tob(1).asType match
         case '[u] =>
           if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[u](quotes)(tob(1), false)
+          else reflect.ReflectOnType[u](quotes)(tob(1))
 
-    JavaMapRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      elementRef,
-      elementRef2
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        JavaMapRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          elementRef,
+          elementRef2
+        ).asInstanceOf[RTypeRef[R]]

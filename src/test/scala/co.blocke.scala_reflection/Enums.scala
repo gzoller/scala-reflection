@@ -45,7 +45,7 @@ class Enums extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.ColorSet:
       |   fields ->
-      |      set: Set of: Enum (Scala 3) having values (Red,Green,Blue,Mix)
+      |      set: Set of Enum (Scala 3) having values (Red,Green,Blue,Mix)
       |""".stripMargin
     )
   }

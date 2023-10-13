@@ -22,10 +22,13 @@ case class JavaSetExtractor() extends TypeExtractor[JavaSetRef[_]]:
       tob.head.asType match
         case '[u] =>
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[u](quotes)(tob.head, false)
+          else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    JavaSetRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      elementRef
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        JavaSetRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          elementRef
+        ).asInstanceOf[RTypeRef[R]]

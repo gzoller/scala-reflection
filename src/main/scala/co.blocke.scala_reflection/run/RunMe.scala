@@ -5,21 +5,14 @@ object RunMe extends App:
 
   println("\n\n")
 
-  val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
-  val cn = "co.blocke.scala_reflection.run.TFoo6"
+  val rt = RType.inTermsOf[Basis[List[Option[Int | Boolean]]]]("co.blocke.scala_reflection.run.Thingy2")
 
-  // println(RType.of[T10[T11[Int, T5[Double, Char]], String]].pretty)
-  // println("\n\n")
-  // println(RType.of(cn).pretty)
+  // val rt = RType.of[Basis[List[Option[Int | Boolean]]]]
 
-  val rt = RType.ito[T10[T11[Int, T5[Double, Char]], String]](cn)
-  println(rt.pretty)
-  println("\n" + rt)
+  // val rt = RType.of[Two]
 
-  // val s = "co.blocke.scala_reflection.run.Foo"
-  // println(RType.echo(s))
+  println(rt)
 
-  // val msg = "Wow!"
-  // println(RType.echo(msg))
+  println("\n\n" + rt.pretty)
 
   println("Done.")

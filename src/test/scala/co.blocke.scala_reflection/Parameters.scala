@@ -62,7 +62,7 @@ class Parameters extends munit.FunSuite:
     val result = RType.of[List[WithDefault]]
     assertEquals(
       result.pretty,
-      """List of: co.blocke.scala_reflection.models.WithDefault:
+      """List of co.blocke.scala_reflection.models.WithDefault:
       |   fields ->
       |      a: Int
       |      b: String (default value: wow)
@@ -265,7 +265,7 @@ class Parameters extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.ListMapSub:
       |   fields ->
-      |      a: List of: co.blocke.scala_reflection.models.DuoTypes[Int,Byte]:
+      |      a: List of co.blocke.scala_reflection.models.DuoTypes[Int,Byte]:
       |         fields ->
       |            a: [U] Byte
       |            b: [Q] Int
@@ -333,7 +333,7 @@ class Parameters extends munit.FunSuite:
       |            message: String
       |   type members ->
       |      Giraffe: [T] co.blocke.scala_reflection.models.FancyBody (seen before, details above)
-      |      Foo: [Foo] Int
+      |      Foo: Int
       |""".stripMargin
     )
   }
@@ -369,7 +369,7 @@ class Parameters extends munit.FunSuite:
       |      a: co.blocke.scala_reflection.models.Level1[String,Boolean] (trait):
       |         fields ->
       |            t: [T] String
-      |            u: Option of List of: Boolean
+      |            u: Option of List of Boolean
       |      b: [Y] Int
       |""".stripMargin
     )
@@ -397,8 +397,8 @@ class Parameters extends munit.FunSuite:
       |      x: Map of:
       |         key: Int
       |         value: Option of Double
-      |      s: Array of: String
-      |      t: Array of: List of: Boolean
+      |      s: Array of String
+      |      t: Array of List of Boolean
       |""".stripMargin
     )
   }
@@ -412,12 +412,12 @@ class Parameters extends munit.FunSuite:
       |   fields ->
       |      t: co.blocke.scala_reflection.models.CClass[CClassLevel2[Int]]:
       |         fields ->
-      |            x: List of: co.blocke.scala_reflection.models.CClassLevel2[Int]:
+      |            x: List of co.blocke.scala_reflection.models.CClassLevel2[Int]:
       |               fields ->
       |                  z: [Z] Int
       |      u: co.blocke.scala_reflection.models.PClass[Short]:
       |         fields ->
-      |            y: List of: Short
+      |            y: List of Short
       |""".stripMargin
     )
   }
@@ -431,10 +431,10 @@ class Parameters extends munit.FunSuite:
       |   fields ->
       |      t: co.blocke.scala_reflection.models.CClass[Int]:
       |         fields ->
-      |            x: List of: Int
+      |            x: List of Int
       |      u: co.blocke.scala_reflection.models.PClass[Short]:
       |         fields ->
-      |            y: List of: Short
+      |            y: List of Short
       |""".stripMargin
     )
   }
@@ -448,7 +448,7 @@ class Parameters extends munit.FunSuite:
       |   fields ->
       |      a: Int
       |      b: String
-      |      c: [T] List of: Option of Union of:
+      |      c: [T] List of Option of Union of:
       |         left--Int
       |         right--Boolean
       |""".stripMargin

@@ -19,18 +19,21 @@ case class TupleExtractor() extends TypeExtractor[TupleRef[_]]:
     implicit val q = quotes
 
     val elementTypes =
-      tob.map{ oneTob =>
+      tob.map { oneTob =>
         oneTob.asType match
           case '[u] =>
             if oneTob.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(oneTob.typeSymbol.name)(using quotes)(using Type.of[Any])
-            else reflect.ReflectOnType[u](quotes)(oneTob, false)
+            else reflect.ReflectOnType[u](quotes)(oneTob)
       }
     val (_, typeParamSymbols) = elementTypes.foldLeft(('A', List.empty[String])) { case ((sym, acc), b) =>
       ((sym + 1).toChar, acc :+ sym.toString())
     }
 
-    TupleRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      elementTypes
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        TupleRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          elementTypes
+        ).asInstanceOf[RTypeRef[R]]

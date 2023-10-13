@@ -1,41 +1,39 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.TraitRType
+import rtypes.TupleRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class TraitRef[R](
+case class TupleRef[R](
     name: String,
-    typedName: TypedName,
-    fields: List[FieldInfoRef],
-    typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
-    typeParamValues: List[RTypeRef[_]] = Nil // Like Int, Boolean
-)(using quotes: Quotes)(using tt: Type[R])
-    extends RTypeRef[R]
+    typeParamSymbols: List[TypeSymbol],
+    tupleRefs: List[RTypeRef[_]]
+)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]
     with AppliedRef:
   import quotes.reflect.*
-  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
+  import Liftables.ListTypeSymbolToExpr
 
+  val typedName: TypedName = name + tupleRefs.map(_.typedName).toList.mkString("[", ",", "]")
   val refType = tt
 
-  def selectLimit: Int = typeParamSymbols.size
+  def selectLimit: Int = tupleRefs.size
+
   def select(i: Int): RTypeRef[?] =
-    if i >= 0 && i < selectLimit then typeParamValues(i)
+    if i >= 0 && i <= tupleRefs.size - 1 then tupleRefs(i)
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[TraitRType]), "<init>"),
+        Select.unique(New(TypeTree.of[TupleRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
         Expr(name).asTerm,
-        Expr(typedName).asTerm,
-        Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(typeParamSymbols).asTerm,
-        Expr.ofList(typeParamValues.map(_.expr)).asTerm
+        Expr.ofList( tupleRefs.map(_.expr) ).asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -43,10 +41,10 @@ case class TraitRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "TraitRType"),
+        JsonField("rtype", "TupleRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("typeParamValues", this.typeParamValues)
+        JsonField("tupleTypes", this.tupleRefs)
       )
     )

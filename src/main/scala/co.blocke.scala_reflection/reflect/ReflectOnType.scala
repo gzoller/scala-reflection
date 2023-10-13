@@ -3,6 +3,7 @@ package reflect
 
 import scala.quoted.*
 import rtypeRefs.*
+import rtypeRefs.{AliasRef, JavaEnumRef, LeftRightRef, PrimitiveRef, ScalaEnumerationRef, SelfRefRef, TypeSymbolRef, UnknownRef}
 
 /** ReflectOnType in the initial point of entry and triage when we get a Type to reflect on.  Most of the time this Type
   * will be some class, but we can't assume that.  Intersection and Union types are not classes and have no classSymbol.
@@ -34,11 +35,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
         className match
           case Clazzes.ANY_CLASS                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
           case _ if seenBefore.get(tname) == Some(true) => SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
-          case _ =>
-            seenBefore.put(tname, true)
-            val result = reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
-            seenBefore.put(tname, false)
-            result
+          case _                                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
       }
       .asInstanceOf[RTypeRef[T]]
 

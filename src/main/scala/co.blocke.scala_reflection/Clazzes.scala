@@ -52,6 +52,8 @@ object Clazzes:
   val SetClazz = Class.forName("scala.collection.Set")
   val TryClazz = Class.forName("scala.util.Try")
 
+  val AnyClazz = classOf[Any]
+
   // Class Ops
   extension (c: Class[?])
     def =:=(other: Class[?]): Boolean = c == other

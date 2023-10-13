@@ -1,4 +1,5 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
@@ -18,7 +19,7 @@ trait OptionRef[R] extends RTypeRef[R] with AppliedRef:
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        // JsonField("rtype", Show.lastPart(this.getClass.getName)),
+        JsonField("rtype", util.Pretty.lastPart(this.getClass.getName).replace("Ref","RType")),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

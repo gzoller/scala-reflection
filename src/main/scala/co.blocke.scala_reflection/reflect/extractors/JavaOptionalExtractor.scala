@@ -23,10 +23,13 @@ case class JavaOptionalExtractor() extends TypeExtractor[JavaOptionalRef[_]]:
       tob.head.asType match
         case '[u] =>
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[u](quotes)(tob.head, false)
+          else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    JavaOptionalRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      optionOfRef
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        JavaOptionalRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          optionOfRef
+        ).asInstanceOf[RTypeRef[R]]

@@ -1,32 +1,30 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.JavaQueueRType
+import rtypes.SealedTraitRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class JavaQueueRef[R](
+case class SealedTraitRef[R](
     name: String,
-    typeParamSymbols: List[TypeSymbol],
-    elementRef: RTypeRef[?]
+    children: List[RTypeRef[_]]
 )(using quotes: Quotes)(using tt: Type[R])
-    extends RTypeRef[R]
-    with CollectionRef[R]:
+    extends RTypeRef[R]:
   import quotes.reflect.*
-  import Liftables.ListTypeSymbolToExpr
 
+  val typedName: TypedName = name + children.map(_.typedName).toList.mkString("[", ",", "]")
   val refType = tt
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[JavaQueueRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[SealedTraitRType]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
         Expr(name).asTerm,
-        Expr(typeParamSymbols).asTerm,
-        elementRef.expr.asTerm
+        Expr.ofList(children.map(_.expr)).asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -34,10 +32,9 @@ case class JavaQueueRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "JavaQueueRType"),
+        JsonField("rtype", "SealedTraitRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
-        JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("elementType", this.elementRef)
+        JsonField("children", this.children)
       )
     )

@@ -8,3 +8,4 @@ case class AliasRType[T](
 
   val name: String = definedType.drop(definedType.lastIndexOf('.') + 1)
   val typedName: TypedName = name
+  override lazy val clazz = unwrappedType.clazz

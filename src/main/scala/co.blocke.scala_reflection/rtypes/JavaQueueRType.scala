@@ -5,7 +5,7 @@ case class JavaQueueRType[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementType: RType[?]
-) extends RType[R]:
+) extends RType[R]
+    with CollectionRType[R]:
 
   val typedName: TypedName = name + "[" + elementType.typedName + "]"
-

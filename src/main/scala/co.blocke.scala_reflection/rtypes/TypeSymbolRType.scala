@@ -6,3 +6,4 @@ package rtypes
 
 case class TypeSymbolRType(name: String) extends RType[Any]:
   val typedName = name.asInstanceOf[TypedName]
+  override lazy val clazz: Class[?] = Clazzes.AnyClazz

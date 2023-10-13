@@ -1,4 +1,5 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
@@ -7,10 +8,12 @@ import util.{JsonField, JsonObjectBuilder}
 
 case class TypeMemberRef(
     name: String,
+    typeSymbol: Option[TypeSymbol],
     memberType: RTypeRef[?]
 )(using quotes: Quotes)(using tt: Type[Any])
     extends RTypeRef[Any]:
   import quotes.reflect.*
+  import Liftables.TypeSymbolToExpr
 
   val typedName: TypedName = name
   val refType = tt
@@ -20,6 +23,7 @@ case class TypeMemberRef(
       Select.unique(New(TypeTree.of[TypeMemberRType]), "<init>"),
       List(
         Expr(name).asTerm,
+        Expr(typeSymbol).asTerm,
         memberType.expr.asTerm
       )
     ).asExprOf[RType[Any]]
@@ -29,7 +33,8 @@ case class TypeMemberRef(
       sb,
       List(
         JsonField("rtype", "TypeMemberRType"),
-        JsonField("typeSymbol", this.name),
+        JsonField("name", this.name),
+        JsonField("typeSymbol", this.typeSymbol),
         JsonField("memberType", this.memberType)
       )
     )

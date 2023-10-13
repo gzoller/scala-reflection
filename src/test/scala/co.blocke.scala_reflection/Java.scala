@@ -15,13 +15,13 @@ class Java extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.JColl:
       |   fields ->
-      |      a: Java List of: Int
-      |      b: Optional of Java ArrayList of: Int
-      |      c: Java Stack of: String
-      |      d: Java Queue of: Map of:
+      |      a: Java List of Int
+      |      b: Optional of Java ArrayList of Int
+      |      c: Java Stack of String
+      |      d: Java Queue of Map of:
       |         key: Int
       |         value: String
-      |      e: Java Set of: Boolean
+      |      e: Java Set of Boolean
       |      f: Java Map of:
       |         key: Int
       |         value: String
@@ -62,12 +62,12 @@ class Java extends munit.FunSuite:
       |      hMap: Java HashMap of:
       |         key: String
       |         value: Integer
-      |      myArr: Array of: String
-      |      myList: Java ArrayList of: String
-      |      myQ: Java concurrent BlockingQueue of: String
-      |      myTree: Java TreeSet of: String
-      |      nested: Array of: Java List of: Integer
-      |      pushPop: Java Stack of: Long
+      |      myArr: Array of String
+      |      myList: Java ArrayList of String
+      |      myQ: Java concurrent BlockingQueue of String
+      |      myTree: Java TreeSet of String
+      |      nested: Array of Java List of Integer
+      |      pushPop: Java Stack of Long
       |""".stripMargin
     )
   }

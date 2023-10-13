@@ -36,6 +36,28 @@ case class ScalaClassRType[R](
       case _                                            => false
     }
 
+  override lazy val clazz =
+    try
+      Class.forName(name)
+    catch {
+      case cnfe: ClassNotFoundException =>
+        if name.contains("$.") then {
+          Class.forName(name.replace("$.", "$"))
+        } else {
+          throw cnfe
+        }
+    }
+
+  override def toType(quotes: Quotes): quoted.Type[R] =
+    import quotes.reflect.*
+    val classType: quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]
+    val classTypeRepr = TypeRepr.of[R](using classType)
+    val fieldTypes = fields.map { f =>
+      val oneFieldType = f.fieldType.toType(quotes)
+      TypeRepr.of[f.fieldType.T](using oneFieldType)
+    }
+    AppliedType(classTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]
+
 //------------------------------------------------------------------------------
 
 /** Java class reflection has a special problem... we need the class file, which isn't available during compilation (i.e. inside a macro).
@@ -51,3 +73,14 @@ case class JavaClassRType[R](
 ) extends ClassRType[R]:
 
   val typedName: TypedName = name
+
+  override def toType(quotes: Quotes): quoted.Type[R] =
+    import quotes.reflect.*
+    val classType: quoted.Type[?] =
+      quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType
+    val classTypeRepr = TypeRepr.of[R](using classType.asInstanceOf[quoted.Type[R]])
+    val fieldTypes = fields.map { f =>
+      val oneFieldType = f.fieldType.toType(quotes)
+      TypeRepr.of[f.fieldType.T](using oneFieldType)
+    }
+    AppliedType(classTypeRepr, fieldTypes).asType.asInstanceOf[quoted.Type[R]]

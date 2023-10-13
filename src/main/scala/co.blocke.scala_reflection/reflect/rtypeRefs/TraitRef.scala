@@ -1,38 +1,42 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.TryRType
+import rtypes.TraitRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class TryRef[R](
+case class TraitRef[R](
     name: String,
-    typeParamSymbols: List[TypeSymbol],
-    tryRef: RTypeRef[?]
-)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]
+    typedName: TypedName,
+    fields: List[FieldInfoRef],
+    typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
+    typeParamValues: List[RTypeRef[_]] = Nil // Like Int, Boolean
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]
     with AppliedRef:
   import quotes.reflect.*
-  import Liftables.ListTypeSymbolToExpr
+  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
 
-  val typedName: TypedName = name + "[" + tryRef.typedName + "]"
   val refType = tt
 
-  def selectLimit: Int = 1
-
+  def selectLimit: Int = typeParamSymbols.size
   def select(i: Int): RTypeRef[?] =
-    if i == 0 then tryRef
+    if i >= 0 && i < selectLimit then typeParamValues(i)
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[TryRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[TraitRType]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
         Expr(name).asTerm,
+        Expr(typedName).asTerm,
+        Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(typeParamSymbols).asTerm,
-        tryRef.expr.asTerm
+        Expr.ofList(typeParamValues.map(_.expr)).asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -40,10 +44,10 @@ case class TryRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "TryRType"),
+        JsonField("rtype", "TraitRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("tryType", this.tryRef)
+        JsonField("typeParamValues", this.typeParamValues)
       )
     )

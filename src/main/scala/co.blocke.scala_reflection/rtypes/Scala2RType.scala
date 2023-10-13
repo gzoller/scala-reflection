@@ -5,4 +5,3 @@ package rtypes
   */
 case class Scala2RType[R](name: String) extends RType[R]:
   val typedName: TypedName = name
-

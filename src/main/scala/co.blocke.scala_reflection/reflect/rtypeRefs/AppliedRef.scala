@@ -1,4 +1,5 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 /** This RType mixin needed because all AppliedTypes don't have parameters.

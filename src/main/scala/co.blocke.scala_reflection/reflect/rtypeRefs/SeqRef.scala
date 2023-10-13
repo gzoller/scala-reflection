@@ -1,11 +1,13 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.JavaListRType
+import rtypes.SeqRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class JavaListRef[R](
+/** Arity 1 Collections, e.g. List, Set, Seq */
+case class SeqRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]
@@ -19,7 +21,7 @@ case class JavaListRef[R](
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[JavaListRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[SeqRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
@@ -33,7 +35,7 @@ case class JavaListRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "JavaListRType"),
+        JsonField("rtype", "SeqRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

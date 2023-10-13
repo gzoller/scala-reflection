@@ -7,7 +7,8 @@ case class IntersectionRType[R](
     leftType: RType[?],
     rightType: RType[?]
 ) extends RType[R]
-    with LeftRightRType:
+    with LeftRightRType[R]:
 
   val typedName: TypedName = name + "[" + leftType.typedName + "," + rightType.typedName + "]"
   def typeParamValues: List[RType[_]] = List(leftType, rightType)
+  override lazy val clazz: Class[?] = Clazzes.AnyClazz

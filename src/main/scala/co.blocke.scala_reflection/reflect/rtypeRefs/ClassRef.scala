@@ -1,4 +1,5 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
@@ -33,7 +34,6 @@ case class ScalaClassRef[R](
     isValueClass: Boolean,
     isCaseClass: Boolean,
     isAbstractClass: Boolean,
-    typeParamPaths: Map[String, List[List[Int]]] = Map.empty[String, List[List[Int]]], // Trait/Class name -> List of Int (path) for each type param
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
     sealedChildren: List[RTypeRef[_]] = Nil // Populated only if this is a sealed class or abstract class
 )(using quotes: Quotes)(using tt: Type[R])

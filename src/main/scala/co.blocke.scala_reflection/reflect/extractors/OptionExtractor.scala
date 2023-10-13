@@ -5,6 +5,7 @@ package extractors
 import rtypeRefs.{ScalaOptionRef, TypeSymbolRef}
 import reflect.TypeExtractor
 import scala.quoted.*
+import rtypeRefs.{ScalaOptionRef, TypeSymbolRef}
 
 case class OptionExtractor() extends TypeExtractor[ScalaOptionRef[_]]:
 
@@ -20,10 +21,13 @@ case class OptionExtractor() extends TypeExtractor[ScalaOptionRef[_]]:
       tob.head.asType match
         case '[u] =>
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[u](quotes)(tob.head, false)
+          else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    ScalaOptionRef(
-      t.classSymbol.get.fullName,
-      typeParamSymbols,
-      optionOfRef
-    ).asInstanceOf[RTypeRef[R]]
+    val a = quotes.reflect.AppliedType(t, tob).asType
+    a match
+      case '[t] =>
+        ScalaOptionRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          optionOfRef
+        ).asInstanceOf[RTypeRef[R]]

@@ -1,32 +1,39 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.SeqRType
+import rtypes.TryRType
 import util.{JsonField, JsonObjectBuilder}
 
-/** Arity 1 Collections, e.g. List, Set, Seq */
-case class SeqRef[R](
+case class TryRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
-    elementRef: RTypeRef[?]
+    tryRef: RTypeRef[?]
 )(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]
-    with CollectionRef[R]:
+    with AppliedRef:
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr
 
+  val typedName: TypedName = name + "[" + tryRef.typedName + "]"
   val refType = tt
+
+  def selectLimit: Int = 1
+
+  def select(i: Int): RTypeRef[?] =
+    if i == 0 then tryRef
+    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[SeqRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[TryRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
         Expr(name).asTerm,
         Expr(typeParamSymbols).asTerm,
-        elementRef.expr.asTerm
+        tryRef.expr.asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -34,10 +41,10 @@ case class SeqRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "SeqRType"),
+        JsonField("rtype", "TryRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("elementType", this.elementRef)
+        JsonField("tryType", this.tryRef)
       )
     )

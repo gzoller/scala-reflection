@@ -1,12 +1,13 @@
 package co.blocke.scala_reflection
+package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.MapRType
+import rtypes.JavaMapRType
 import util.{JsonField, JsonObjectBuilder}
 
 /** Arity 2 Collections, Map flavors, basiclly */
-case class MapRef[R](
+case class JavaMapRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?], // map key
@@ -17,11 +18,10 @@ case class MapRef[R](
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr
 
-  override val typedName: TypedName = name + "[" + elementRef.typedName + "," + elementRef2.typedName + "]"
-  override val selectLimit: Int = 2
-
   val refType = tt
 
+  override val typedName: TypedName = name + "[" + elementRef.typedName + "," + elementRef2.typedName + "]"
+  override val selectLimit: Int = 2
   override def select(i: Int): RTypeRef[?] =
     i match {
       case 0 => elementRef
@@ -32,7 +32,7 @@ case class MapRef[R](
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[MapRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[JavaMapRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
@@ -47,7 +47,7 @@ case class MapRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "MapRType"),
+        JsonField("rtype", "JavaMapRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

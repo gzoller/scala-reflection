@@ -12,7 +12,7 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll1:
       |   fields ->
-      |      a: List of: String
+      |      a: List of String
       |""".stripMargin
     )
   }
@@ -23,7 +23,7 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll2:
       |   fields ->
-      |      a: HashSet of: String
+      |      a: HashSet of String
       |""".stripMargin
     )
   }
@@ -60,7 +60,7 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll1m:
       |   fields ->
-      |      a: mutable ListBuffer of: String
+      |      a: mutable ListBuffer of String
       |""".stripMargin
     )
   }
@@ -71,7 +71,7 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll2m:
       |   fields ->
-      |      a: mutable HashSet of: String
+      |      a: mutable HashSet of String
       |""".stripMargin
     )
   }
@@ -110,7 +110,7 @@ class Collections extends munit.FunSuite:
       |   fields ->
       |      a: Map of:
       |         key: String
-      |         value: List of: Option of Int
+      |         value: List of Option of Int
       |""".stripMargin
     )
   }
@@ -124,7 +124,7 @@ class Collections extends munit.FunSuite:
       |      t: Tuple of:
       |         0: Int
       |         1: Boolean
-      |         2: List of: String
+      |         2: List of String
       |         3: co.blocke.scala_reflection.models.NormalOption:
       |            fields ->
       |               a: Option of Int
@@ -139,16 +139,16 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.WithScalaArray:
       |   fields ->
-      |      list: Array of: Array of: Char
-      |      x1: Array of: Boolean
-      |      x2: Array of: Byte
-      |      x3: Array of: Char
-      |      x4: Array of: Double
-      |      x5: Array of: Float
-      |      x6: Array of: Int
-      |      x7: Array of: Long
-      |      x8: Array of: Short
-      |      x9: Array of: String
+      |      list: Array of Array of Char
+      |      x1: Array of Boolean
+      |      x2: Array of Byte
+      |      x3: Array of Char
+      |      x4: Array of Double
+      |      x5: Array of Float
+      |      x6: Array of Int
+      |      x7: Array of Long
+      |      x8: Array of Short
+      |      x9: Array of String
       |""".stripMargin
     )
   }
