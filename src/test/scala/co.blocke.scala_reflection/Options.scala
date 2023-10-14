@@ -14,7 +14,7 @@ class Options extends munit.FunSuite:
 
   test("java ArrayList of Option[String]") {
     val result = RType.of[java.util.ArrayList[Option[String]]]
-    assertEquals(result.pretty, "Java ArrayList of: Option of String")
+    assertEquals(result.pretty, "Java ArrayList of Option of String")
   }
 
   test("Scala optional field") {

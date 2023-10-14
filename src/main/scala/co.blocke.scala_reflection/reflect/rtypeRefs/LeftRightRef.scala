@@ -29,7 +29,7 @@ case class LeftRightRef[R](
   val typedName: TypedName = name + "[" + leftRef.typedName + "," + rightRef.typedName + "]"
   val refType = tt
 
-  def selectLimit: Int = 2
+  val selectLimit: Int = 2
 
   def select(i: Int): RTypeRef[?] =
     i match {

@@ -5,14 +5,17 @@ object RunMe extends App:
 
   println("\n\n")
 
-  val rt = RType.inTermsOf[Basis[List[Option[Int | Boolean]]]]("co.blocke.scala_reflection.run.Thingy2")
+  val rt = RType.inTermsOf[MapIt[Int, Double, String, Boolean]]("co.blocke.scala_reflection.run.MapItC")
 
-  // val rt = RType.of[Basis[List[Option[Int | Boolean]]]]
-
-  // val rt = RType.of[Two]
-
-  println(rt)
+  // println(rt)
 
   println("\n\n" + rt.pretty)
 
   println("Done.")
+
+  /*
+
+trait MapIt[X, Y, S, T] { val x: Map[X, Option[Y]]; val s: Array[S]; val t: Array[List[T]] }
+case class MapItC[A, B, W, U](x: Map[A, Option[B]], s: Array[W], t: Array[List[U]]) extends MapIt[A, B, W, U]
+
+   */

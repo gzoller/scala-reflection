@@ -10,7 +10,8 @@ case class TryRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     tryRef: RTypeRef[?]
-)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]
     with AppliedRef:
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr
@@ -18,7 +19,7 @@ case class TryRef[R](
   val typedName: TypedName = name + "[" + tryRef.typedName + "]"
   val refType = tt
 
-  def selectLimit: Int = 1
+  val selectLimit: Int = 1
 
   def select(i: Int): RTypeRef[?] =
     if i == 0 then tryRef

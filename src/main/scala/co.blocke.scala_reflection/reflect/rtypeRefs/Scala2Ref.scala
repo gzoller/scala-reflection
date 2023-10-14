@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-import scala.quoted.* 
+import scala.quoted.*
 import rtypes.Scala2RType
 import util.{JsonField, JsonObjectBuilder}
 

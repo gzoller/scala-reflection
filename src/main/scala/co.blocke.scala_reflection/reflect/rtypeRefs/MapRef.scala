@@ -19,10 +19,10 @@ case class MapRef[R](
   import Liftables.ListTypeSymbolToExpr
 
   override val typedName: TypedName = name + "[" + elementRef.typedName + "," + elementRef2.typedName + "]"
-  override val selectLimit: Int = 2
 
   val refType = tt
 
+  override val selectLimit: Int = 2
   override def select(i: Int): RTypeRef[?] =
     i match {
       case 0 => elementRef

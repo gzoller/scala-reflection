@@ -20,9 +20,9 @@ case class TraitRef[R](
 
   val refType = tt
 
-  def selectLimit: Int = typeParamSymbols.size
+  val selectLimit: Int = fields.size
   def select(i: Int): RTypeRef[?] =
-    if i >= 0 && i < selectLimit then typeParamValues(i)
+    if i >= 0 && i < selectLimit then fields(i).fieldRef
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
   val expr =

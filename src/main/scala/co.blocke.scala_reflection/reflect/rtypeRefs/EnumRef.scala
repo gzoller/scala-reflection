@@ -2,8 +2,8 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-import scala.quoted.* 
-import rtypes.{ScalaEnumRType, ScalaEnumerationRType, JavaEnumRType}
+import scala.quoted.*
+import rtypes.{JavaEnumRType, ScalaEnumerationRType, ScalaEnumRType}
 import util.{JsonField, JsonObjectBuilder}
 
 /** Something to smooth the differences between the 2.x Enumeration class and the 3.x Enum class
@@ -27,7 +27,8 @@ trait EnumRef[R] extends RTypeRef[R]:
 case class ScalaEnumRef[R](
     name: String,
     values: List[String]
-)(using quotes: Quotes)(using tt: Type[R]) extends EnumRef[R]:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends EnumRef[R]:
   import quotes.reflect.*
   val typedName: TypedName = name
   val refType = tt
@@ -43,13 +44,14 @@ case class ScalaEnumRef[R](
         Expr(values).asTerm
       )
     ).asExprOf[RType[R]]
-  
+
 //---------------------------------------------------------< Scala 2 Enumeration
 
 case class ScalaEnumerationRef[R](
     name: String,
     values: List[String]
-)(using quotes: Quotes)(using tt: Type[R]) extends EnumRef[R]:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends EnumRef[R]:
   import quotes.reflect.*
   val typedName: TypedName = name
   val refType = tt
@@ -66,14 +68,14 @@ case class ScalaEnumerationRef[R](
       )
     ).asExprOf[RType[R]]
 
-
 //---------------------------------------------------------< Java Enumeration
 
 // When we get here: we can use class.getEnumConstants() to return array of T, the valid values of a Java enum
 case class JavaEnumRef[R](
     name: String,
     values: List[String]
-)(using quotes: Quotes)(using tt: Type[R]) extends EnumRef[R]:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends EnumRef[R]:
   import quotes.reflect.*
   val typedName: TypedName = name
   val refType = tt

@@ -27,7 +27,8 @@ case class ScalaClassRType[R](
     isCaseClass: Boolean,
     isAbstractClass: Boolean,
     nonConstructorFields: List[NonConstructorFieldInfo] = Nil, // Populated for non-case classes only
-    sealedChildren: List[RType[_]] = Nil // Populated only if this is a sealed class or abstract class
+    sealedChildren: List[RType[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    typePaths: Map[String, List[List[Int]]] // pre-computed path to each type symbol used (to get concrete types)
 ) extends ClassRType[R]:
 
   override def equals(obj: Any) =

@@ -18,6 +18,8 @@ trait RType[R]:
   override def equals(obj: Any) = this.hashCode == obj.hashCode
 
 object RType:
+  import scala.quoted.staging.*
+  given Compiler = Compiler.make(getClass.getClassLoader)
 
   protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]]
 
@@ -29,19 +31,11 @@ object RType:
   def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
     import quotes.reflect.*
     reflect.ReflectOnType[T](quotes)(TypeRepr.of[T])(using scala.collection.mutable.Map.empty[TypedName, Boolean]).expr
-    // val z = reflect.ReflectOnType[T](quotes)(TypeRepr.of[T])(using scala.collection.mutable.Map.empty[TypedName, Boolean])
-    // println("Z: " + z)
-    // val e = z.expr
-    // println("\n\n>> " + e.show)
-    // e
 
   // ------------------------
   //  <<  NON-MACRO ENTRY >>  (Tasty Inspection)
   // ------------------------
   def of(className: String): RType[?] =
-    import scala.quoted.staging.*
-    given Compiler = Compiler.make(getClass.getClassLoader)
-
     rtypeCache.getOrElse(
       className, {
         val newRType = {
@@ -58,36 +52,40 @@ object RType:
   // ------------------------
   //  <<  NON-MACRO ENTRY: inTermsOf >>  (Tasty Inspection)
   // ------------------------
+  // inline def inTermsOf2[T](className: String): Map[TypeSymbol, RType[?]] =
+
   inline def inTermsOf[T](className: String): RType[?] =
-    import scala.quoted.staging.*
     of[T] match {
       case traitRType: rtypes.TraitRType[?] =>
-        given Compiler = Compiler.make(getClass.getClassLoader)
+        val classRType = of(className).asInstanceOf[rtypes.ScalaClassRType[_]]
+
+        val i: Int = (Math.random() * 100).toInt
         val fn = (quotes: Quotes) ?=> {
           import quotes.reflect.*
 
           val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
 
-          // Get paths for types
+          // def deepApply2(quotes: Quotes)(path: List[List[Int]], traitTypeRepr: quotes.reflect.TypeRepr): List[quotes.reflect.TypeRepr]
           val t1 = System.currentTimeMillis()
-          val clazz = Class.forName(className)
-          val symbol = TypeRepr.typeConstructorOf(clazz).typeSymbol
-          val typeSymbols = symbol.primaryConstructor.paramSymss.head.map(_.name.asInstanceOf[TypeSymbol])
-          val classDef = symbol.tree.asInstanceOf[ClassDef]
-          val paths = reflect.TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)(using seenBefore)
+          val paths = classRType.typePaths.getOrElse(traitRType.name, throw new ReflectException(s"No path in class ${classRType.name} for trait ${traitRType.name}"))
+          implicit val tt = traitRType.toType(quotes)
+          val typeParamTypes = reflect.TypeSymbolMapper.runPath(quotes)(paths, TypeRepr.of[traitRType.T])
           val t2 = System.currentTimeMillis()
 
-          // Now apply these paths against traitRType
+          // Apply type param paths from classRType against traitRType
+          // val typeParamTypes = reflect.TypeSymbolMapper.deepApply(classRType.typePaths, classRType.typeParamSymbols, traitRType)(using quotes)
+          val classQuotedTypeRepr = TypeRepr.typeConstructorOf(classRType.clazz)
+          val z = reflect.ReflectOnType(quotes)(classQuotedTypeRepr.appliedTo(typeParamTypes))(using seenBefore).expr
           val t3 = System.currentTimeMillis()
-          val typeParamTypes = reflect.TypeSymbolMapper.deepApply(paths, typeSymbols, traitRType)(using quotes)
-          val classQuotedTypeRepr = TypeRepr.typeConstructorOf(clazz)
-          val q = reflect.ReflectOnType(quotes)(classQuotedTypeRepr.appliedTo(typeParamTypes))(using seenBefore).expr
-          val t4 = System.currentTimeMillis()
-          println("Class Path Time: " + (t2 - t1))
-          println("Run Path Time  : " + (t4 - t3))
-          q
+          println(s"($i) TIME: " + (t2 - t1) + " / " + (t3 - t2))
+          z
         }
-        run(fn)
+        val t4 = System.currentTimeMillis()
+        val q = run(fn)
+        val t5 = System.currentTimeMillis()
+        println(s"($i) Total: " + (t5 - t4))
+        q
+      // So.... the whole "run()" machinery roughly doubles the total processing time of the fn() body... :-(
       case x => throw new ReflectException(s"${x.name} is not of type trait")
     }
 

@@ -2,14 +2,15 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-import scala.quoted.* 
+import scala.quoted.*
 import rtypes.AliasRType
 import util.{JsonField, JsonObjectBuilder}
 
 case class AliasRef[R](
     definedType: String,
     unwrappedType: RTypeRef[?] // Aliases with a parameterized wrapped type are not currently supported, so ConcreteType here.
-)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]:
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]:
   import quotes.reflect.*
 
   val name: String = definedType.drop(definedType.lastIndexOf('.') + 1)

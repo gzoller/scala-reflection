@@ -2,13 +2,14 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-import scala.quoted.* 
+import scala.quoted.*
 import rtypes.ObjectRType
 import util.{JsonField, JsonObjectBuilder}
 
 case class ObjectRef(
     name: String
-)(using quotes: Quotes)(using tt: Type[Object]) extends RTypeRef[Object]:
+)(using quotes: Quotes)(using tt: Type[Object])
+    extends RTypeRef[Object]:
   import quotes.reflect.*
 
   val typedName = name

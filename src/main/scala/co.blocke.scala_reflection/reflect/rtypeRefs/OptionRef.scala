@@ -10,7 +10,7 @@ trait OptionRef[R] extends RTypeRef[R] with AppliedRef:
   val typeParamSymbols: List[TypeSymbol]
   val optionParamType: RTypeRef[?]
 
-  def selectLimit: Int = 1
+  val selectLimit: Int = 1
   def select(i: Int): RTypeRef[?] =
     if i == 0 then optionParamType
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
@@ -19,7 +19,7 @@ trait OptionRef[R] extends RTypeRef[R] with AppliedRef:
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", util.Pretty.lastPart(this.getClass.getName).replace("Ref","RType")),
+        JsonField("rtype", util.Pretty.lastPart(this.getClass.getName).replace("Ref", "RType")),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

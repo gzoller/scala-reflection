@@ -295,6 +295,11 @@ object ReflectOnClass:
                   )(using quotes)(using Type.of[Any](using quotes))
           }
 
+          // compute type param paths for parameterized class
+          val typeParamPaths =
+            if typeSymbols.isEmpty then Map.empty[String, List[List[Int]]]
+            else TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
+
           val constructorParams = // Annoying "ism"... different param order dep on whether class is parameterized or not!
             if classDef.constructor.paramss.tail == Nil then classDef.constructor.paramss.head.params
             else classDef.constructor.paramss.tail.head.params
@@ -337,7 +342,8 @@ object ReflectOnClass:
               true,
               isAbstract,
               Nil,
-              sealedChildrenRTypes
+              sealedChildrenRTypes,
+              typeParamPaths
             )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
           else
 
@@ -386,7 +392,8 @@ object ReflectOnClass:
               false,
               isAbstract,
               nonConstructorFields,
-              sealedChildrenRTypes
+              sealedChildrenRTypes,
+              typeParamPaths
             )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
         // === Other kinds of classes (non-case Scala) ===

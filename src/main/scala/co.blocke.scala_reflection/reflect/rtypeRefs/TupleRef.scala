@@ -10,7 +10,8 @@ case class TupleRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     tupleRefs: List[RTypeRef[_]]
-)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]
     with AppliedRef:
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr
@@ -18,7 +19,7 @@ case class TupleRef[R](
   val typedName: TypedName = name + tupleRefs.map(_.typedName).toList.mkString("[", ",", "]")
   val refType = tt
 
-  def selectLimit: Int = tupleRefs.size
+  val selectLimit: Int = tupleRefs.size
 
   def select(i: Int): RTypeRef[?] =
     if i >= 0 && i <= tupleRefs.size - 1 then tupleRefs(i)
@@ -33,7 +34,7 @@ case class TupleRef[R](
       List(
         Expr(name).asTerm,
         Expr(typeParamSymbols).asTerm,
-        Expr.ofList( tupleRefs.map(_.expr) ).asTerm
+        Expr.ofList(tupleRefs.map(_.expr)).asTerm
       )
     ).asExprOf[RType[R]]
 

@@ -11,7 +11,8 @@ case class SeqRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]
-)(using quotes: Quotes)(using tt: Type[R]) extends RTypeRef[R]
+)(using quotes: Quotes)(using tt: Type[R])
+    extends RTypeRef[R]
     with CollectionRef[R]:
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr

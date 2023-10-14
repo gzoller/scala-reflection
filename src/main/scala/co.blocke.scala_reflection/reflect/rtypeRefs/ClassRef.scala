@@ -14,9 +14,9 @@ trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
   val annotations: Map[String, Map[String, String]]
   val mixins: List[String]
 
-  def selectLimit: Int = typeParamSymbols.size
+  val selectLimit: Int = fields.size
   def select(i: Int): RTypeRef[?] =
-    if i >= 0 && i < selectLimit then typeParamValues(i)
+    if i >= 0 && i < selectLimit then fields(i).fieldRef
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
 
 //------------------------------------------------------------------------------
@@ -35,7 +35,8 @@ case class ScalaClassRef[R](
     isCaseClass: Boolean,
     isAbstractClass: Boolean,
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
-    sealedChildren: List[RTypeRef[_]] = Nil // Populated only if this is a sealed class or abstract class
+    sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    typePaths: Map[String, List[List[Int]]]
 )(using quotes: Quotes)(using tt: Type[R])
     extends ClassRef[R]:
   import quotes.reflect.*
@@ -63,7 +64,8 @@ case class ScalaClassRef[R](
         Expr(isCaseClass).asTerm,
         Expr(isAbstractClass).asTerm,
         Expr.ofList(nonConstructorFields.map(_.expr.asInstanceOf[Expr[NonConstructorFieldInfo]])).asTerm,
-        Expr.ofList(sealedChildren.map(_.expr)).asTerm
+        Expr.ofList(sealedChildren.map(_.expr)).asTerm,
+        Expr(typePaths).asTerm
       )
     ).asExprOf[RType[R]]
 
