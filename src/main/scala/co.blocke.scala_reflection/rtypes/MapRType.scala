@@ -9,9 +9,19 @@ case class MapRType[R](
     typeParamSymbols: List[TypeSymbol],
     elementType: RType[?], // map key
     elementType2: RType[?] // map value
-) extends RType[R]:
+) extends RType[R]
+    with AppliedRType:
 
   val typedName: TypedName = name + "[" + elementType.typedName + "," + elementType2.typedName + "]"
+  def typeParamValues: List[RType[_]] = List(elementType, elementType2)
+
+  override val selectLimit: Int = 2
+  override def select(i: Int): RType[?] =
+    i match {
+      case 0 => elementType
+      case 1 => elementType2
+      case _ => throw new ReflectException(s"AppliedType select index $i out of range for $name")
+    }
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

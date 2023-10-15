@@ -5,11 +5,24 @@ object RunMe extends App:
 
   println("\n\n")
 
-  val rt = RType.inTermsOf[MapIt[Int, Double, String, Boolean]]("co.blocke.scala_reflection.run.MapItC")
+  // val rt = RType.mapTypesForSymbols[MapIt[Int, Double, String, Boolean]]("co.blocke.scala_reflection.run.MapItC")
+
+  println("--1--")
+  // val cname = "co.blocke.scala_reflection.run.MapItC"
+  print("Enter a classname: ")
+  val cname = scala.io.StdIn.readLine()
+  val rt = RType.of(cname)
+
+  // println("--2--")
+  // RType.of("co.blocke.scala_reflection.run.MapItC")
 
   // println(rt)
 
   println("\n\n" + rt.pretty)
+
+  // print("Enter you name: ")
+  // val name = scala.io.StdIn.readLine()
+  // println(RType.echo(name))
 
   println("Done.")
 

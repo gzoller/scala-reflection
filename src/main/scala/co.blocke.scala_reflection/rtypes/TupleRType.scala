@@ -11,6 +11,12 @@ case class TupleRType[R](
 
   val typedName: TypedName = name + typeParamValues.map(_.typedName).toList.mkString("[", ",", "]")
 
+  val selectLimit: Int = typeParamValues.size
+
+  def select(i: Int): RType[?] =
+    if i >= 0 && i <= typeParamValues.size - 1 then typeParamValues(i)
+    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
+
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val tupleType: quoted.Type[R] = super.toType(quotes)
