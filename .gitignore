@@ -1,4 +1,7 @@
 out/
+.vscode/
+.metals/
+.bloop/
 .idea/
 .idea_modules/
 target/
