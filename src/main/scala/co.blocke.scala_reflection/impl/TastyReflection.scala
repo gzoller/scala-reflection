@@ -1,6 +1,7 @@
 package co.blocke.scala_reflection
 package impl
 
+import co.blocke.scala_reflection.util.ClassUtil
 import info.*
 
 import scala.quoted.*
@@ -131,7 +132,7 @@ object TastyReflection extends NonCaseClassReflection:
     import quotes.reflect.{_, given}
 
     // The .replace here "fixes" wrong class name in the case where a class is defined inside an object
-    val className = typeRef.classSymbol.get.fullName.replace("$.","$")
+    val className = ClassUtil.adjustClassName(typeRef.classSymbol.get.fullName)
 
     object DefaultMethod {
       val reg: Regex = """\$lessinit\$greater\$default\$(\d+)""".r
