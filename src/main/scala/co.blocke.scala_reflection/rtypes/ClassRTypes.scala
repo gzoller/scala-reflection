@@ -37,17 +37,7 @@ case class ScalaClassRType[R](
       case _                                            => false
     }
 
-  override lazy val clazz =
-    try
-      Class.forName(name)
-    catch {
-      case cnfe: ClassNotFoundException =>
-        if name.contains("$.") then {
-          Class.forName(name.replace("$.", "$"))
-        } else {
-          throw cnfe
-        }
-    }
+  override lazy val clazz = Class.forName(util.AdjustClassName(name))
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

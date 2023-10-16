@@ -28,7 +28,7 @@ object ReflectOnClass:
 
       // Let's get the className, symbol, and any typeSymbols (eg Foo[T,U]) that may exist.
       // The .replace here "fixes" wrong class name in the case where a class is defined inside an object
-      val className = typeRef.classSymbol.get.fullName.replace("$.", "$")
+      val className = util.AdjustClassName(typeRef.classSymbol.get.fullName)
       val symbol = typeRef.classSymbol.get
       val (typeSymbols, typeSymbolValues) = symbol.primaryConstructor.paramSymss match {
         case List(paramSyms: List[Symbol], _) =>
