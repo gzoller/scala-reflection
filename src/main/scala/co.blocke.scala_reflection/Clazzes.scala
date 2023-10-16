@@ -58,4 +58,3 @@ object Clazzes:
   extension (c: Class[?])
     def =:=(other: Class[?]): Boolean = c == other
     def <:<(other: Class[?]): Boolean = other.isAssignableFrom(c)
-

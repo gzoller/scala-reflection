@@ -341,7 +341,7 @@ class Parameters extends munit.FunSuite:
   test("Nested trait substitutions (inTermsOf)") {
     val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
     val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]].asInstanceOf[TraitRType[_]]
-    val result = RType.inTermsOf[T10[T11[Int, T5[Double, Char]], String]](inst.getClass.getName)
+    val result = RType.inTermsOf[T10[T11[Int, T5[Double, Char]], String]](inst.getClass)
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.TFoo6[Char,String,Int,Double]:
@@ -361,7 +361,7 @@ class Parameters extends munit.FunSuite:
   test("With nested Option and List (inTermsOf)") {
     val inst: Base[Level1[String, Boolean], Int] = BaseClass(L1Class("foo", Some(List(true))), 3)
     val result = RType.inTermsOf[Base[Level1[String, Boolean], Int]](
-      "co.blocke.scala_reflection.models.BaseClass"
+      Class.forName("co.blocke.scala_reflection.models.BaseClass")
     )
     assertEquals(
       result.pretty,
@@ -377,7 +377,7 @@ class Parameters extends munit.FunSuite:
   }
 
   test("With nested Try (inTermsOf)") {
-    val result = RType.inTermsOf[TryIt[Int, Double]]("co.blocke.scala_reflection.models.TryItC")
+    val result = RType.inTermsOf[TryIt[Int, Double]](Class.forName("co.blocke.scala_reflection.models.TryItC"))
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.TryItC[Int,Double]:
@@ -390,7 +390,7 @@ class Parameters extends munit.FunSuite:
 
   test("With nested Map and Array (inTermsOf)") {
     val result =
-      RType.inTermsOf[MapIt[Int, Double, String, Boolean]]("co.blocke.scala_reflection.models.MapItC")
+      RType.inTermsOf[MapIt[Int, Double, String, Boolean]](Class.forName("co.blocke.scala_reflection.models.MapItC"))
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.MapItC[Int,Double,String,Boolean]:
@@ -406,7 +406,7 @@ class Parameters extends munit.FunSuite:
 
   test("With nested case class and non-case class (inTermsOf)") {
     val result =
-      RType.inTermsOf[ClassistBase[Int, Short]]("co.blocke.scala_reflection.models.ClassistC")
+      RType.inTermsOf[ClassistBase[Int, Short]](Class.forName("co.blocke.scala_reflection.models.ClassistC"))
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.ClassistC[Int,Short]:
@@ -425,7 +425,7 @@ class Parameters extends munit.FunSuite:
 
   test("With nested case class and non-case class (inverted) (inTermsOf)") {
     val result =
-      RType.inTermsOf[ClassistBaseInv[Int, Short]]("co.blocke.scala_reflection.models.ClassistCInv")
+      RType.inTermsOf[ClassistBaseInv[Int, Short]](Class.forName("co.blocke.scala_reflection.models.ClassistCInv"))
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.ClassistCInv[Int,Short]:
@@ -442,7 +442,7 @@ class Parameters extends munit.FunSuite:
 
   test("InTermsOf deep type substitution (inTermsOf)") {
     val result =
-      RType.inTermsOf[Basis[List[Option[Int | Boolean]]]]("co.blocke.scala_reflection.models.Thingy2")
+      RType.inTermsOf[Basis[List[Option[Int | Boolean]]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.Thingy2[List[Option[Int | Boolean]]]:

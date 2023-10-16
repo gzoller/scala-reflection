@@ -73,7 +73,7 @@ class Java extends munit.FunSuite:
   }
 
   test("Detect parameterized Java class") {
-    val result = RType.of("co.blocke.reflect.ParamAnno")
+    val result = RType.of(Class.forName("co.blocke.reflect.ParamAnno"))
     assertEquals(
       result.pretty,
       """co.blocke.reflect.ParamAnno[T] (Java):

@@ -55,15 +55,15 @@ object RType:
   // ------------------------
   //  <<  NON-MACRO ENTRY >>  (Tasty Inspection)
   // ------------------------
-  def of(className: String): RType[?] =
+  def of(clazz: Class[?]): RType[?] =
     rtypeCache.getOrElse(
-      className, {
+      clazz.getName, {
         val newRType = {
-          val fn = (quotes: Quotes) ?=> reflect.ReflectOnType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(className)), false)(using scala.collection.mutable.Map.empty[TypedName, Boolean]).expr
+          val fn = (quotes: Quotes) ?=> reflect.ReflectOnType(quotes)(quotes.reflect.TypeRepr.typeConstructorOf(clazz), false)(using scala.collection.mutable.Map.empty[TypedName, Boolean]).expr
           run(fn)
         }.asInstanceOf[RType[?]]
         rtypeCache.synchronized {
-          rtypeCache.put(className, newRType)
+          rtypeCache.put(clazz.getName, newRType)
         }
         newRType
       }
@@ -72,10 +72,10 @@ object RType:
   // ------------------------
   //  <<  NON-MACRO ENTRY: inTermsOf >>  (Tasty Inspection)
   // ------------------------
-  inline def inTermsOf[T](className: String): RType[?] =
+  inline def inTermsOf[T](clazz: Class[?]): RType[?] =
     of[T] match {
       case traitRType: rtypes.TraitRType[?] =>
-        val classRType = of(className).asInstanceOf[rtypes.ScalaClassRType[_]]
+        val classRType = of(clazz).asInstanceOf[rtypes.ScalaClassRType[_]]
 
         val i: Int = (Math.random() * 100).toInt
         val fn = (quotes: Quotes) ?=> {
