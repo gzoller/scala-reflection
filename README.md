@@ -18,11 +18,13 @@ libraryDependencies += "co.blocke" %% "scala-reflection" % CURRENT_VERSION
 This library defines a set of RType (reflected type) classes, which are high-level abstractions representing information about Scala or Java classes and structures. Reflect on a class like this:
 
 ```scala
+// File 1
 package com.me.models
 
 case class Thing[T](a: String, b: List[T])
 ```
 ```scala
+// File 2
 package com.me.controller
 
 import co.blocke.scala_reflection.*
@@ -30,6 +32,13 @@ import com.me.models.*
 
 // >> Compile-time reflection (using square brackets) for types we know at runtime
 val macroRType: RType[_] = RType.of[Thing[Int]] // returns ScalaClassRType
+println(macroRType.pretty)
+/*
+com.yourpath.Thing[Int]:
+   fields ->
+      a: String
+      b: List of Int
+*/
 
 // >> Run-time reflection using parentheses for type
 val runtimeRType: RType[_] = RType.of(className)
