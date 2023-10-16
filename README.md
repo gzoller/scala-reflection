@@ -138,7 +138,7 @@ At this point the library can reflect on quite a lot of things in the Scala ecos
 * Try typed fields
 * Either
 * Option and Java Optional
-* Collections, incl. several Java Collections
+* Collections, including several Java Collections
 * Tuples
 * Match/dependent types
 
