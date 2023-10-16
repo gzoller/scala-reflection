@@ -22,30 +22,13 @@ object RType:
   import scala.quoted.staging.*
   given Compiler = Compiler.make(getClass.getClassLoader)
 
+  // Chache of the "of()" (non-macro) reflected RTypes
   protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]]
-
-  inline def echo(s: String): String = ${ echoImpl('s) }
-
-  def wrap(q: Quotes)(t: Expr[String]): Expr[String] =
-    import q.reflect.*
-    implicit val q2 = q
-    '{ "\"" + $t + "\"" }
-
-  def echoImpl(s: Expr[String])(using q: Quotes): Expr[String] =
-    import quotes.reflect.*
-    // level 0 (compile time)
-    '{ // level 1 (runtime)
-      val s2 = $s
-      "Hello, " + ${ // level 0
-        wrap(q)(
-          's2
-        )
-      }
-    }
 
   // -----------------------------
   //  <<  MACRO ENTRY: of[T] >>       (Tasty Reflection)
   // -----------------------------
+
   inline def of[T]: RType[T] = ${ ofImpl[T]() }
 
   def ofImpl[T]()(using t: Type[T])(using quotes: Quotes): Expr[RType[T]] =
