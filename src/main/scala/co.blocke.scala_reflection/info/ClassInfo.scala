@@ -1,6 +1,7 @@
 package co.blocke.scala_reflection
 package info
 
+import co.blocke.scala_reflection.util.ClassUtil
 import impl.*
 import java.nio.ByteBuffer
 import scala.quoted.Quotes
@@ -48,7 +49,7 @@ trait ScalaClassInfoBase extends ClassInfo:
     } catch {
       case cnfe: ClassNotFoundException => {
         if (name.contains("$.")) {
-          Class.forName(name.replace("$.", "$"))
+          Class.forName(ClassUtil.adjustClassName(name))
         } else {
           throw cnfe
         }
@@ -125,7 +126,7 @@ case class ScalaCaseClassInfo protected[scala_reflection] (
     _mixins:                Array[String],
     override val isAppliedType: Boolean,
     isValueClass:           Boolean
-  ) extends ScalaClassInfoBase: 
+  ) extends ScalaClassInfoBase:
 
   // Used for ScalaJack writing of type members ("external type hints").  If some type members are not class/trait, it messes up any
   // type hint modifiers, so for the purposes of serialization we want to filter out "uninteresting" type members (e.g. primitives)
