@@ -194,6 +194,7 @@ Nicolas Stucki (@nicolasstucki)
 
 ## Release Notes:
 
+* 1.2.3 - Support for inner classes
 * 1.2.2 - Scala 3.3.0 LTS support
 * 1.2.0 - Experimental Scala.js support
 * 1.1.11 - Scala 3.2.1 supported, plus issue fixes
