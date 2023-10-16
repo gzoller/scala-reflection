@@ -12,11 +12,6 @@ case class TraitRType[R](
 ) extends RType[R]
     with AppliedRType:
 
-  val selectLimit: Int = fields.size
-  def select(i: Int): RType[?] =
-    if i >= 0 && i < selectLimit then fields(i).fieldType
-    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
-
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val traitType: quoted.Type[R] = quotes.reflect.TypeRepr.typeConstructorOf(clazz).asType.asInstanceOf[quoted.Type[R]]

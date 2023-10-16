@@ -338,54 +338,122 @@ class Parameters extends munit.FunSuite:
     )
   }
 
-  test("Nested trait substitutions") {
+  test("Nested trait substitutions (inTermsOf)") {
     val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
-    val result = RType.mapTypesForSymbols[T10[T11[Int, T5[Double, Char]], String]](inst.getClass.getName)
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("A" -> "scala.Char", "B" -> "java.lang.String", "C" -> "scala.Int", "D" -> "scala.Double"))
+    val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]].asInstanceOf[TraitRType[_]]
+    val result = RType.inTermsOf[T10[T11[Int, T5[Double, Char]], String]](inst.getClass.getName)
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.TFoo6[Char,String,Int,Double]:
+      |   fields ->
+      |      x: co.blocke.scala_reflection.models.T11[Int,T5[Double,Char]] (trait):
+      |         fields ->
+      |            w: [W] Int
+      |            z: [Z] co.blocke.scala_reflection.models.T5[Double,Char] (trait):
+      |               fields ->
+      |                  thing1: [X] Double
+      |                  thing2: [Y] Char
+      |      y: [B] String
+      |""".stripMargin
+    )
   }
 
-  test("With nested Option and List") {
+  test("With nested Option and List (inTermsOf)") {
     val inst: Base[Level1[String, Boolean], Int] = BaseClass(L1Class("foo", Some(List(true))), 3)
-    val result = RType.mapTypesForSymbols[Base[Level1[String, Boolean], Int]](
+    val result = RType.inTermsOf[Base[Level1[String, Boolean], Int]](
       "co.blocke.scala_reflection.models.BaseClass"
     )
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("X" -> "java.lang.String", "Y" -> "scala.Int", "Z" -> "scala.Boolean"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.BaseClass[String,Int,Boolean]:
+      |   fields ->
+      |      a: co.blocke.scala_reflection.models.Level1[String,Boolean] (trait):
+      |         fields ->
+      |            t: [T] String
+      |            u: Option of List of Boolean
+      |      b: [Y] Int
+      |""".stripMargin
+    )
   }
 
-  test("With nested Try") {
-    val result = RType.mapTypesForSymbols[TryIt[Int, Double]]("co.blocke.scala_reflection.models.TryItC")
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("A" -> "scala.Int", "B" -> "scala.Double"))
+  test("With nested Try (inTermsOf)") {
+    val result = RType.inTermsOf[TryIt[Int, Double]]("co.blocke.scala_reflection.models.TryItC")
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.TryItC[Int,Double]:
+      |   fields ->
+      |      x: Try of Int
+      |      y: Try of Option of Double
+      |""".stripMargin
+    )
   }
 
-  test("With nested Map and Array") {
+  test("With nested Map and Array (inTermsOf)") {
     val result =
-      RType.mapTypesForSymbols[MapIt[Int, Double, String, Boolean]]("co.blocke.scala_reflection.models.MapItC")
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("A" -> "scala.Int", "B" -> "scala.Double", "W" -> "java.lang.String", "U" -> "scala.Boolean"))
+      RType.inTermsOf[MapIt[Int, Double, String, Boolean]]("co.blocke.scala_reflection.models.MapItC")
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.MapItC[Int,Double,String,Boolean]:
+      |   fields ->
+      |      x: Map of:
+      |         key: Int
+      |         value: Option of Double
+      |      s: Array of String
+      |      t: Array of List of Boolean
+      |""".stripMargin
+    )
   }
 
-  test("With nested case class and non-case class") {
+  test("With nested case class and non-case class (inTermsOf)") {
     val result =
-      RType.mapTypesForSymbols[ClassistBase[Int, Short]]("co.blocke.scala_reflection.models.ClassistC")
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("A" -> "scala.Int", "B" -> "scala.Short"))
+      RType.inTermsOf[ClassistBase[Int, Short]]("co.blocke.scala_reflection.models.ClassistC")
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.ClassistC[Int,Short]:
+      |   fields ->
+      |      t: co.blocke.scala_reflection.models.CClass[CClassLevel2[Int]]:
+      |         fields ->
+      |            x: List of co.blocke.scala_reflection.models.CClassLevel2[Int]:
+      |               fields ->
+      |                  z: [Z] Int
+      |      u: co.blocke.scala_reflection.models.PClass[Short]:
+      |         fields ->
+      |            y: List of Short
+      |""".stripMargin
+    )
   }
 
-  test("With nested case class and non-case class (inverted)") {
+  test("With nested case class and non-case class (inverted) (inTermsOf)") {
     val result =
-      RType.mapTypesForSymbols[ClassistBaseInv[Int, Short]]("co.blocke.scala_reflection.models.ClassistCInv")
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("A" -> "scala.Int", "B" -> "scala.Short"))
+      RType.inTermsOf[ClassistBaseInv[Int, Short]]("co.blocke.scala_reflection.models.ClassistCInv")
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.ClassistCInv[Int,Short]:
+      |   fields ->
+      |      t: co.blocke.scala_reflection.models.CClass[Int]:
+      |         fields ->
+      |            x: List of Int
+      |      u: co.blocke.scala_reflection.models.PClass[Short]:
+      |         fields ->
+      |            y: List of Short
+      |""".stripMargin
+    )
   }
 
-  test("InTermsOf deep type substitution") {
+  test("InTermsOf deep type substitution (inTermsOf)") {
     val result =
-      RType.mapTypesForSymbols[Basis[List[Option[Int | Boolean]]]]("co.blocke.scala_reflection.models.Thingy2")
-    val r2 = result.map { case (k, v) => (k.toString, v.typedName.toString) }.toMap
-    assertEquals(r2, Map("T" -> "scala.collection.immutable.List[scala.Option[scala.Union[scala.Int,scala.Boolean]]]"))
+      RType.inTermsOf[Basis[List[Option[Int | Boolean]]]]("co.blocke.scala_reflection.models.Thingy2")
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[Option[Int | Boolean]]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of Option of Union of:
+      |         left--Int
+      |         right--Boolean
+      |""".stripMargin
+    )
   }
 
   test("Parameterized class defined inside an object") {

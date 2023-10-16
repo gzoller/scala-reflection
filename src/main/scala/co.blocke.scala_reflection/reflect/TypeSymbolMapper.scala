@@ -94,56 +94,6 @@ object TypeSymbolMapper:
         Left(paramList)
     }
 
-    /*
-  private def navLevel2(quotes: Quotes)(
-      repr: quotes.reflect.TypeRepr,
-      index: Int,
-      paramList: List[TypeRecord]
-  ): Either[List[TypeRecord], List[TypeRecord]] = // Left => More to do, Right => complete
-    import quotes.reflect.*
-    repr match {
-      case ap @ AppliedType(t, tob) =>
-        val initialList =
-          if index < 0 then paramList
-          else paramList.map(_.pushPath(index)) // add current path to all un-found symbols
-
-        // Special abortable foldLeft, so for large classes we don't have to recuse the entire deep class structure once we find all the types
-        val afterAppliedList = ap match
-          case _ if ap.typeSymbol.flags.is(Flags.Trait) =>
-            val traitFields = ap.typeSymbol.declaredFields.map(f => repr.memberType(f))
-            println(s"Fields ($index : ${repr.typeSymbol.name}): ")
-            traitFields.map(f => println("        " + f))
-            foldLeftBreak((0 to traitFields.size - 1).toList)(initialList) { (i, pList) =>
-              navLevel2(quotes)(traitFields(i), i, pList)
-            }
-          case _ =>
-            println(s"Descend $index " + ap.typeSymbol.name)
-            println("Tob: " + tob)
-            foldLeftBreak((0 to tob.size - 1).toList)(initialList) { (i, pList) =>
-              navLevel2(quotes)(tob(i), i, pList)
-            }
-
-        val cleanedList =
-          afterAppliedList.map(_.popPath()) // revert any paths that weren't found in our deep dive into AppliedType
-        var numLeftToFind = cleanedList.foldLeft(cleanedList.size) { (numLeft, rec) =>
-          if rec.isFound then numLeft - 1 else numLeft
-        }
-        if numLeftToFind == 0 then Right(cleanedList)
-        else Left(cleanedList)
-
-      case ts: TypeRef =>
-        paramList.indexOf2(ts.name.asInstanceOf[TypeSymbol]) match {
-          case i if (i >= 0 && !paramList(i).isFound) =>
-            Left(paramList.updated(i, paramList(i).pushPath(index, true)))
-          case _ =>
-            Left(paramList) // do nothing--not found, or already found
-        }
-
-      case _ => // another RType with no type parameter involvement, e.g. primitive type
-        Left(paramList)
-    }
-     */
-
   def runPath(quotes: Quotes)(path: List[List[Int]], traitTypeRepr: quotes.reflect.TypeRepr): List[quotes.reflect.TypeRepr] =
     import quotes.reflect.*
 

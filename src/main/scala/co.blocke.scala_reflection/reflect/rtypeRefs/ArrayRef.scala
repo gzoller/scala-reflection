@@ -46,5 +46,3 @@ case class ArrayRef[R](
         JsonField("elementType", this.elementRef)
       )
     )
-
-  def toRType = ArrayRType[R](name, typeParamSymbols, elementRef.toRType)

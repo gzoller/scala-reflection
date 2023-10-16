@@ -13,12 +13,6 @@ case class TryRType[R](
   val typedName: TypedName = name + "[" + tryType.typedName + "]"
   def typeParamValues: List[RType[_]] = List(tryType)
 
-  val selectLimit: Int = 1
-
-  def select(i: Int): RType[?] =
-    if i == 0 then tryType
-    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
-
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val thisTryType: quoted.Type[R] = super.toType(quotes)

@@ -9,8 +9,3 @@ trait AppliedRType:
 
   val typeParamSymbols: List[TypeSymbol]
   def typeParamValues: List[RType[_]]
-
-  // Selecting is for creating and navigating paths through type parameters.  A Map[K,V] has a select limit of 2,
-  // so select(0) gives you the Ref for K and select(1) gives the Ref for V.
-  def selectLimit: Int
-  def select(i: Int): RType[?]

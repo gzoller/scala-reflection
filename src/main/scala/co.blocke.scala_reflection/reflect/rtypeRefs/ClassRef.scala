@@ -91,24 +91,6 @@ case class ScalaClassRef[R](
       )
     )
 
-  def toRType = ScalaClassRType(
-    name,
-    typedName,
-    typeParamSymbols,
-    typeParamValues.map(_.toRType),
-    typeMembers.map(_.toRType.asInstanceOf[TypeMemberRType]),
-    fields.map(_.toRType),
-    annotations,
-    mixins,
-    isAppliedType,
-    isValueClass,
-    isCaseClass,
-    isAbstractClass,
-    nonConstructorFields.map(_.toRType),
-    sealedChildren.map(_.toRType),
-    typePaths
-  )
-
 //------------------------------------------------------------------------------
 
 /** Java class reflection has a special problem... we need the class file, which isn't available during compilation (i.e. inside a macro).
@@ -161,12 +143,3 @@ case class JavaClassRef[R](
         JsonField("mixins", this.mixins)
       )
     )
-
-  def toRType = JavaClassRType(
-    name,
-    fields.map(_.toRType),
-    typeParamSymbols,
-    typeParamValues.map(_.toRType),
-    annotations,
-    mixins
-  )

@@ -10,11 +10,6 @@ trait OptionRType[R] extends RType[R] with AppliedRType:
   def typeParamValues: List[RType[_]] = List(optionParamType)
   val typedName: TypedName = name + "[" + optionParamType.typedName + "]"
 
-  val selectLimit: Int = 1
-  def select(i: Int): RType[?] =
-    if i == 0 then optionParamType
-    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
-
 //-------------------
 
 case class ScalaOptionRType[R](

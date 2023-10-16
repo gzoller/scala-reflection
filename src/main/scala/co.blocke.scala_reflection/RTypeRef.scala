@@ -17,4 +17,3 @@ trait RTypeRef[R]:
   val expr: Expr[RType[R]]
   val refType: Type[R]
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit
-  def toRType: RType[R]

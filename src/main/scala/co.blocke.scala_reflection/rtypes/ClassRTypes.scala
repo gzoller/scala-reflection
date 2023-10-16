@@ -11,11 +11,6 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
   val annotations: Map[String, Map[String, String]]
   val mixins: List[String]
 
-  val selectLimit: Int = fields.size
-  def select(i: Int): RType[?] =
-    if i >= 0 && i < selectLimit then fields(i).fieldType
-    else throw new ReflectException(s"AppliedType select index $i out of range for $name")
-
 //------------------------------------------------------------------------------
 
 case class ScalaClassRType[R](

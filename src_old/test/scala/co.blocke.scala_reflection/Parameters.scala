@@ -371,7 +371,7 @@ class Parameters extends munit.FunSuite:
       |      a: co.blocke.scala_reflection.models.Level1[String,Boolean] (trait):
       |         fields ->
       |            t: [T] String
-      |            u: Option of List of: Boolean
+      |            u: Option of List of Boolean
       |      b: [Y] Int
       |""".stripMargin
     )
@@ -433,10 +433,10 @@ class Parameters extends munit.FunSuite:
       |   fields ->
       |      t: co.blocke.scala_reflection.models.CClass[Int]:
       |         fields ->
-      |            x: List of: Int
+      |            x: List of Int
       |      u: co.blocke.scala_reflection.models.PClass[Short]:
       |         fields ->
-      |            y: List of: Short
+      |            y: List of Short
       |""".stripMargin
     )
   }
@@ -450,7 +450,7 @@ class Parameters extends munit.FunSuite:
       |   fields ->
       |      a: Int
       |      b: String
-      |      c: [T] List of: Option of Union of:
+      |      c: [T] List of Option of Union of:
       |         left--Int
       |         right--Boolean
       |""".stripMargin

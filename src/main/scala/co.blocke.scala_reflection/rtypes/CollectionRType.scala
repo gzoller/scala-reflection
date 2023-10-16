@@ -12,12 +12,6 @@ trait CollectionRType[R] extends AppliedRType:
   val elementType: RType[?]
   def typeParamValues: List[RType[_]] = List(elementType)
 
-  val selectLimit: Int = 1
-
-  def select(i: Int): RType[?] =
-    if i == 0 then elementType
-    else throw new ReflectException(s"AppliedType select index $i out of range for ${self.name}")
-
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val collectionType: quoted.Type[R] =

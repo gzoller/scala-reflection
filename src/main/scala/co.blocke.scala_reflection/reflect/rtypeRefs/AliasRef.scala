@@ -40,5 +40,3 @@ case class AliasRef[R](
         JsonField("unwrappedType", this.unwrappedType)
       )
     )
-
-  def toRType = AliasRType[R](definedType, unwrappedType.toRType)
