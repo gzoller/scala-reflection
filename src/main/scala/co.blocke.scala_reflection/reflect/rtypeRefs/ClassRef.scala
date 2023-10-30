@@ -7,7 +7,8 @@ import rtypes.{JavaClassRType, NonConstructorFieldInfo, ScalaClassRType, TypeMem
 import util.{JsonField, JsonObjectBuilder}
 
 trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
-  val name: String
+  self: RTypeRef[?] =>
+
   val fields: List[FieldInfoRef]
   val typeParamSymbols: List[TypeSymbol]
   val typeParamValues: List[RTypeRef[_]]
@@ -36,7 +37,8 @@ case class ScalaClassRef[R](
     isAbstractClass: Boolean,
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
     sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
-    typePaths: Map[String, List[List[Int]]]
+    typePaths: Map[String, List[List[Int]]],
+    renderTrait: Option[String] = None // used by ScalaJack
 )(using quotes: Quotes)(using tt: Type[R])
     extends ClassRef[R]:
   import quotes.reflect.*

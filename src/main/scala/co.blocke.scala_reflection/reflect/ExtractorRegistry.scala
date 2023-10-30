@@ -14,10 +14,7 @@ object ExtractorRegistry:
       MapExtractor(),
       TupleExtractor(),
       TryExtractor(),
-      JavaQueueExtractor(),
-      JavaStackExtractor(),
-      JavaSetExtractor(),
-      JavaListExtractor(),
+      JavaCollectionExtractor(),
       JavaOptionalExtractor(),
       JavaMapExtractor()
     )

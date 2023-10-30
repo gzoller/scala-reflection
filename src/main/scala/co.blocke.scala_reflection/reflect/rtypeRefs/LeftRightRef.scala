@@ -13,6 +13,14 @@ enum LRKind(name: String) {
   override def toString(): String = this.name
 }
 
+given LRKindToExpr: ToExpr[LRKind] with {
+  def apply(x: LRKind)(using Quotes): Expr[LRKind] =
+    x match
+      case LRKind.EITHER       => '{ LRKind.EITHER }
+      case LRKind.INTERSECTION => '{ LRKind.INTERSECTION }
+      case LRKind.UNION        => '{ LRKind.UNION }
+}
+
 /** Marker trait for all Scala/Java left/right types (either, intersection, union) */
 case class LeftRightRef[R](
     name: String,

@@ -98,7 +98,10 @@ object Pretty:
   ): (StringBuilder, Boolean, List[String]) =
     rt match {
       case t: PrimitiveRType =>
-        (buf.append(lastPart(t.name)), false, seenBefore)
+        val label =
+          if t.name.startsWith("java.") && t.name != "java.lang.String" && t.name != "java.util.UUID" then lastPart(t.name) + " (Java)"
+          else lastPart(t.name)
+        (buf.append(label), false, seenBefore)
 
       case t: TypeSymbolRType =>
         (buf.append(t.name), false, seenBefore)
@@ -338,16 +341,7 @@ object Pretty:
 
           (buf, true, allClassesSeenUpToNow)
 
-      case t: JavaListRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
-
-      case t: JavaQueueRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
-
-      case t: JavaStackRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
-
-      case t: JavaSetRType[?] =>
+      case t: JavaCollectionRType[?] =>
         showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaMapRType[?] =>

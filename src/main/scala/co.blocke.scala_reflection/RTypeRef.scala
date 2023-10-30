@@ -14,6 +14,7 @@ trait RTypeRef[R]:
   type T = R // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]
   val name: String
   val typedName: TypedName
-  val expr: Expr[RType[R]]
+  val expr: Expr[RType[R]] // RTypeRef -> Expr[RType]
   val refType: Type[R]
+  val isNullable: Boolean = true
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit

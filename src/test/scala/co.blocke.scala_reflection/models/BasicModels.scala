@@ -20,7 +20,21 @@ case class Prim(
     g: Long,
     h: Short,
     i: String,
-    j: Any
+    j: Any,
+    k: scala.math.BigDecimal,
+    l: scala.math.BigInt,
+    m: java.lang.Boolean,
+    n: java.lang.Byte,
+    o: java.lang.Character,
+    p: java.lang.Double,
+    q: java.lang.Float,
+    r: java.lang.Integer,
+    s: java.lang.Long,
+    t: java.lang.Short,
+    u: java.lang.Number,
+    v: java.math.BigDecimal,
+    w: java.math.BigInteger,
+    x: java.util.UUID
 )
 
 // Match / dependent types

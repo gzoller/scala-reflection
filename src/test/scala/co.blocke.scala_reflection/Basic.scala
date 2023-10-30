@@ -21,6 +21,20 @@ class Basic extends munit.FunSuite:
         |      h: Short
         |      i: String
         |      j: Any
+        |      k: BigDecimal
+        |      l: BigInt
+        |      m: Boolean (Java)
+        |      n: Byte (Java)
+        |      o: Character (Java)
+        |      p: Double (Java)
+        |      q: Float (Java)
+        |      r: Integer (Java)
+        |      s: Long (Java)
+        |      t: Short (Java)
+        |      u: Number (Java)
+        |      v: BigDecimal (Java)
+        |      w: BigInteger (Java)
+        |      x: UUID
         |""".stripMargin
     )
   }
@@ -121,8 +135,8 @@ class Basic extends munit.FunSuite:
   }
 
   test("Scala 2.x class") {
-    val result = RType.of[scala.math.BigDecimal]
-    assertEquals(result.pretty, "scala.math.BigDecimal (Scala 2)")
+    val result = RType.of[scala.math.Integral[Int]]
+    assertEquals(result.pretty, "scala.math.Integral (Scala 2)")
   }
 
   test("support value classes") {

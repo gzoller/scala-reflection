@@ -23,7 +23,7 @@ object RType:
   given Compiler = Compiler.make(getClass.getClassLoader)
 
   // Chache of the "of()" (non-macro) reflected RTypes
-  protected[scala_reflection] val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]]
+  val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]]
 
   // -----------------------------
   //  <<  MACRO ENTRY: of[T] >>       (Tasty Reflection)
@@ -57,27 +57,25 @@ object RType:
   // ------------------------
   inline def inTermsOf[T](clazz: Class[?]): RType[?] =
     of[T] match {
-      case traitRType: rtypes.TraitRType[?] =>
+      case traitRType: rtypes.TraitRType[?] if traitRType.typeParamSymbols.nonEmpty =>
         val classRType = of(clazz).asInstanceOf[rtypes.ScalaClassRType[_]]
 
-        val i: Int = (Math.random() * 100).toInt
         val fn = (quotes: Quotes) ?=> {
           import quotes.reflect.*
 
           val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
 
-          // def deepApply2(quotes: Quotes)(path: List[List[Int]], traitTypeRepr: quotes.reflect.TypeRepr): List[quotes.reflect.TypeRepr]
           val paths = classRType.typePaths.getOrElse(traitRType.name, throw new ReflectException(s"No path in class ${classRType.name} for trait ${traitRType.name}"))
           implicit val tt = traitRType.toType(quotes)
           val typeParamTypes = reflect.TypeSymbolMapper.runPath(quotes)(paths, TypeRepr.of[traitRType.T])
 
           // Apply type param paths from classRType against traitRType
-          // val typeParamTypes = reflect.TypeSymbolMapper.deepApply(classRType.typePaths, classRType.typeParamSymbols, traitRType)(using quotes)
           val classQuotedTypeRepr = TypeRepr.typeConstructorOf(classRType.clazz)
           reflect.ReflectOnType(quotes)(classQuotedTypeRepr.appliedTo(typeParamTypes))(using seenBefore).expr
         }
         run(fn)
-      case x => throw new ReflectException(s"${x.name} is not of type trait")
+      case traitRType: rtypes.TraitRType[?] => of(clazz)
+      case x                                => throw new ReflectException(s"${x.name} is not of type trait")
     }
 
   // ------------------------------

@@ -61,13 +61,13 @@ class Java extends munit.FunSuite:
       |   fields ->
       |      hMap: Java HashMap of:
       |         key: String
-      |         value: Integer
+      |         value: Integer (Java)
       |      myArr: Array of String
       |      myList: Java ArrayList of String
       |      myQ: Java concurrent BlockingQueue of String
       |      myTree: Java TreeSet of String
-      |      nested: Array of Java List of Integer
-      |      pushPop: Java Stack of Long
+      |      nested: Array of Java List of Integer (Java)
+      |      pushPop: Java Stack of Long (Java)
       |""".stripMargin
     )
   }
@@ -110,7 +110,7 @@ class Java extends munit.FunSuite:
       |   fields ->
       |      jFoo: co.blocke.reflect.JavaParam[Integer] (Java):
       |         fields ->
-      |            jThing: Integer
+      |            jThing: Integer (Java)
       |""".stripMargin
     )
   }

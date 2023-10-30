@@ -2,11 +2,20 @@ package co.blocke.scala_reflection
 package rtypes
 
 import Clazzes.*
+import scala.math.{BigDecimal, BigInt}
 
 trait PrimitiveRType:
   self: RType[?] =>
 
 //------ SCALA ------
+case class BigDecimalRType() extends RType[BigDecimal] with PrimitiveRType:
+  val name = BIG_DECIMAL_CLASS
+  val typedName: TypedName = name
+
+case class BigIntRType() extends RType[BigInt] with PrimitiveRType:
+  val name = BIG_INT_CLASS
+  val typedName: TypedName = name
+
 case class BooleanRType() extends RType[Boolean] with PrimitiveRType:
   val name = BOOLEAN_CLASS
   val typedName: TypedName = name
@@ -48,6 +57,14 @@ case class AnyRType() extends RType[Any] with PrimitiveRType:
   val typedName: TypedName = name
 
 //------ JAVA ------
+case class JBigDecimalRType() extends RType[java.math.BigDecimal] with PrimitiveRType:
+  val name = JBIG_DECIMAL_CLASS
+  val typedName: TypedName = name
+
+case class JBigIntegerRType() extends RType[java.math.BigInteger] with PrimitiveRType:
+  val name = JBIG_INTEGER_CLASS
+  val typedName: TypedName = name
+
 case class JavaBooleanRType() extends RType[java.lang.Boolean] with PrimitiveRType:
   val name = JBOOLEAN_CLASS
   val typedName: TypedName = name
@@ -86,4 +103,8 @@ case class JavaObjectRType() extends RType[java.lang.Object] with PrimitiveRType
 
 case class JavaNumberRType() extends RType[java.lang.Number] with PrimitiveRType:
   val name = JNUMBER_CLASS
+  val typedName: TypedName = name
+
+case class UUIDRType() extends RType[java.util.UUID] with PrimitiveRType:
+  val name = UUID_CLASS
   val typedName: TypedName = name

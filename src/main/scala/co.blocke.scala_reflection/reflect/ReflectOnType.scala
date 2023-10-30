@@ -139,14 +139,16 @@ object ReflectOnType: // extends NonCaseClassReflection:
 
               case cs if is2xEnumeration =>
                 val enumerationClassSymbol = typeRef.qualifier.termSymbol.moduleClass
-                ScalaEnumerationRef(
-                  className,
-                  enumerationClassSymbol.declaredFields.map(_.name)
-                )(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
+                enumerationClassSymbol.declaredTypes.head.typeRef.asType match
+                  case '[y] =>
+                    ScalaEnumerationRef[y](
+                      className,
+                      enumerationClassSymbol.declaredFields.map(_.name)
+                    )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
 
               case a if a == defn.AnyClass =>
                 implicit val q = quotes
-                PrimitiveRef[Any](Clazzes.ANY_CLASS)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
+                PrimitiveRef[Any](Clazzes.ANY_CLASS, PrimFamily.Any)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
 
               case cs if !isJavaEnum => // Non-parameterized classes
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)

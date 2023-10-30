@@ -1,7 +1,7 @@
 package co.blocke.scala_reflection
 package rtypes
 
-case class JavaListRType[R](
+case class JavaCollectionRType[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementType: RType[?]

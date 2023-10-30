@@ -35,7 +35,7 @@ class Options extends munit.FunSuite:
       result.pretty,
       """co.blocke.reflect.JavaOption1 (Java):
       |   fields ->
-      |      fld: Optional of Integer
+      |      fld: Optional of Integer (Java)
       |""".stripMargin
     )
   }
@@ -80,7 +80,7 @@ class Options extends munit.FunSuite:
       result.pretty,
       """co.blocke.reflect.JavaOption2 (Java):
       |   fields ->
-      |      fld: Optional of Optional of Integer
+      |      fld: Optional of Optional of Integer (Java)
       |""".stripMargin
     )
   }
