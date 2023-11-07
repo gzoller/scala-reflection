@@ -7,3 +7,5 @@ package rtypes
   *  When one of these is encountered in the wild, just re-Reflect on the infoClass and you'll get the non-SelfRef (i.e. normal) RType
   */
 case class SelfRefRType[R](name: String, typedName: TypedName) extends RType[R]
+// val bogus: R = null.asInstanceOf[R]
+// type U = R

@@ -37,8 +37,8 @@ case class ScalaClassRef[R](
     isAbstractClass: Boolean,
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
     sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
-    typePaths: Map[String, List[List[Int]]],
-    renderTrait: Option[String] = None // used by ScalaJack
+    childrenAreObject: Boolean = false,
+    typePaths: Map[String, List[List[Int]]]
 )(using quotes: Quotes)(using tt: Type[R])
     extends ClassRef[R]:
   import quotes.reflect.*
@@ -65,9 +65,11 @@ case class ScalaClassRef[R](
         Expr(isValueClass).asTerm,
         Expr(isCaseClass).asTerm,
         Expr(isAbstractClass).asTerm,
+        Expr(typePaths).asTerm,
         Expr.ofList(nonConstructorFields.map(_.expr.asInstanceOf[Expr[NonConstructorFieldInfo]])).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm,
-        Expr(typePaths).asTerm
+        Expr(childrenAreObject).asTerm,
+        Expr(None).asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -89,7 +91,8 @@ case class ScalaClassRef[R](
         JsonField("isCaseClass", this.isCaseClass),
         JsonField("isAbstractClass", this.isAbstractClass),
         JsonField("nonConstructorFields", this.nonConstructorFields),
-        JsonField("sealedChildren", this.sealedChildren)
+        JsonField("sealedChildren", this.sealedChildren),
+        JsonField("childrenAreObject", this.childrenAreObject)
       )
     )
 

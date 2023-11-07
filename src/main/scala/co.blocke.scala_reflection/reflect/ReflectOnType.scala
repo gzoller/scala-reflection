@@ -33,9 +33,10 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         className match
-          case Clazzes.ANY_CLASS                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
-          case _ if seenBefore.get(tname) == Some(true) => SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
-          case _                                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case _ if seenBefore.get(tname) == Some(true) =>
+            SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
+          case _ => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
       }
       .asInstanceOf[RTypeRef[T]]
 
@@ -147,8 +148,12 @@ object ReflectOnType: // extends NonCaseClassReflection:
                     )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
 
               case a if a == defn.AnyClass =>
-                implicit val q = quotes
-                PrimitiveRef[Any](Clazzes.ANY_CLASS, PrimFamily.Any)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
+                // implicit val q = quotes
+                typeRef.asType match
+                  case '[y] =>
+                    val repr = TypeRepr.of[y]
+                    if TypeRepr.of[y].typeSymbol.owner.fullName == NEOTYPE then NeoTypeRef[y](aType.typeSymbol.fullName).asInstanceOf[RTypeRef[T]]
+                    else PrimitiveRef[Any](Clazzes.ANY_CLASS, PrimFamily.Any)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
 
               case cs if !isJavaEnum => // Non-parameterized classes
                 ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)

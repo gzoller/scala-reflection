@@ -16,6 +16,8 @@ class ReflectException(msg: String) extends Exception(msg)
 
 val NONE = "<none>"
 
+val NEOTYPE = "neotype.Newtype"
+
 inline def annoSymToString(quotes: Quotes)(terms: List[quotes.reflect.Term]): Map[String, String] =
   import quotes.reflect.*
   terms.collect {
@@ -41,5 +43,5 @@ def foldLeftBreak[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
       }
   }
 
-type IntersectionType
-type UnionType
+type IntersectionType = Any
+type UnionType = Any

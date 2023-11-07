@@ -36,7 +36,6 @@ case class Prim(
     w: java.math.BigInteger,
     x: java.util.UUID
 )
-
 // Match / dependent types
 type Elem[X] = X match {
   case String      => Char
