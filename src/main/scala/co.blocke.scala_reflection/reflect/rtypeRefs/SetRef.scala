@@ -3,45 +3,33 @@ package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.MapRType
+import rtypes.SetRType
 import util.{JsonField, JsonObjectBuilder}
 
-/** Arity 2 Collections, Map flavors, basiclly */
-case class MapRef[R <: scala.collection.Map[_, _]](
+/** Arity 1 Collections, e.g. List, Set, Seq */
+case class SetRef[R <: scala.collection.Set[_]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
-    elementRef: RTypeRef[?], // map key
-    elementRef2: RTypeRef[?] // map value
+    elementRef: RTypeRef[?]
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]
     with CollectionRef[R]:
   import quotes.reflect.*
   import Liftables.ListTypeSymbolToExpr
 
-  override val typedName: TypedName = name + "[" + elementRef.typedName + "," + elementRef2.typedName + "]"
-
   val refType = tt
   val isMutable = name.contains(".mutable.")
-
-  override val selectLimit: Int = 2
-  override def select(i: Int): RTypeRef[?] =
-    i match {
-      case 0 => elementRef
-      case 1 => elementRef2
-      case _ => throw new ReflectException(s"AppliedType select index $i out of range for $name")
-    }
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[MapRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[SetRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
         Expr(name).asTerm,
         Expr(typeParamSymbols).asTerm,
-        elementRef.expr.asTerm,
-        elementRef2.expr.asTerm
+        elementRef.expr.asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -49,11 +37,10 @@ case class MapRef[R <: scala.collection.Map[_, _]](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "MapRType"),
+        JsonField("rtype", "SetRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("elementType", this.elementRef),
-        JsonField("elementType2", this.elementRef2)
+        JsonField("elementType", this.elementRef)
       )
     )

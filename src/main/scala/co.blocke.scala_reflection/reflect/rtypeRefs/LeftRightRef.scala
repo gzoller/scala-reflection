@@ -48,8 +48,8 @@ case class LeftRightRef[R](
 
   type LRType[X] = X match
     case scala.util.Either[?, ?] => EitherRType[R]
-    case IntersectionType        => IntersectionRType[R]
-    case UnionType               => UnionRType[R]
+    case ? & ?                   => IntersectionRType[R]
+    case ? | ?                   => UnionRType[R]
 
   private val reprMap = Map(
     LRKind.EITHER -> { () => TypeRepr.typeConstructorOf(classOf[EitherRType[R]]) },

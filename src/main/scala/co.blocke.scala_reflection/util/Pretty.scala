@@ -99,8 +99,12 @@ object Pretty:
     rt match {
       case t: PrimitiveRType =>
         val label =
-          if t.name.startsWith("java.") && t.name != "java.lang.String" && t.name != "java.util.UUID" then lastPart(t.name) + " (Java)"
+          if t.name.startsWith("java.") && t.name != "java.lang.String" then lastPart(t.name) + " (Java)"
           else lastPart(t.name)
+        (buf.append(label), false, seenBefore)
+
+      case t: SimpleRType =>
+        val label = lastPart(t.name) + " (Java)"
         (buf.append(label), false, seenBefore)
 
       case t: TypeSymbolRType =>
@@ -116,6 +120,9 @@ object Pretty:
         showOfType(buf, seenBefore, tabLevel, "Try of ", t.tryType)
 
       case t: SeqRType[?] =>
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
+
+      case t: SetRType[?] =>
         showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: ArrayRType[?] =>

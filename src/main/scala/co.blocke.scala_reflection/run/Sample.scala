@@ -8,10 +8,10 @@ case class Foom[X](x: X) extends Miss[X]
 
 case class Person[Y](name: String, again: Option[Person[Y]])
 
-case class Funny[Y]( a: Hoovie[Y], b: card, c: Weather, d: Truth, e: Miss[Y])
+case class Funny[Y](a: Hoovie[Y], b: card, c: Weather, d: Truth, e: Miss[Y])
 
 // Sealed trait (non-enumeration) w/case class
-sealed trait Hoovie[X]{ val item: X }
+sealed trait Hoovie[X] { val item: X }
 case class Cmd[T](item: T) extends Hoovie[T]
 case class Quest[T](item: T) extends Hoovie[T]
 
@@ -33,13 +33,11 @@ case class Wrong(excuse: String) extends Truth
 
 case class Mom[R](f: Miss[R])
 
-
 case class PersonZ[T](msg: Hoovie[T])
 
 // sealed trait Hoovie{ val item: Int}
 // case class Cmd(item: Int) extends Hoovie
 // case class Quest(item: Int) extends Hoovie
-
 
 // case class Person(name:String, age:Int)
 

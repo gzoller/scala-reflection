@@ -11,6 +11,8 @@ import util.{JsonField, JsonObjectBuilder}
 trait EnumRef[R] extends RTypeRef[R]:
   val values: List[String]
 
+  val expr: Expr[RType[R]]
+
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
     JsonObjectBuilder(quotes)(
       sb,

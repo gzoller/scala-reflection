@@ -22,6 +22,8 @@ case class ArrayRef[R](
   import quotes.reflect.*
   val refType = tt
 
+  val isMutable = true
+
   val expr =
     Apply(
       TypeApply(

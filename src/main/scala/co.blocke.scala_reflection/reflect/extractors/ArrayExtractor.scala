@@ -39,15 +39,15 @@ case class ArrayExtractor() extends TypeExtractor[ArrayRef[_]]:
       case _: TypeSymbolRef => "Ljava.lang.Object;"
       case c: ArrayRef[?]   => mangleArrayClassName(c.elementRef)
       // case c: rtypes.JavaArrayInfo => mangleArrayClassName(c.elementType)
-      case p: PrimitiveRef[?] if p.name == BOOLEAN_CLASS => "Z"
-      case p: PrimitiveRef[?] if p.name == BYTE_CLASS    => "B"
-      case p: PrimitiveRef[?] if p.name == CHAR_CLASS    => "C"
-      case p: PrimitiveRef[?] if p.name == DOUBLE_CLASS  => "D"
-      case p: PrimitiveRef[?] if p.name == FLOAT_CLASS   => "F"
-      case p: PrimitiveRef[?] if p.name == INT_CLASS     => "I"
-      case p: PrimitiveRef[?] if p.name == LONG_CLASS    => "J"
-      case p: PrimitiveRef[?] if p.name == SHORT_CLASS   => "S"
-      case p: PrimitiveRef[?] if p.name == ANY_CLASS     => "Ljava.lang.Object;"
-      case c                                             => "L" + c.name + ";"
+      case p: BooleanRef => "Z"
+      case p: ByteRef    => "B"
+      case p: CharRef    => "C"
+      case p: DoubleRef  => "D"
+      case p: FloatRef   => "F"
+      case p: IntRef     => "I"
+      case p: LongRef    => "J"
+      case p: ShortRef   => "S"
+      case p: AnyRef     => "Ljava.lang.Object;"
+      case c             => "L" + c.name + ";"
     }
     "[" + mangled

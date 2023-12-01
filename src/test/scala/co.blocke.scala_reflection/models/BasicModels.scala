@@ -33,9 +33,26 @@ case class Prim(
     t: java.lang.Short,
     u: java.lang.Number,
     v: java.math.BigDecimal,
-    w: java.math.BigInteger,
-    x: java.util.UUID
+    w: java.math.BigInteger
 )
+case class Simple(
+    a: java.time.Duration,
+    b: java.time.Instant,
+    c: java.time.LocalDate,
+    d: java.time.LocalDateTime,
+    e: java.time.LocalTime,
+    f: java.time.MonthDay,
+    g: java.time.OffsetDateTime,
+    h: java.time.OffsetTime,
+    i: java.time.Period,
+    j: java.time.Year,
+    k: java.time.YearMonth,
+    l: java.time.ZonedDateTime,
+    m: java.time.ZoneId,
+    n: java.time.ZoneOffset,
+    o: java.util.UUID
+)
+
 // Match / dependent types
 type Elem[X] = X match {
   case String      => Char

@@ -34,6 +34,22 @@ object Clazzes:
   val JNUMBER_CLASS = "java.lang.Number"
   val UUID_CLASS = "java.util.UUID"
 
+  // ======= Time Class Names =======
+  val DURATION_CLASS = "java.time.Duration"
+  val INSTANT_CLASS = "java.time.Instant"
+  val LOCALDATE_CLASS = "java.time.LocalDate"
+  val LOCALDATETIME_CLASS = "java.time.LocalDateTime"
+  val LOCALTIME_CLASS = "java.time.LocalTime"
+  val MONTHDAY_CLASS = "java.time.MonthDay"
+  val OFFSETDATETIME_CLASS = "java.time.OffsetDateTime"
+  val OFFSETTIME_CLASS = "java.time.OffsetTime"
+  val PERIOD_CLASS = "java.time.Period"
+  val YEAR_CLASS = "java.time.Year"
+  val YEARMONTH_CLASS = "java.time.YearMonth"
+  val ZONEDDATETIME_CLASS = "java.time.ZonedDateTime"
+  val ZONEID_CLASS = "java.time.ZoneId"
+  val ZONEOFFSET_CLASS = "java.time.ZoneOffset"
+
   /** Union and intersection types are only denoted internally as scala.Matchable, which is so generic it isn't helpful.
     *  These are synthetic marker class names to differentiate a union type.  Following Scala naming conventions, but be clear--there
     *  is (currently) no such class as "scala.Union" or "scala.Intersection" and bad things will happen if you try to

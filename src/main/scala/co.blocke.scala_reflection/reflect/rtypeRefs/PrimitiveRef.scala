@@ -12,117 +12,542 @@ import scala.math.{BigDecimal, BigInt}
 /** Reference for all Java & Scala primitive types
   */
 
-enum PrimFamily:
-  case Stringish, Longish, Doublish, Boolish, Any
-import PrimFamily.*
+trait PrimitiveRef:
+  val isNullable: Boolean
 
-object PrimitiveRef:
-  // Pre-bake primitive types w/cached builder functions
-  protected[scala_reflection] val primFnMap = Map(
-    BIG_DECIMAL_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[BigDecimal](BIG_DECIMAL_CLASS, Doublish, true)(using quotes)(using Type.of[BigDecimal](using quotes)) },
-    BIG_INT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[BigInt](BIG_INT_CLASS, Longish, true)(using quotes)(using Type.of[BigInt](using quotes)) },
-    BOOLEAN_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Boolean](BOOLEAN_CLASS, Boolish)(using quotes)(using Type.of[Boolean](using quotes)) },
-    BYTE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Byte](BYTE_CLASS, Longish)(using quotes)(using Type.of[Byte](using quotes)) },
-    CHAR_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Char](CHAR_CLASS, Stringish)(using quotes)(using Type.of[Char](using quotes)) },
-    DOUBLE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Double](DOUBLE_CLASS, Doublish)(using quotes)(using Type.of[Double](using quotes)) },
-    FLOAT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Float](FLOAT_CLASS, Doublish)(using quotes)(using Type.of[Float](using quotes)) },
-    INT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Int](INT_CLASS, Longish)(using quotes)(using Type.of[Int](using quotes)) },
-    LONG_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Long](LONG_CLASS, Longish)(using quotes)(using Type.of[Long](using quotes)) },
-    SHORT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[Short](SHORT_CLASS, Longish)(using quotes)(using Type.of[Short](using quotes)) },
-    STRING_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[String](STRING_CLASS, Stringish, true)(using quotes)(using Type.of[String](using quotes)) },
-    JBIG_DECIMAL_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.math.BigDecimal](JBIG_DECIMAL_CLASS, Doublish, true)(using quotes)(using Type.of[java.math.BigDecimal](using quotes)) },
-    JBIG_INTEGER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.math.BigInteger](JBIG_INTEGER_CLASS, Longish, true)(using quotes)(using Type.of[java.math.BigInteger](using quotes)) },
-    JBOOLEAN_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Boolean](JBOOLEAN_CLASS, Boolish, true)(using quotes)(using Type.of[java.lang.Boolean](using quotes)) },
-    JBYTE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Byte](JBYTE_CLASS, Longish, true)(using quotes)(using Type.of[java.lang.Byte](using quotes)) },
-    JCHARACTER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Character](JCHARACTER_CLASS, Stringish, true)(using quotes)(using Type.of[java.lang.Character](using quotes)) },
-    JDOUBLE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Double](JDOUBLE_CLASS, Doublish, true)(using quotes)(using Type.of[java.lang.Double](using quotes)) },
-    JFLOAT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Float](JFLOAT_CLASS, Doublish, true)(using quotes)(using Type.of[java.lang.Float](using quotes)) },
-    JINTEGER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Integer](JINTEGER_CLASS, Longish, true)(using quotes)(using Type.of[java.lang.Integer](using quotes)) },
-    JLONG_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Long](JLONG_CLASS, Longish, true)(using quotes)(using Type.of[java.lang.Long](using quotes)) },
-    JSHORT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Short](JSHORT_CLASS, Longish, true)(using quotes)(using Type.of[java.lang.Short](using quotes)) },
-    JOBJECT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Object](JOBJECT_CLASS, Stringish, true)(using quotes)(using Type.of[java.lang.Object](using quotes)) },
-    JNUMBER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.lang.Number](JNUMBER_CLASS, Doublish, true)(using quotes)(using Type.of[java.lang.Number](using quotes)) },
-    UUID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => PrimitiveRef[java.util.UUID](UUID_CLASS, Stringish, true)(using quotes)(using Type.of[java.util.UUID](using quotes)) }
-  )
+trait Stringish
 
-  private val primMap = Map(
-    BIG_DECIMAL_CLASS -> classOf[BigDecimalRType],
-    BIG_INT_CLASS -> classOf[BigIntRType],
-    BOOLEAN_CLASS -> classOf[BooleanRType],
-    BYTE_CLASS -> classOf[ByteRType],
-    CHAR_CLASS -> classOf[CharRType],
-    DOUBLE_CLASS -> classOf[DoubleRType],
-    FLOAT_CLASS -> classOf[FloatRType],
-    INT_CLASS -> classOf[IntRType],
-    LONG_CLASS -> classOf[LongRType],
-    SHORT_CLASS -> classOf[ShortRType],
-    STRING_CLASS -> classOf[StringRType],
-    ANY_CLASS -> classOf[AnyRType],
-    JBIG_DECIMAL_CLASS -> classOf[JBigDecimalRType],
-    JBIG_INTEGER_CLASS -> classOf[JBigIntegerRType],
-    JBOOLEAN_CLASS -> classOf[JavaBooleanRType],
-    JBYTE_CLASS -> classOf[JavaByteRType],
-    JCHARACTER_CLASS -> classOf[JavaCharacterRType],
-    JDOUBLE_CLASS -> classOf[JavaDoubleRType],
-    JFLOAT_CLASS -> classOf[JavaFloatRType],
-    JINTEGER_CLASS -> classOf[JavaIntegerRType],
-    JLONG_CLASS -> classOf[JavaLongRType],
-    JSHORT_CLASS -> classOf[JavaShortRType],
-    JOBJECT_CLASS -> classOf[JavaObjectRType],
-    JNUMBER_CLASS -> classOf[JavaNumberRType],
-    UUID_CLASS -> classOf[UUIDRType]
-  )
-
-case class PrimitiveRef[R](
-    name: String,
-    family: PrimFamily,
-    override val isNullable: Boolean = false
-)(using quotes: Quotes)(using tt: Type[R])
-    extends RTypeRef[R]:
+case class BigDecimalRef()(using quotes: Quotes)(using tt: Type[BigDecimal]) extends RTypeRef[BigDecimal] with PrimitiveRef:
   import quotes.reflect.*
-
+  val name = Clazzes.BIG_DECIMAL_CLASS
   val typedName: TypedName = name
+  override val isNullable = true
   val refType = tt
 
-  type PrimType[X] = X match
-    case BigDecimal           => BigDecimalRType
-    case BigInt               => BigIntRType
-    case Boolean              => BooleanRType
-    case Byte                 => ByteRType
-    case Char                 => CharRType
-    case Double               => DoubleRType
-    case Float                => FloatRType
-    case Int                  => IntRType
-    case Long                 => LongRType
-    case Short                => ShortRType
-    case String               => StringRType
-    case Any                  => AnyRType
-    case java.math.BigDecimal => JBigDecimalRType
-    case java.math.BigInteger => JBigIntegerRType
-    case java.lang.Boolean    => JavaBooleanRType
-    case java.lang.Byte       => JavaByteRType
-    case java.lang.Character  => JavaCharacterRType
-    case java.lang.Double     => JavaDoubleRType
-    case java.lang.Float      => JavaFloatRType
-    case java.lang.Integer    => JavaIntegerRType
-    case java.lang.Long       => JavaLongRType
-    case java.lang.Short      => JavaShortRType
-    case java.lang.Object     => JavaObjectRType
-    case java.lang.Number     => JavaNumberRType
-    case java.util.UUID       => UUIDRType
-
   val expr =
-    val pt = TypeRepr.typeConstructorOf(PrimitiveRef.primMap(name))
     Apply(
-      Select.unique(New(TypeTree.ref(pt.typeSymbol)), "<init>"),
+      Select.unique(New(TypeTree.of[BigDecimalRType]), "<init>"),
       Nil
-    ).asExprOf[RType[R]]
+    ).asExprOf[RType[BigDecimal]]
 
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "PrimitiveRType"),
+        JsonField("rtype", "BigDecimalRType"),
         JsonField("name", name)
       )
     )
+
+case class BigIntRef()(using quotes: Quotes)(using tt: Type[BigInt]) extends RTypeRef[BigInt] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.BIG_INT_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[BigIntRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[BigInt]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "BigIntRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class BooleanRef()(using quotes: Quotes)(using tt: Type[Boolean]) extends RTypeRef[Boolean] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.BOOLEAN_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[BooleanRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Boolean]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "BooleanRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class ByteRef()(using quotes: Quotes)(using tt: Type[Byte]) extends RTypeRef[Byte] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.BYTE_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[ByteRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Byte]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "ByteRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class CharRef()(using quotes: Quotes)(using tt: Type[Char]) extends RTypeRef[Char] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.CHAR_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[CharRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Char]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "CharRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class DoubleRef()(using quotes: Quotes)(using tt: Type[Double]) extends RTypeRef[Double] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.DOUBLE_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[DoubleRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Double]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "DoubleRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class FloatRef()(using quotes: Quotes)(using tt: Type[Float]) extends RTypeRef[Float] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.FLOAT_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[FloatRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Float]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "FloatRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class IntRef()(using quotes: Quotes)(using tt: Type[Int]) extends RTypeRef[Int] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.INT_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[IntRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Int]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "IntRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class LongRef()(using quotes: Quotes)(using tt: Type[Long]) extends RTypeRef[Long] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.LONG_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[LongRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Long]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "LongRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class ShortRef()(using quotes: Quotes)(using tt: Type[Short]) extends RTypeRef[Short] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.SHORT_CLASS
+  val typedName: TypedName = name
+  override val isNullable = false
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[ShortRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Short]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "ShortRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class StringRef()(using quotes: Quotes)(using tt: Type[String]) extends RTypeRef[String] with PrimitiveRef with Stringish:
+  import quotes.reflect.*
+  val name = Clazzes.STRING_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[StringRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[String]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "StringRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JBigDecimalRef()(using quotes: Quotes)(using tt: Type[java.math.BigDecimal]) extends RTypeRef[java.math.BigDecimal] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JBIG_DECIMAL_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaBigDecimalRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.math.BigDecimal]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaBigDecimalRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JBigIntegerRef()(using quotes: Quotes)(using tt: Type[java.math.BigInteger]) extends RTypeRef[java.math.BigInteger] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JBIG_INTEGER_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaBigIntegerRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.math.BigInteger]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaBigIntegerRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JBooleanRef()(using quotes: Quotes)(using tt: Type[java.lang.Boolean]) extends RTypeRef[java.lang.Boolean] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JBOOLEAN_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaBooleanRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Boolean]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaBooleanRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JByteRef()(using quotes: Quotes)(using tt: Type[java.lang.Byte]) extends RTypeRef[java.lang.Byte] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JBYTE_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaByteRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Byte]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaByteRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JCharacterRef()(using quotes: Quotes)(using tt: Type[java.lang.Character]) extends RTypeRef[java.lang.Character] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JCHARACTER_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaCharacterRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Character]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaCharacterRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JDoubleRef()(using quotes: Quotes)(using tt: Type[java.lang.Double]) extends RTypeRef[java.lang.Double] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JDOUBLE_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaDoubleRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Double]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaDoubleRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JFloatRef()(using quotes: Quotes)(using tt: Type[java.lang.Float]) extends RTypeRef[java.lang.Float] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JFLOAT_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaFloatRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Float]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaFloatRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JIntegerRef()(using quotes: Quotes)(using tt: Type[java.lang.Integer]) extends RTypeRef[java.lang.Integer] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JINTEGER_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaIntegerRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Integer]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaIntegerRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JLongRef()(using quotes: Quotes)(using tt: Type[java.lang.Long]) extends RTypeRef[java.lang.Long] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JLONG_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaLongRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Long]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaLongRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JShortRef()(using quotes: Quotes)(using tt: Type[java.lang.Short]) extends RTypeRef[java.lang.Short] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JSHORT_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaShortRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Short]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaShortRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class JNumberRef()(using quotes: Quotes)(using tt: Type[java.lang.Number]) extends RTypeRef[java.lang.Number] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.JNUMBER_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[JavaNumberRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[java.lang.Number]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "JavaNumberRType"),
+        JsonField("name", name)
+      )
+    )
+
+case class AnyRef()(using quotes: Quotes)(using tt: Type[Any]) extends RTypeRef[Any] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.ANY_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[AnyRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[Any]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "AnyRType"),
+        JsonField("name", name)
+      )
+    )
+
+object PrimitiveRef:
+  // Pre-bake primitive types w/cached builder functions
+  // Note: AnyRef is NOT in the map, because it would match everything in ReflectOnType!
+  protected[scala_reflection] val primTypeMap = Map(
+    BIG_DECIMAL_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => BigDecimalRef()(using quotes)(using Type.of[scala.math.BigDecimal](using quotes)) },
+    BIG_INT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => BigIntRef()(using quotes)(using Type.of[scala.math.BigInt](using quotes)) },
+    BOOLEAN_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => BooleanRef()(using quotes)(using Type.of[Boolean](using quotes)) },
+    BYTE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ByteRef()(using quotes)(using Type.of[Byte](using quotes)) },
+    CHAR_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => CharRef()(using quotes)(using Type.of[Char](using quotes)) },
+    DOUBLE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => DoubleRef()(using quotes)(using Type.of[Double](using quotes)) },
+    FLOAT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => FloatRef()(using quotes)(using Type.of[Float](using quotes)) },
+    INT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => IntRef()(using quotes)(using Type.of[Int](using quotes)) },
+    LONG_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => LongRef()(using quotes)(using Type.of[Long](using quotes)) },
+    SHORT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ShortRef()(using quotes)(using Type.of[Short](using quotes)) },
+    STRING_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => StringRef()(using quotes)(using Type.of[String](using quotes)) },
+    JBIG_DECIMAL_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JBigDecimalRef()(using quotes)(using Type.of[java.math.BigDecimal](using quotes)) },
+    JBIG_INTEGER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JBigIntegerRef()(using quotes)(using Type.of[java.math.BigInteger](using quotes)) },
+    JBOOLEAN_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JBooleanRef()(using quotes)(using Type.of[java.lang.Boolean](using quotes)) },
+    JBYTE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JByteRef()(using quotes)(using Type.of[java.lang.Byte](using quotes)) },
+    JCHARACTER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JCharacterRef()(using quotes)(using Type.of[java.lang.Character](using quotes)) },
+    JDOUBLE_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JDoubleRef()(using quotes)(using Type.of[java.lang.Double](using quotes)) },
+    JFLOAT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JFloatRef()(using quotes)(using Type.of[java.lang.Float](using quotes)) },
+    JINTEGER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JIntegerRef()(using quotes)(using Type.of[java.lang.Integer](using quotes)) },
+    JLONG_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JLongRef()(using quotes)(using Type.of[java.lang.Long](using quotes)) },
+    JSHORT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JShortRef()(using quotes)(using Type.of[java.lang.Short](using quotes)) },
+    JNUMBER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JNumberRef()(using quotes)(using Type.of[java.lang.Number](using quotes)) },
+    UUID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => UUIDRef()(using quotes)(using Type.of[java.util.UUID](using quotes)) }
+  )

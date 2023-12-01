@@ -6,9 +6,8 @@ import scala.quoted.*
 import rtypes.NeoTypeRType
 import util.{JsonField, JsonObjectBuilder}
 
-/**
-  * Ideally we'd like to know the actual wrapped type in the NeoTypeRef, but sadly this is
-  * impossible to know at compile time.  Reflection here only gives us a Type and nothing 
+/** Ideally we'd like to know the actual wrapped type in the NeoTypeRef, but sadly this is
+  * impossible to know at compile time.  Reflection here only gives us a Type and nothing
   * more. The 'given' at runtime actually binds it to an actual (typed) implementation.
   * So here we just record that this is a NeoType of a given type name and reftype.
   *

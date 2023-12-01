@@ -42,6 +42,3 @@ def foldLeftBreak[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
         case Left(b)  => foldLeftBreak(as)(b)(op)
       }
   }
-
-type IntersectionType = Any
-type UnionType = Any

@@ -46,6 +46,8 @@ case class ScalaClassRef[R](
 
   val refType = tt
 
+  def isSealed: Boolean = sealedChildren.nonEmpty
+
   val expr =
     Apply(
       TypeApply(
@@ -68,8 +70,7 @@ case class ScalaClassRef[R](
         Expr(typePaths).asTerm,
         Expr.ofList(nonConstructorFields.map(_.expr.asInstanceOf[Expr[NonConstructorFieldInfo]])).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm,
-        Expr(childrenAreObject).asTerm,
-        Expr(None).asTerm
+        Expr(childrenAreObject).asTerm
       )
     ).asExprOf[RType[R]]
 
