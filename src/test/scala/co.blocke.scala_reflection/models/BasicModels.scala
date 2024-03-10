@@ -35,7 +35,7 @@ case class Prim(
     v: java.math.BigDecimal,
     w: java.math.BigInteger
 )
-case class Simple(
+case class Time(
     a: java.time.Duration,
     b: java.time.Instant,
     c: java.time.LocalDate,
@@ -49,8 +49,12 @@ case class Simple(
     k: java.time.YearMonth,
     l: java.time.ZonedDateTime,
     m: java.time.ZoneId,
-    n: java.time.ZoneOffset,
-    o: java.util.UUID
+    n: java.time.ZoneOffset
+)
+case class Net(
+    a: java.net.URL,
+    b: java.net.URI,
+    c: java.util.UUID
 )
 
 // Match / dependent types

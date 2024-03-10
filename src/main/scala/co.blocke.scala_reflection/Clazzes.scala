@@ -33,6 +33,8 @@ object Clazzes:
   val JOBJECT_CLASS = "java.lang.Object"
   val JNUMBER_CLASS = "java.lang.Number"
   val UUID_CLASS = "java.util.UUID"
+  val URL_CLASS = "java.net.URL"
+  val URI_CLASS = "java.net.URI"
 
   // ======= Time Class Names =======
   val DURATION_CLASS = "java.time.Duration"

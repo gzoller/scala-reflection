@@ -594,6 +594,5 @@ object PrimitiveRef:
     JINTEGER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JIntegerRef()(using quotes)(using Type.of[java.lang.Integer](using quotes)) },
     JLONG_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JLongRef()(using quotes)(using Type.of[java.lang.Long](using quotes)) },
     JSHORT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JShortRef()(using quotes)(using Type.of[java.lang.Short](using quotes)) },
-    JNUMBER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JNumberRef()(using quotes)(using Type.of[java.lang.Number](using quotes)) },
-    UUID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => UUIDRef()(using quotes)(using Type.of[java.util.UUID](using quotes)) }
+    JNUMBER_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JNumberRef()(using quotes)(using Type.of[java.lang.Number](using quotes)) }
   )

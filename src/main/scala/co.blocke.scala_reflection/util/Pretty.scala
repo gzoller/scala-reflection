@@ -103,7 +103,11 @@ object Pretty:
           else lastPart(t.name)
         (buf.append(label), false, seenBefore)
 
-      case t: SimpleRType =>
+      case t: TimeRType =>
+        val label = lastPart(t.name) + " (Java)"
+        (buf.append(label), false, seenBefore)
+
+      case t: NetRType =>
         val label = lastPart(t.name) + " (Java)"
         (buf.append(label), false, seenBefore)
 

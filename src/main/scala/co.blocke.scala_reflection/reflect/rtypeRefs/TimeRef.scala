@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-/** This file is very much like PrimitiveRef.scala in that holds simple types (vs complex types like collections).
+/** This file is very much like PrimitiveRef.scala in that holds time types.
   * In theory we could have bundled all this under PrimitiveRef, but technically these types are not language primitives
   * or wrappers around language primitives, so in the name of integrity we'll separate them out here.
   */
@@ -17,9 +17,9 @@ import scala.math.{BigDecimal, BigInt}
 /** Reference for all Java & Scala primitive types
   */
 
-trait SimpleRef
+trait TimeRef
 
-case class DurationRef()(using quotes: Quotes)(using tt: Type[java.time.Duration]) extends RTypeRef[java.time.Duration] with SimpleRef:
+case class DurationRef()(using quotes: Quotes)(using tt: Type[java.time.Duration]) extends RTypeRef[java.time.Duration] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.DURATION_CLASS
   val typedName: TypedName = name
@@ -43,7 +43,7 @@ case class DurationRef()(using quotes: Quotes)(using tt: Type[java.time.Duration
       )
     )
 
-case class InstantRef()(using quotes: Quotes)(using tt: Type[java.time.Instant]) extends RTypeRef[java.time.Instant] with SimpleRef:
+case class InstantRef()(using quotes: Quotes)(using tt: Type[java.time.Instant]) extends RTypeRef[java.time.Instant] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.INSTANT_CLASS
   val typedName: TypedName = name
@@ -67,7 +67,7 @@ case class InstantRef()(using quotes: Quotes)(using tt: Type[java.time.Instant])
       )
     )
 
-case class LocalDateRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDate]) extends RTypeRef[java.time.LocalDate] with SimpleRef:
+case class LocalDateRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDate]) extends RTypeRef[java.time.LocalDate] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.LOCALDATE_CLASS
   val typedName: TypedName = name
@@ -91,7 +91,7 @@ case class LocalDateRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDa
       )
     )
 
-case class LocalDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDateTime]) extends RTypeRef[java.time.LocalDateTime] with SimpleRef:
+case class LocalDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDateTime]) extends RTypeRef[java.time.LocalDateTime] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.LOCALDATETIME_CLASS
   val typedName: TypedName = name
@@ -115,7 +115,7 @@ case class LocalDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Loc
       )
     )
 
-case class LocalTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalTime]) extends RTypeRef[java.time.LocalTime] with SimpleRef:
+case class LocalTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalTime]) extends RTypeRef[java.time.LocalTime] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.LOCALTIME_CLASS
   val typedName: TypedName = name
@@ -139,7 +139,7 @@ case class LocalTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalTi
       )
     )
 
-case class MonthDayRef()(using quotes: Quotes)(using tt: Type[java.time.MonthDay]) extends RTypeRef[java.time.MonthDay] with SimpleRef:
+case class MonthDayRef()(using quotes: Quotes)(using tt: Type[java.time.MonthDay]) extends RTypeRef[java.time.MonthDay] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.MONTHDAY_CLASS
   val typedName: TypedName = name
@@ -163,7 +163,7 @@ case class MonthDayRef()(using quotes: Quotes)(using tt: Type[java.time.MonthDay
       )
     )
 
-case class OffsetDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.OffsetDateTime]) extends RTypeRef[java.time.OffsetDateTime] with SimpleRef:
+case class OffsetDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.OffsetDateTime]) extends RTypeRef[java.time.OffsetDateTime] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.OFFSETDATETIME_CLASS
   val typedName: TypedName = name
@@ -187,7 +187,7 @@ case class OffsetDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Of
       )
     )
 
-case class OffsetTimeRef()(using quotes: Quotes)(using tt: Type[java.time.OffsetTime]) extends RTypeRef[java.time.OffsetTime] with SimpleRef:
+case class OffsetTimeRef()(using quotes: Quotes)(using tt: Type[java.time.OffsetTime]) extends RTypeRef[java.time.OffsetTime] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.OFFSETTIME_CLASS
   val typedName: TypedName = name
@@ -211,7 +211,7 @@ case class OffsetTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Offset
       )
     )
 
-case class PeriodRef()(using quotes: Quotes)(using tt: Type[java.time.Period]) extends RTypeRef[java.time.Period] with SimpleRef:
+case class PeriodRef()(using quotes: Quotes)(using tt: Type[java.time.Period]) extends RTypeRef[java.time.Period] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.PERIOD_CLASS
   val typedName: TypedName = name
@@ -235,7 +235,7 @@ case class PeriodRef()(using quotes: Quotes)(using tt: Type[java.time.Period]) e
       )
     )
 
-case class YearRef()(using quotes: Quotes)(using tt: Type[java.time.Year]) extends RTypeRef[java.time.Year] with SimpleRef:
+case class YearRef()(using quotes: Quotes)(using tt: Type[java.time.Year]) extends RTypeRef[java.time.Year] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.YEAR_CLASS
   val typedName: TypedName = name
@@ -259,7 +259,7 @@ case class YearRef()(using quotes: Quotes)(using tt: Type[java.time.Year]) exten
       )
     )
 
-case class YearMonthRef()(using quotes: Quotes)(using tt: Type[java.time.YearMonth]) extends RTypeRef[java.time.YearMonth] with SimpleRef:
+case class YearMonthRef()(using quotes: Quotes)(using tt: Type[java.time.YearMonth]) extends RTypeRef[java.time.YearMonth] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.YEARMONTH_CLASS
   val typedName: TypedName = name
@@ -283,7 +283,7 @@ case class YearMonthRef()(using quotes: Quotes)(using tt: Type[java.time.YearMon
       )
     )
 
-case class ZonedDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.ZonedDateTime]) extends RTypeRef[java.time.ZonedDateTime] with SimpleRef:
+case class ZonedDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.ZonedDateTime]) extends RTypeRef[java.time.ZonedDateTime] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.ZONEDDATETIME_CLASS
   val typedName: TypedName = name
@@ -307,7 +307,7 @@ case class ZonedDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Zon
       )
     )
 
-case class ZoneIdRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneId]) extends RTypeRef[java.time.ZoneId] with SimpleRef:
+case class ZoneIdRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneId]) extends RTypeRef[java.time.ZoneId] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.ZONEID_CLASS
   val typedName: TypedName = name
@@ -331,7 +331,7 @@ case class ZoneIdRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneId]) e
       )
     )
 
-case class ZoneOffsetRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneOffset]) extends RTypeRef[java.time.ZoneOffset] with SimpleRef:
+case class ZoneOffsetRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneOffset]) extends RTypeRef[java.time.ZoneOffset] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.ZONEOFFSET_CLASS
   val typedName: TypedName = name
@@ -355,7 +355,7 @@ case class ZoneOffsetRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneOf
       )
     )
 
-case class JObjectRef()(using quotes: Quotes)(using tt: Type[java.lang.Object]) extends RTypeRef[java.lang.Object] with SimpleRef:
+case class JObjectRef()(using quotes: Quotes)(using tt: Type[java.lang.Object]) extends RTypeRef[java.lang.Object] with TimeRef:
   import quotes.reflect.*
   val name = Clazzes.JOBJECT_CLASS
   val typedName: TypedName = name
@@ -379,31 +379,7 @@ case class JObjectRef()(using quotes: Quotes)(using tt: Type[java.lang.Object]) 
       )
     )
 
-case class UUIDRef()(using quotes: Quotes)(using tt: Type[java.util.UUID]) extends RTypeRef[java.util.UUID] with SimpleRef:
-  import quotes.reflect.*
-  val name = Clazzes.UUID_CLASS
-  val typedName: TypedName = name
-  override val isNullable = true
-  val refType = tt
-
-  val unitVal = '{ null }.asExprOf[java.util.UUID]
-
-  val expr =
-    Apply(
-      Select.unique(New(TypeTree.of[UUIDRType]), "<init>"),
-      Nil
-    ).asExprOf[RType[java.util.UUID]]
-
-  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
-    JsonObjectBuilder(quotes)(
-      sb,
-      List(
-        JsonField("rtype", "UUIDRType"),
-        JsonField("name", name)
-      )
-    )
-
-object SimpleRef:
+object TimeRef:
   // Pre-bake primitive types w/cached builder functions
   protected[scala_reflection] val simpleTypeMap = Map(
     DURATION_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => DurationRef()(using quotes)(using Type.of[java.time.Duration](using quotes)) },
@@ -420,6 +396,5 @@ object SimpleRef:
     ZONEDDATETIME_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ZonedDateTimeRef()(using quotes)(using Type.of[java.time.ZonedDateTime](using quotes)) },
     ZONEID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ZoneIdRef()(using quotes)(using Type.of[java.time.ZoneId](using quotes)) },
     ZONEOFFSET_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ZoneOffsetRef()(using quotes)(using Type.of[java.time.ZoneOffset](using quotes)) },
-    JOBJECT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JObjectRef()(using quotes)(using Type.of[java.lang.Object](using quotes)) },
-    UUID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => UUIDRef()(using quotes)(using Type.of[java.util.UUID](using quotes)) }
+    JOBJECT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JObjectRef()(using quotes)(using Type.of[java.lang.Object](using quotes)) }
   )

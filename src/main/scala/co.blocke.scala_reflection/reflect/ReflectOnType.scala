@@ -13,7 +13,7 @@ import rtypeRefs.{AliasRef, JavaEnumRef, LeftRightRef, PrimitiveRef, ScalaEnumer
 object ReflectOnType: // extends NonCaseClassReflection:
 
   // Pre-bake primitive types w/cached builder functions
-  private val allBasicTypesMap = PrimitiveRef.primTypeMap ++ SimpleRef.simpleTypeMap
+  private val allBasicTypesMap = PrimitiveRef.primTypeMap ++ TimeRef.simpleTypeMap ++ NetRef.simpleTypeMap
 
   def apply[T](
       quotes: Quotes

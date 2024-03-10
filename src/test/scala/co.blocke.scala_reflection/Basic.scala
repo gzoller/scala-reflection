@@ -38,11 +38,11 @@ class Basic extends munit.FunSuite:
     )
   }
 
-  test("Class of all simple types") {
-    val result = RType.of[Simple]
+  test("Class of all time types") {
+    val result = RType.of[Time]
     assertEquals(
       result.pretty,
-      """co.blocke.scala_reflection.models.Simple:
+      """co.blocke.scala_reflection.models.Time:
         |   fields ->
         |      a: Duration (Java)
         |      b: Instant (Java)
@@ -58,7 +58,19 @@ class Basic extends munit.FunSuite:
         |      l: ZonedDateTime (Java)
         |      m: ZoneId (Java)
         |      n: ZoneOffset (Java)
-        |      o: UUID (Java)
+        |""".stripMargin
+    )
+  }
+
+  test("Class of all net types") {
+    val result = RType.of[Net]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Net:
+        |   fields ->
+        |      a: URL (Java)
+        |      b: URI (Java)
+        |      c: UUID (Java)
         |""".stripMargin
     )
   }
