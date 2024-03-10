@@ -20,12 +20,13 @@ object ReflectOnType: // extends NonCaseClassReflection:
   )(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
-    val tname = util.TypedName(quotes)(aType.dealias)
+    val dealiased = aType.dealias
+    val tname = util.TypedName(quotes)(dealiased)
     allBasicTypesMap
       .get(tname)
       .map(fn => fn(quotes))
       .getOrElse {
-        val className = aType.dealias.asInstanceOf[TypeRef] match {
+        val className = dealiased.asInstanceOf[TypeRef] match {
           case AndType(_, _)                               => Clazzes.INTERSECTION_CLASS
           case OrType(_, _)                                => Clazzes.UNION_CLASS
           case _: dotty.tools.dotc.core.Types.WildcardType => Clazzes.ANY_CLASS
@@ -33,10 +34,10 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         className match
-          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType.dealias, tname, resolveTypeSyms)
+          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(dealiased, tname, resolveTypeSyms)
           case _ if seenBefore.get(tname) == Some(true) =>
-            SelfRefRef[T](className, tname)(using quotes)(using aType.dealias.asType.asInstanceOf[Type[T]])
-          case _ => reflectOnType[T](quotes)(aType.dealias, tname, resolveTypeSyms)
+            SelfRefRef[T](className, tname)(using quotes)(using dealiased.asType.asInstanceOf[Type[T]])
+          case _ => reflectOnType[T](quotes)(dealiased, tname, resolveTypeSyms)
       }
       .asInstanceOf[RTypeRef[T]]
 
