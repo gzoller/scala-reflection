@@ -20,12 +20,12 @@ object ReflectOnType: // extends NonCaseClassReflection:
   )(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
-    val tname = util.TypedName(quotes)(aType)
+    val tname = util.TypedName(quotes)(aType.dealias)
     allBasicTypesMap
       .get(tname)
       .map(fn => fn(quotes))
       .getOrElse {
-        val className = aType.asInstanceOf[TypeRef] match {
+        val className = aType.dealias.asInstanceOf[TypeRef] match {
           case AndType(_, _)                               => Clazzes.INTERSECTION_CLASS
           case OrType(_, _)                                => Clazzes.UNION_CLASS
           case _: dotty.tools.dotc.core.Types.WildcardType => Clazzes.ANY_CLASS
@@ -33,10 +33,10 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         className match
-          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType.dealias, tname, resolveTypeSyms)
           case _ if seenBefore.get(tname) == Some(true) =>
-            SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
-          case _ => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+            SelfRefRef[T](className, tname)(using quotes)(using aType.dealias.asType.asInstanceOf[Type[T]])
+          case _ => reflectOnType[T](quotes)(aType.dealias, tname, resolveTypeSyms)
       }
       .asInstanceOf[RTypeRef[T]]
 
@@ -144,21 +144,36 @@ object ReflectOnType: // extends NonCaseClassReflection:
                     )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
 
               case a if a == defn.AnyClass =>
-                // implicit val q = quotes
+                import neotype.*
                 typeRef.asType match
                   case '[y] =>
-                    val repr = TypeRepr.of[y]
-                    if TypeRepr.of[y].typeSymbol.owner.fullName == NEOTYPE then NeoTypeRef[y](aType.typeSymbol.fullName).asInstanceOf[RTypeRef[T]]
-                    else AnyRef().asInstanceOf[RTypeRef[T]] // Any type
+                    Implicits.search(TypeRepr.of[Newtype.WithType[_, y]]) match
+                      case ss: ImplicitSearchSuccess => NeoTypeRef[y](ss.tree.show, aType.typeSymbol.fullName.asInstanceOf[TypedName]).asInstanceOf[RTypeRef[T]]
+                      case _                         => AnyRef().asInstanceOf[RTypeRef[T]] // Any type
 
               case cs if !isJavaEnum => // Non-parameterized classes
-                ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
+                // This chunk here catches type members who's values are applied types, eg type foo = List[Int]
+                typeRef.dealias match
+                  case AppliedType(t, tob) =>
+                    val foundType: Option[RTypeRef[T]] = ExtractorRegistry.extractors.collectFirst {
+                      case e if e.matches(quotes)(classSymbol) =>
+                        e.extractInfo[T](quotes)(t, tob, classSymbol)
+                    }
+                    foundType
+                      .getOrElse {
+                        // Nope--we've got a parameterized class or trait here
+                        ReflectOnClass(quotes)(typeRef, util.TypedName(quotes)(typeRef), resolveTypeSyms, tob)
+                      }
+                  case _ =>
+                    ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
 
               case _: Symbol => // Java Enum
-                JavaEnumRef(
-                  aType.classSymbol.get.fullName,
-                  aType.classSymbol.get.children.map(_.name)
-                )(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
+                typeRef.asType match
+                  case '[y] =>
+                    JavaEnumRef(
+                      aType.classSymbol.get.fullName,
+                      aType.classSymbol.get.children.map(_.name)
+                    )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
             }
 
           // Union Type (sometimes it pops up down here for some reason... hmm...)

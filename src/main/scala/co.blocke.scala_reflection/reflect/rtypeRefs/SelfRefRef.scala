@@ -21,6 +21,8 @@ case class SelfRefRef[R](
 
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val expr =
     Apply(
       TypeApply(

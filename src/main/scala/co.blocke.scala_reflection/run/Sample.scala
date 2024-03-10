@@ -52,3 +52,23 @@ case class PersonZ[T](msg: Hoovie[T])
 //     input.age < 18
 
 // case class SampleNeo(name: NonEmptyString, label: String, unknown: MinorPerson)
+
+type Thing = List[Int]
+case class AliasHolder[T](a: T)
+
+type NonEmptyString = NonEmptyString.Type
+given NonEmptyString: Newtype[String] with
+  inline def validate(input: String): Boolean =
+    input.nonEmpty
+
+type NonEmptyList = NonEmptyList.Type
+given NonEmptyList: Newtype[List[Int]] with
+  inline def validate(input: List[Int]): Boolean =
+    input.nonEmpty
+
+case class PersonX(age: NonEmptyList)
+
+sealed trait Candy
+case class Veggies()
+
+type Food = Candy | Veggies

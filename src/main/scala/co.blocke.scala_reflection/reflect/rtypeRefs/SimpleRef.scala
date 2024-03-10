@@ -2,8 +2,7 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-/**
-  * This file is very much like PrimitiveRef.scala in that holds simple types (vs complex types like collections).
+/** This file is very much like PrimitiveRef.scala in that holds simple types (vs complex types like collections).
   * In theory we could have bundled all this under PrimitiveRef, but technically these types are not language primitives
   * or wrappers around language primitives, so in the name of integrity we'll separate them out here.
   */
@@ -27,6 +26,8 @@ case class DurationRef()(using quotes: Quotes)(using tt: Type[java.time.Duration
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.Duration]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[DurationRType]), "<init>"),
@@ -48,6 +49,8 @@ case class InstantRef()(using quotes: Quotes)(using tt: Type[java.time.Instant])
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.Instant]
 
   val expr =
     Apply(
@@ -71,6 +74,8 @@ case class LocalDateRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDa
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.LocalDate]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[LocalDateRType]), "<init>"),
@@ -92,6 +97,8 @@ case class LocalDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Loc
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.LocalDateTime]
 
   val expr =
     Apply(
@@ -115,6 +122,8 @@ case class LocalTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalTi
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.LocalTime]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[LocalTimeRType]), "<init>"),
@@ -136,6 +145,8 @@ case class MonthDayRef()(using quotes: Quotes)(using tt: Type[java.time.MonthDay
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.MonthDay]
 
   val expr =
     Apply(
@@ -159,6 +170,8 @@ case class OffsetDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Of
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.OffsetDateTime]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[OffsetDateTimeRType]), "<init>"),
@@ -180,6 +193,8 @@ case class OffsetTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Offset
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.OffsetTime]
 
   val expr =
     Apply(
@@ -203,6 +218,8 @@ case class PeriodRef()(using quotes: Quotes)(using tt: Type[java.time.Period]) e
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.Period]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[PeriodRType]), "<init>"),
@@ -224,6 +241,8 @@ case class YearRef()(using quotes: Quotes)(using tt: Type[java.time.Year]) exten
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.Year]
 
   val expr =
     Apply(
@@ -247,6 +266,8 @@ case class YearMonthRef()(using quotes: Quotes)(using tt: Type[java.time.YearMon
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.YearMonth]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[YearMonthRType]), "<init>"),
@@ -268,6 +289,8 @@ case class ZonedDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Zon
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.ZonedDateTime]
 
   val expr =
     Apply(
@@ -291,6 +314,8 @@ case class ZoneIdRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneId]) e
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.time.ZoneId]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[ZoneIdRType]), "<init>"),
@@ -312,6 +337,8 @@ case class ZoneOffsetRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneOf
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.time.ZoneOffset]
 
   val expr =
     Apply(
@@ -335,6 +362,8 @@ case class JObjectRef()(using quotes: Quotes)(using tt: Type[java.lang.Object]) 
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[java.lang.Object]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaObjectRType]), "<init>"),
@@ -349,13 +378,15 @@ case class JObjectRef()(using quotes: Quotes)(using tt: Type[java.lang.Object]) 
         JsonField("name", name)
       )
     )
-    
+
 case class UUIDRef()(using quotes: Quotes)(using tt: Type[java.util.UUID]) extends RTypeRef[java.util.UUID] with SimpleRef:
   import quotes.reflect.*
   val name = Clazzes.UUID_CLASS
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[java.util.UUID]
 
   val expr =
     Apply(
@@ -389,7 +420,6 @@ object SimpleRef:
     ZONEDDATETIME_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ZonedDateTimeRef()(using quotes)(using Type.of[java.time.ZonedDateTime](using quotes)) },
     ZONEID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ZoneIdRef()(using quotes)(using Type.of[java.time.ZoneId](using quotes)) },
     ZONEOFFSET_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => ZoneOffsetRef()(using quotes)(using Type.of[java.time.ZoneOffset](using quotes)) },
-
     JOBJECT_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => JObjectRef()(using quotes)(using Type.of[java.lang.Object](using quotes)) },
     UUID_CLASS.asInstanceOf[TypedName] -> { (quotes: Quotes) => UUIDRef()(using quotes)(using Type.of[java.util.UUID](using quotes)) }
   )

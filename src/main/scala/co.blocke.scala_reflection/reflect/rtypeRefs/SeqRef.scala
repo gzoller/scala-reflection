@@ -20,6 +20,8 @@ case class SeqRef[R <: scala.collection.Seq[_]](
   val refType = tt
   val isMutable = name.contains(".mutable.")
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val expr =
     Apply(
       TypeApply(

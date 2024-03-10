@@ -15,6 +15,8 @@ case class ObjectRef(
   val typedName = name
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[Object]
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[ObjectRType]), "<init>"),

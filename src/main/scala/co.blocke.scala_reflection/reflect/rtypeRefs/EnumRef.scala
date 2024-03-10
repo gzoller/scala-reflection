@@ -35,6 +35,8 @@ case class ScalaEnumRef[R](
   val typedName: TypedName = name
   val refType = tt
 
+  val unitVal = '{ null.asInstanceOf[R] }
+
   val expr =
     Apply(
       TypeApply(
@@ -57,6 +59,8 @@ case class ScalaEnumerationRef[R](
   import quotes.reflect.*
   val typedName: TypedName = name
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[R]
 
   val expr =
     Apply(
@@ -81,6 +85,8 @@ case class JavaEnumRef[R](
   import quotes.reflect.*
   val typedName: TypedName = name
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[R]
 
   val expr =
     Apply(

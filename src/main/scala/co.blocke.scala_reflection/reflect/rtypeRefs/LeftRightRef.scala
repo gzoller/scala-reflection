@@ -37,6 +37,11 @@ case class LeftRightRef[R](
   val typedName: TypedName = name + "[" + leftRef.typedName + "," + rightRef.typedName + "]"
   val refType = tt
 
+  val unitVal = lrkind match {
+    case LRKind.EITHER => '{ null }.asExprOf[R]
+    case _             => leftRef.unitVal.asInstanceOf[Expr[R]]
+  }
+
   val selectLimit: Int = 2
 
   def select(i: Int): RTypeRef[?] =

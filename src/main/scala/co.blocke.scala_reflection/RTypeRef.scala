@@ -16,5 +16,6 @@ trait RTypeRef[R]:
   val typedName: TypedName
   val expr: Expr[RType[R]] // RTypeRef -> Expr[RType]
   val refType: Type[R]
+  val unitVal: Expr[R] // default, unassigned value for a field during class construction
   val isNullable: Boolean = true
   def asJson(sb: StringBuilder)(using quotes: Quotes): Unit

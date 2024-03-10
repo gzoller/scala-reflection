@@ -22,6 +22,8 @@ case class TraitRef[R](
 
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val selectLimit: Int = fields.size
   def select(i: Int): RTypeRef[?] =
     if i >= 0 && i < selectLimit then fields(i).fieldRef

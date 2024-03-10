@@ -16,13 +16,16 @@ import util.{JsonField, JsonObjectBuilder}
   * @param tt
   */
 case class NeoTypeRef[R](
-    name: String
+    name: String,
+    typedName: TypedName
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]:
   import quotes.reflect.*
+  import Liftables.TypedNameToExpr
 
-  val typedName: TypedName = name
   val refType = tt
+
+  val unitVal = '{ null.asInstanceOf[R] }
 
   val expr =
     Apply(
@@ -31,7 +34,8 @@ case class NeoTypeRef[R](
         List(TypeTree.of[R])
       ),
       List(
-        Expr(name).asTerm
+        Expr(name).asTerm,
+        Expr(typedName).asTerm
       )
     ).asExprOf[RType[R]]
 

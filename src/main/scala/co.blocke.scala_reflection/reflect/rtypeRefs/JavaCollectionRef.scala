@@ -18,6 +18,8 @@ case class JavaCollectionRef[R](
 
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val expr =
     Apply(
       TypeApply(

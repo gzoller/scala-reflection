@@ -15,6 +15,8 @@ case class TypeSymbolRef(name: String)(using quotes: Quotes)(using tt: Type[Any]
   val typedName: TypedName = name
   val refType = tt
 
+  val unitVal = '{ "" }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[TypeSymbolRType]), "<init>"),

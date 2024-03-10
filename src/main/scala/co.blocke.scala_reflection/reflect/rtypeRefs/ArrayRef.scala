@@ -22,6 +22,8 @@ case class ArrayRef[R](
   import quotes.reflect.*
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val isMutable = true
 
   val expr =

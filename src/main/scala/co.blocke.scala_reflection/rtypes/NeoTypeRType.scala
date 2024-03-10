@@ -2,8 +2,8 @@ package co.blocke.scala_reflection
 package rtypes
 
 case class NeoTypeRType[T](
-    name: String
+    name: String,
+    typedName: TypedName
 ) extends RType[T]:
 
-  val typedName: TypedName = name
   override lazy val clazz = classOf[Any]

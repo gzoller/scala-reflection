@@ -46,6 +46,21 @@ case class ScalaClassRef[R](
 
   val refType = tt
 
+  val unitVal =
+    // If this is a value class we can't assume null (could be an Int wrapped).  So we need to
+    // construct one of these beasties with the unit val of the specific wrapped type.  Kinda doesn't matter,
+    // but this way should guarantee no class cast exceptions.
+    if isValueClass then
+      refType match {
+        case '[c] =>
+          val tpe = TypeRepr.of[c]
+          val primaryConstructor = tpe.classSymbol.get.primaryConstructor
+          val constructor = Select(New(Inferred(tpe)), primaryConstructor)
+          val argss = List(List(fields(0).fieldRef.unitVal.asTerm))
+          argss.tail.foldLeft(Apply(constructor, argss.head))((acc, args) => Apply(acc, args)).asExprOf[R]
+      }
+    else '{ null }.asExprOf[R]
+
   def isSealed: Boolean = sealedChildren.nonEmpty
 
   val expr =
@@ -118,6 +133,8 @@ case class JavaClassRef[R](
 
   val typedName: TypedName = name
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[R]
 
   val expr =
     Apply(

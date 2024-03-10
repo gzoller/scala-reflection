@@ -24,6 +24,8 @@ case class BigDecimalRef()(using quotes: Quotes)(using tt: Type[BigDecimal]) ext
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ BigDecimal(0) }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[BigDecimalRType]), "<init>"),
@@ -45,6 +47,8 @@ case class BigIntRef()(using quotes: Quotes)(using tt: Type[BigInt]) extends RTy
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ BigInt(0) }
 
   val expr =
     Apply(
@@ -68,6 +72,8 @@ case class BooleanRef()(using quotes: Quotes)(using tt: Type[Boolean]) extends R
   override val isNullable = false
   val refType = tt
 
+  val unitVal = '{ false }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[BooleanRType]), "<init>"),
@@ -89,6 +95,8 @@ case class ByteRef()(using quotes: Quotes)(using tt: Type[Byte]) extends RTypeRe
   val typedName: TypedName = name
   override val isNullable = false
   val refType = tt
+
+  val unitVal = '{ 0.toByte }
 
   val expr =
     Apply(
@@ -112,6 +120,8 @@ case class CharRef()(using quotes: Quotes)(using tt: Type[Char]) extends RTypeRe
   override val isNullable = false
   val refType = tt
 
+  val unitVal = '{ 0.toChar }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[CharRType]), "<init>"),
@@ -133,6 +143,8 @@ case class DoubleRef()(using quotes: Quotes)(using tt: Type[Double]) extends RTy
   val typedName: TypedName = name
   override val isNullable = false
   val refType = tt
+
+  val unitVal = '{ 0.0 }
 
   val expr =
     Apply(
@@ -156,6 +168,8 @@ case class FloatRef()(using quotes: Quotes)(using tt: Type[Float]) extends RType
   override val isNullable = false
   val refType = tt
 
+  val unitVal = '{ 0.0f }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[FloatRType]), "<init>"),
@@ -177,6 +191,8 @@ case class IntRef()(using quotes: Quotes)(using tt: Type[Int]) extends RTypeRef[
   val typedName: TypedName = name
   override val isNullable = false
   val refType = tt
+
+  val unitVal = '{ 0 }
 
   val expr =
     Apply(
@@ -200,6 +216,8 @@ case class LongRef()(using quotes: Quotes)(using tt: Type[Long]) extends RTypeRe
   override val isNullable = false
   val refType = tt
 
+  val unitVal = '{ 0L }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[LongRType]), "<init>"),
@@ -221,6 +239,8 @@ case class ShortRef()(using quotes: Quotes)(using tt: Type[Short]) extends RType
   val typedName: TypedName = name
   override val isNullable = false
   val refType = tt
+
+  val unitVal = '{ 0.toShort }
 
   val expr =
     Apply(
@@ -244,6 +264,8 @@ case class StringRef()(using quotes: Quotes)(using tt: Type[String]) extends RTy
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ "" }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[StringRType]), "<init>"),
@@ -265,6 +287,8 @@ case class JBigDecimalRef()(using quotes: Quotes)(using tt: Type[java.math.BigDe
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ java.math.BigDecimal(0.0) }
 
   val expr =
     Apply(
@@ -288,6 +312,8 @@ case class JBigIntegerRef()(using quotes: Quotes)(using tt: Type[java.math.BigIn
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ java.math.BigInteger.valueOf(0L) }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaBigIntegerRType]), "<init>"),
@@ -309,6 +335,8 @@ case class JBooleanRef()(using quotes: Quotes)(using tt: Type[java.lang.Boolean]
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ java.lang.Boolean.FALSE }
 
   val expr =
     Apply(
@@ -332,6 +360,8 @@ case class JByteRef()(using quotes: Quotes)(using tt: Type[java.lang.Byte]) exte
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ java.lang.Byte.MIN_VALUE }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaByteRType]), "<init>"),
@@ -353,6 +383,8 @@ case class JCharacterRef()(using quotes: Quotes)(using tt: Type[java.lang.Charac
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ java.lang.Character('x') }
 
   val expr =
     Apply(
@@ -376,6 +408,8 @@ case class JDoubleRef()(using quotes: Quotes)(using tt: Type[java.lang.Double]) 
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ java.lang.Double(0.0) }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaDoubleRType]), "<init>"),
@@ -397,6 +431,8 @@ case class JFloatRef()(using quotes: Quotes)(using tt: Type[java.lang.Float]) ex
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ java.lang.Float(0.0f) }
 
   val expr =
     Apply(
@@ -420,6 +456,8 @@ case class JIntegerRef()(using quotes: Quotes)(using tt: Type[java.lang.Integer]
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ java.lang.Integer(0) }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaIntegerRType]), "<init>"),
@@ -441,6 +479,8 @@ case class JLongRef()(using quotes: Quotes)(using tt: Type[java.lang.Long]) exte
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ java.lang.Long(0L) }
 
   val expr =
     Apply(
@@ -464,6 +504,8 @@ case class JShortRef()(using quotes: Quotes)(using tt: Type[java.lang.Short]) ex
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ java.lang.Short(0.toShort) }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaShortRType]), "<init>"),
@@ -486,6 +528,8 @@ case class JNumberRef()(using quotes: Quotes)(using tt: Type[java.lang.Number]) 
   override val isNullable = true
   val refType = tt
 
+  val unitVal = '{ null.asInstanceOf[java.lang.Number] }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[JavaNumberRType]), "<init>"),
@@ -507,6 +551,8 @@ case class AnyRef()(using quotes: Quotes)(using tt: Type[Any]) extends RTypeRef[
   val typedName: TypedName = name
   override val isNullable = true
   val refType = tt
+
+  val unitVal = '{ null.asInstanceOf[Any] }
 
   val expr =
     Apply(
