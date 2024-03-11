@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 package models
 
 import co.blocke.reflect.*
+import neotype.*
 
 // Basic Tasty classes
 case class Item(desc: String)
@@ -152,3 +153,16 @@ case class UberJS[T](
     x: T
 ) extends Blah[T]:
   type S = String
+
+// Test NeoType and differentiation from Any
+type NonEmptyString = NonEmptyString.Type
+given NonEmptyString: Newtype[String] with
+  inline def validate(input: String): Boolean =
+    input.nonEmpty
+
+type NonEmptyList = NonEmptyList.Type
+given NonEmptyList: Newtype[List[Int]] with
+  inline def validate(input: List[Int]): Boolean =
+    input.nonEmpty
+
+case class NeoPerson(age: NonEmptyList, desc: NonEmptyString, whatever: Any)

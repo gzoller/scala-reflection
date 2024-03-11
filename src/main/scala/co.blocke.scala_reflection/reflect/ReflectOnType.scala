@@ -20,6 +20,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
   )(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
+    // maybeNeoOrAny.getOrElse {
     val dealiased = aType.dealias
     val tname = util.TypedName(quotes)(dealiased)
     allBasicTypesMap
@@ -34,10 +35,10 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         className match
-          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(dealiased, tname, resolveTypeSyms)
+          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
           case _ if seenBefore.get(tname) == Some(true) =>
-            SelfRefRef[T](className, tname)(using quotes)(using dealiased.asType.asInstanceOf[Type[T]])
-          case _ => reflectOnType[T](quotes)(dealiased, tname, resolveTypeSyms)
+            SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
+          case _ => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
       }
       .asInstanceOf[RTypeRef[T]]
 
@@ -145,12 +146,12 @@ object ReflectOnType: // extends NonCaseClassReflection:
                     )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
 
               case a if a == defn.AnyClass =>
-                import neotype.*
                 typeRef.asType match
                   case '[y] =>
-                    Implicits.search(TypeRepr.of[Newtype.WithType[_, y]]) match
-                      case ss: ImplicitSearchSuccess => NeoTypeRef[y](ss.tree.show, aType.typeSymbol.fullName.asInstanceOf[TypedName]).asInstanceOf[RTypeRef[T]]
-                      case _                         => AnyRef().asInstanceOf[RTypeRef[T]] // Any type
+                    typeRef.typeSymbol.fullName match
+                      case "scala.Any" => AnyRef().asInstanceOf[RTypeRef[T]] // Any type
+                      case n => // presume NeoType (CAUTION--may not always be true in the future!)
+                        NeoTypeRef[y](typeRef.typeSymbol.name, n.asInstanceOf[TypedName]).asInstanceOf[RTypeRef[T]]
 
               case cs if !isJavaEnum => // Non-parameterized classes
                 // This chunk here catches type members who's values are applied types, eg type foo = List[Int]

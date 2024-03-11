@@ -321,6 +321,19 @@ class Basic extends munit.FunSuite:
     )
   }
 
+  test("Ensure NeoType integration works") {
+    val result = RType.of[NeoPerson]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.NeoPerson:
+        |   fields ->
+        |      age: NonEmptyList (Neotype)
+        |      desc: NonEmptyString (Neotype)
+        |      whatever: Any
+        |""".stripMargin
+    )
+  }
+
   test("Sample ScalaJS support test (JSON)") {
     val js = RType.ofJS[UberJS[Short]]
     assertEquals(

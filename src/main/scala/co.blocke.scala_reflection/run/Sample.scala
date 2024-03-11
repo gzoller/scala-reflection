@@ -66,7 +66,7 @@ given NonEmptyList: Newtype[List[Int]] with
   inline def validate(input: List[Int]): Boolean =
     input.nonEmpty
 
-case class PersonX(age: NonEmptyList)
+case class NeoPerson(age: NonEmptyList, desc: NonEmptyString, whatever: Any)
 
 sealed trait Candy
 case class Veggies()
