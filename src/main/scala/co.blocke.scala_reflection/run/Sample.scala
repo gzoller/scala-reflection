@@ -1,5 +1,5 @@
 package co.blocke.scala_reflection
-package run
+package model
 
 import neotype.*
 
@@ -56,9 +56,9 @@ case class PersonZ[T](msg: Hoovie[T])
 type Thing = List[Int]
 case class AliasHolder[T](a: T)
 
-type NonEmptyString = NonEmptyString.Type
-given NonEmptyString: Newtype[String] with
-  inline def validate(input: String): Boolean =
+type NonEmptyString = NonEmptyString2.Type
+object NonEmptyString2 extends Newtype[String]:
+  override inline def validate(input: String): Boolean =
     input.nonEmpty
 
 type NonEmptyList = NonEmptyList.Type

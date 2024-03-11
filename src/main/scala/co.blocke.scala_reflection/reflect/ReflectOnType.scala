@@ -145,13 +145,14 @@ object ReflectOnType: // extends NonCaseClassReflection:
                       enumerationClassSymbol.declaredFields.map(_.name)
                     )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
 
+              // Symbol.requiredModule("co.blocke.scalajack.json.run.NonZeroInt").methodMembers
               case a if a == defn.AnyClass =>
                 typeRef.asType match
                   case '[y] =>
                     typeRef.typeSymbol.fullName match
                       case "scala.Any" => AnyRef().asInstanceOf[RTypeRef[T]] // Any type
                       case n => // presume NeoType (CAUTION--may not always be true in the future!)
-                        NeoTypeRef[y](typeRef.typeSymbol.name, n.asInstanceOf[TypedName]).asInstanceOf[RTypeRef[T]]
+                        NeoTypeRef[y](typeRef.typeSymbol.name, n.replaceAll("""\.\w+\$package\$""", "").asInstanceOf[TypedName]).asInstanceOf[RTypeRef[T]]
 
               case cs if !isJavaEnum => // Non-parameterized classes
                 // This chunk here catches type members who's values are applied types, eg type foo = List[Int]
