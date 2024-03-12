@@ -5,6 +5,6 @@ import model.*
 object Main {
 
   def main(args: Array[String]): Unit =
-    println(RType.of[NeoPerson].pretty)
+    println(RType.of[Schema].pretty)
     println("done")
 }
