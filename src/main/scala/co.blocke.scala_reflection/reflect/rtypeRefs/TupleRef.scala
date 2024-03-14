@@ -19,6 +19,8 @@ case class TupleRef[R](
   val typedName: TypedName = name + tupleRefs.map(_.typedName).toList.mkString("[", ",", "]")
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val selectLimit: Int = tupleRefs.size
 
   def select(i: Int): RTypeRef[?] =

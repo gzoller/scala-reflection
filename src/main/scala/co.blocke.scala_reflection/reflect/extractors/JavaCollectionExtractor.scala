@@ -7,10 +7,10 @@ import Clazzes.*
 import scala.quoted.*
 import scala.util.Try
 
-case class JavaSetExtractor() extends TypeExtractor[JavaSetRef[_]]:
+case class JavaCollectionExtractor() extends TypeExtractor[JavaCollectionRef[_]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
-    Try(Class.forName(symbol.fullName) <:< JSetClazz).toOption.getOrElse(false)
+    Try(Class.forName(symbol.fullName) <:< JCollectionClazz).toOption.getOrElse(false)
 
   def extractInfo[R](
       quotes: Quotes
@@ -27,7 +27,7 @@ case class JavaSetExtractor() extends TypeExtractor[JavaSetRef[_]]:
     val a = quotes.reflect.AppliedType(t, tob).asType
     a match
       case '[t] =>
-        JavaSetRef[t](
+        JavaCollectionRef[t](
           t.classSymbol.get.fullName,
           typeParamSymbols,
           elementRef

@@ -7,7 +7,7 @@ import rtypes.SeqRType
 import util.{JsonField, JsonObjectBuilder}
 
 /** Arity 1 Collections, e.g. List, Set, Seq */
-case class SeqRef[R](
+case class SeqRef[R <: scala.collection.Seq[_]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]
@@ -18,6 +18,9 @@ case class SeqRef[R](
   import Liftables.ListTypeSymbolToExpr
 
   val refType = tt
+  val isMutable = name.contains(".mutable.")
+
+  val unitVal = '{ null }.asExprOf[R]
 
   val expr =
     Apply(

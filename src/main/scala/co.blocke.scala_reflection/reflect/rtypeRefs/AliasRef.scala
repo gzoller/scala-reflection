@@ -17,6 +17,8 @@ case class AliasRef[R](
   val typedName: TypedName = name
   val refType = tt
 
+  val unitVal = unwrappedType.unitVal.asInstanceOf[Expr[R]]
+
   val expr =
     Apply(
       TypeApply(

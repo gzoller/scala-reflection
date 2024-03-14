@@ -3,10 +3,11 @@ package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.JavaStackRType
+import rtypes.SetRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class JavaStackRef[R](
+/** Arity 1 Collections, e.g. List, Set, Seq */
+case class SetRef[R <: scala.collection.Set[_]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]
@@ -17,11 +18,14 @@ case class JavaStackRef[R](
   import Liftables.ListTypeSymbolToExpr
 
   val refType = tt
+  val isMutable = name.contains(".mutable.")
+
+  val unitVal = '{ null }.asExprOf[R]
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[JavaStackRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[SetRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
@@ -35,7 +39,7 @@ case class JavaStackRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "JavaStackRType"),
+        JsonField("rtype", "SetRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

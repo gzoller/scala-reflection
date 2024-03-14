@@ -1,7 +1,8 @@
 package co.blocke.scala_reflection
 package rtypes
 
-case class JavaListRType[R](
+/** Arity 1 Collections, e.g. List, Set, Seq */
+case class SetRType[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementType: RType[?]

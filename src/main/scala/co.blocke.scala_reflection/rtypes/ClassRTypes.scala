@@ -26,9 +26,10 @@ case class ScalaClassRType[R](
     isValueClass: Boolean,
     isCaseClass: Boolean,
     isAbstractClass: Boolean,
+    typePaths: Map[String, List[List[Int]]], // pre-computed path to each type symbol used (to get concrete types)
     nonConstructorFields: List[NonConstructorFieldInfo] = Nil, // Populated for non-case classes only
     sealedChildren: List[RType[_]] = Nil, // Populated only if this is a sealed class or abstract class
-    typePaths: Map[String, List[List[Int]]] // pre-computed path to each type symbol used (to get concrete types)
+    childrenAreObject: Boolean = false
 ) extends ClassRType[R]:
 
   override def equals(obj: Any) =
@@ -38,6 +39,8 @@ case class ScalaClassRType[R](
     }
 
   override lazy val clazz = Class.forName(util.AdjustClassName(name))
+
+  def isSealed: Boolean = sealedChildren.nonEmpty
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

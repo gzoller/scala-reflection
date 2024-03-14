@@ -6,6 +6,10 @@ import Clazzes.*
 import rtypeRefs.*
 import scala.quoted.*
 
+object MapType {
+  type IsMap[A <: scala.collection.Map[_, _]] = A
+}
+
 case class MapExtractor() extends TypeExtractor[MapRef[_]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
@@ -31,7 +35,7 @@ case class MapExtractor() extends TypeExtractor[MapRef[_]]:
 
     val a = quotes.reflect.AppliedType(t, tob).asType
     a match
-      case '[t] =>
+      case '[MapType.IsMap[t]] =>
         MapRef[t](
           t.classSymbol.get.fullName,
           typeParamSymbols,

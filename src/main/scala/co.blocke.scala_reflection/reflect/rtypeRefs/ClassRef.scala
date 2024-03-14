@@ -7,7 +7,8 @@ import rtypes.{JavaClassRType, NonConstructorFieldInfo, ScalaClassRType, TypeMem
 import util.{JsonField, JsonObjectBuilder}
 
 trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
-  val name: String
+  self: RTypeRef[?] =>
+
   val fields: List[FieldInfoRef]
   val typeParamSymbols: List[TypeSymbol]
   val typeParamValues: List[RTypeRef[_]]
@@ -36,6 +37,7 @@ case class ScalaClassRef[R](
     isAbstractClass: Boolean,
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
     sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    childrenAreObject: Boolean = false,
     typePaths: Map[String, List[List[Int]]]
 )(using quotes: Quotes)(using tt: Type[R])
     extends ClassRef[R]:
@@ -43,6 +45,23 @@ case class ScalaClassRef[R](
   import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr, TypeSymbolToExpr}
 
   val refType = tt
+
+  val unitVal =
+    // If this is a value class we can't assume null (could be an Int wrapped).  So we need to
+    // construct one of these beasties with the unit val of the specific wrapped type.  Kinda doesn't matter,
+    // but this way should guarantee no class cast exceptions.
+    if isValueClass then
+      refType match {
+        case '[c] =>
+          val tpe = TypeRepr.of[c]
+          val primaryConstructor = tpe.classSymbol.get.primaryConstructor
+          val constructor = Select(New(Inferred(tpe)), primaryConstructor)
+          val argss = List(List(fields(0).fieldRef.unitVal.asTerm))
+          argss.tail.foldLeft(Apply(constructor, argss.head))((acc, args) => Apply(acc, args)).asExprOf[R]
+      }
+    else '{ null }.asExprOf[R]
+
+  def isSealed: Boolean = sealedChildren.nonEmpty
 
   val expr =
     Apply(
@@ -63,9 +82,10 @@ case class ScalaClassRef[R](
         Expr(isValueClass).asTerm,
         Expr(isCaseClass).asTerm,
         Expr(isAbstractClass).asTerm,
+        Expr(typePaths).asTerm,
         Expr.ofList(nonConstructorFields.map(_.expr.asInstanceOf[Expr[NonConstructorFieldInfo]])).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm,
-        Expr(typePaths).asTerm
+        Expr(childrenAreObject).asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -87,7 +107,8 @@ case class ScalaClassRef[R](
         JsonField("isCaseClass", this.isCaseClass),
         JsonField("isAbstractClass", this.isAbstractClass),
         JsonField("nonConstructorFields", this.nonConstructorFields),
-        JsonField("sealedChildren", this.sealedChildren)
+        JsonField("sealedChildren", this.sealedChildren),
+        JsonField("childrenAreObject", this.childrenAreObject)
       )
     )
 
@@ -112,6 +133,8 @@ case class JavaClassRef[R](
 
   val typedName: TypedName = name
   val refType = tt
+
+  val unitVal = '{ null }.asExprOf[R]
 
   val expr =
     Apply(

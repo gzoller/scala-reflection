@@ -11,7 +11,9 @@ case class TraitRef[R](
     typedName: TypedName,
     fields: List[FieldInfoRef],
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
-    typeParamValues: List[RTypeRef[_]] = Nil // Like Int, Boolean
+    typeParamValues: List[RTypeRef[_]] = Nil, // Like Int, Boolean
+    sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    childrenAreObject: Boolean = false
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]
     with AppliedRef:
@@ -20,10 +22,14 @@ case class TraitRef[R](
 
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val selectLimit: Int = fields.size
   def select(i: Int): RTypeRef[?] =
     if i >= 0 && i < selectLimit then fields(i).fieldRef
     else throw new ReflectException(s"AppliedType select index $i out of range for $name")
+
+  def isSealed: Boolean = sealedChildren.nonEmpty
 
   val expr =
     Apply(
@@ -36,7 +42,9 @@ case class TraitRef[R](
         Expr(typedName).asTerm,
         Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(typeParamSymbols).asTerm,
-        Expr.ofList(typeParamValues.map(_.expr)).asTerm
+        Expr.ofList(typeParamValues.map(_.expr)).asTerm,
+        Expr.ofList(sealedChildren.map(_.expr)).asTerm,
+        Expr(childrenAreObject).asTerm
       )
     ).asExprOf[RType[R]]
 
@@ -48,6 +56,8 @@ case class TraitRef[R](
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),
-        JsonField("typeParamValues", this.typeParamValues)
+        JsonField("typeParamValues", this.typeParamValues),
+        JsonField("sealedChildren", this.sealedChildren),
+        JsonField("childrenAreObject", this.childrenAreObject)
       )
     )

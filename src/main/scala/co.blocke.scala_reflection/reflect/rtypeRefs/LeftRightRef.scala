@@ -13,6 +13,14 @@ enum LRKind(name: String) {
   override def toString(): String = this.name
 }
 
+given LRKindToExpr: ToExpr[LRKind] with {
+  def apply(x: LRKind)(using Quotes): Expr[LRKind] =
+    x match
+      case LRKind.EITHER       => '{ LRKind.EITHER }
+      case LRKind.INTERSECTION => '{ LRKind.INTERSECTION }
+      case LRKind.UNION        => '{ LRKind.UNION }
+}
+
 /** Marker trait for all Scala/Java left/right types (either, intersection, union) */
 case class LeftRightRef[R](
     name: String,
@@ -29,6 +37,11 @@ case class LeftRightRef[R](
   val typedName: TypedName = name + "[" + leftRef.typedName + "," + rightRef.typedName + "]"
   val refType = tt
 
+  val unitVal = lrkind match {
+    case LRKind.EITHER => '{ null }.asExprOf[R]
+    case _             => leftRef.unitVal.asInstanceOf[Expr[R]]
+  }
+
   val selectLimit: Int = 2
 
   def select(i: Int): RTypeRef[?] =
@@ -40,8 +53,8 @@ case class LeftRightRef[R](
 
   type LRType[X] = X match
     case scala.util.Either[?, ?] => EitherRType[R]
-    case IntersectionType        => IntersectionRType[R]
-    case UnionType               => UnionRType[R]
+    case ? & ?                   => IntersectionRType[R]
+    case ? | ?                   => UnionRType[R]
 
   private val reprMap = Map(
     LRKind.EITHER -> { () => TypeRepr.typeConstructorOf(classOf[EitherRType[R]]) },

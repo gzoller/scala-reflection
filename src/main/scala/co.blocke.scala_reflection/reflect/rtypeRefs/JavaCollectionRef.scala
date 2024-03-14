@@ -3,10 +3,10 @@ package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.JavaSetRType
+import rtypes.JavaCollectionRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class JavaSetRef[R](
+case class JavaCollectionRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]
@@ -18,10 +18,12 @@ case class JavaSetRef[R](
 
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[JavaSetRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[JavaCollectionRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
@@ -35,7 +37,7 @@ case class JavaSetRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "JavaSetRType"),
+        JsonField("rtype", "JavaCollectionRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

@@ -98,7 +98,18 @@ object Pretty:
   ): (StringBuilder, Boolean, List[String]) =
     rt match {
       case t: PrimitiveRType =>
-        (buf.append(lastPart(t.name)), false, seenBefore)
+        val label =
+          if t.name.startsWith("java.") && t.name != "java.lang.String" then lastPart(t.name) + " (Java)"
+          else lastPart(t.name)
+        (buf.append(label), false, seenBefore)
+
+      case t: TimeRType =>
+        val label = lastPart(t.name) + " (Java)"
+        (buf.append(label), false, seenBefore)
+
+      case t: NetRType =>
+        val label = lastPart(t.name) + " (Java)"
+        (buf.append(label), false, seenBefore)
 
       case t: TypeSymbolRType =>
         (buf.append(t.name), false, seenBefore)
@@ -113,6 +124,9 @@ object Pretty:
         showOfType(buf, seenBefore, tabLevel, "Try of ", t.tryType)
 
       case t: SeqRType[?] =>
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
+
+      case t: SetRType[?] =>
         showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: ArrayRType[?] =>
@@ -247,7 +261,7 @@ object Pretty:
           buf.append(showSimpleName(t))
           if t.typeParamValues.nonEmpty then buf.append(typeString(t.typeParamValues))
           else if t.typeParamSymbols.nonEmpty then buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]"))
-          buf.append(" (trait):\n")
+          buf.append(s" (${if t.isSealed then "sealed " else ""}trait):\n")
           buf.append(tabs(tabLevel + 1))
           buf.append("fields ->\n")
           val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
@@ -258,24 +272,17 @@ object Pretty:
             if !lastWasMultiLine then buf.append("\n")
             classesSeenBefore
           }
-          (buf, true, allClassesSeenUpToNow)
-
-      case t: SealedTraitRType[?] =>
-        if seenBefore.contains(t.typedName.toString) then
-          buf.append(showSimpleName(t) + " (seen before, details above)\n")
-          (buf, true, seenBefore)
-        else
-          buf.append(showSimpleName(t))
-          buf.append(" (sealed trait):\n")
-          buf.append(tabs(tabLevel + 1))
-          buf.append("children ->\n")
-          val allClassesSeenUpToNow = t.children.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
-            buf.append(tabs(tabLevel + 2))
-            val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f, buf, tabLevel + 2, classesSeen)
-            if !lastWasMultiLine then buf.append("\n")
-            classesSeenBefore
-          }
-          (buf, true, allClassesSeenUpToNow)
+          val allClassesSeenUpToNow2 = if t.sealedChildren.nonEmpty then
+            buf.append(tabs(tabLevel + 1))
+            buf.append("children ->\n")
+            t.sealedChildren.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
+              buf.append(tabs(tabLevel + 2))
+              val (_, lastWasMultiLine, allClassesSeenUpToNow) = _pretty(f, buf, tabLevel + 2, classesSeen)
+              if !lastWasMultiLine then buf.append("\n")
+              allClassesSeenUpToNow
+            }
+          else allClassesSeenUpToNow
+          (buf, true, allClassesSeenUpToNow2)
 
       case t: ScalaEnumerationRType[?] =>
         buf.append("Enumeration (Scala 2) having values " + t.values.mkString("(", ",", ")"))
@@ -338,16 +345,11 @@ object Pretty:
 
           (buf, true, allClassesSeenUpToNow)
 
-      case t: JavaListRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
+      case t: NeoTypeRType[?] =>
+        buf.append(lastPart(t.name) + " (Neotype)")
+        (buf, false, seenBefore)
 
-      case t: JavaQueueRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
-
-      case t: JavaStackRType[?] =>
-        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
-
-      case t: JavaSetRType[?] =>
+      case t: JavaCollectionRType[?] =>
         showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaMapRType[?] =>

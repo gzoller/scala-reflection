@@ -3,15 +3,19 @@ package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.SelfRefRType
+import rtypes.NeoTypeRType
 import util.{JsonField, JsonObjectBuilder}
 
-/** Placeholder RType to be lazy-resolved, used for self-referencing types.  This is needed because without it, reflecting on
-  *  a self-referencing type will enter an endless loop until the stack explodes.  This RType is immediately inserted into the
-  *  type cache so that when the self-reference comes there's something in the cache to find.
-  *  When one of these is encountered in the wild, just re-Reflect on the infoClass and you'll get the non-SelfRef (i.e. normal) RType
+/** Ideally we'd like to know the actual wrapped type in the NeoTypeRef, but sadly this is
+  * impossible to know at compile time.  Reflection here only gives us a Type and nothing
+  * more. The 'given' at runtime actually binds it to an actual (typed) implementation.
+  * So here we just record that this is a NeoType of a given type name and reftype.
+  *
+  * @param name
+  * @param quotes
+  * @param tt
   */
-case class SelfRefRef[R](
+case class NeoTypeRef[R](
     name: String,
     typedName: TypedName
 )(using quotes: Quotes)(using tt: Type[R])
@@ -21,12 +25,12 @@ case class SelfRefRef[R](
 
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[SelfRefRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[NeoTypeRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
@@ -39,7 +43,7 @@ case class SelfRefRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "SelfRefRType"),
+        JsonField("rtype", "NeoTypeRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName)
       )

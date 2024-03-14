@@ -13,19 +13,21 @@ import rtypeRefs.{AliasRef, JavaEnumRef, LeftRightRef, PrimitiveRef, ScalaEnumer
 object ReflectOnType: // extends NonCaseClassReflection:
 
   // Pre-bake primitive types w/cached builder functions
-  private val primFnMap = PrimitiveRef.primFnMap
+  private val allBasicTypesMap = PrimitiveRef.primTypeMap ++ TimeRef.simpleTypeMap ++ NetRef.simpleTypeMap
 
   def apply[T](
       quotes: Quotes
   )(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
-    val tname = util.TypedName(quotes)(aType)
-    primFnMap
+    // maybeNeoOrAny.getOrElse {
+    val dealiased = aType.dealias
+    val tname = util.TypedName(quotes)(dealiased)
+    allBasicTypesMap
       .get(tname)
       .map(fn => fn(quotes))
       .getOrElse {
-        val className = aType.asInstanceOf[TypeRef] match {
+        val className = dealiased.asInstanceOf[TypeRef] match {
           case AndType(_, _)                               => Clazzes.INTERSECTION_CLASS
           case OrType(_, _)                                => Clazzes.UNION_CLASS
           case _: dotty.tools.dotc.core.Types.WildcardType => Clazzes.ANY_CLASS
@@ -33,9 +35,10 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         className match
-          case Clazzes.ANY_CLASS                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
-          case _ if seenBefore.get(tname) == Some(true) => SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
-          case _                                        => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case _ if seenBefore.get(tname) == Some(true) =>
+            SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
+          case _ => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
       }
       .asInstanceOf[RTypeRef[T]]
 
@@ -43,52 +46,48 @@ object ReflectOnType: // extends NonCaseClassReflection:
       quotes: Quotes
   )(aType: quotes.reflect.TypeRepr, typedName: TypedName, resolveTypeSyms: Boolean)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
+    implicit val q = quotes
 
     val typeRef = aType.asInstanceOf[TypeRef]
     typeRef.classSymbol match {
 
-      case None =>
-        implicit val q = quotes
-        typeRef match {
+      case None => // Sometimes And/Or types don't have class symbols, so we need to test them again separately...
+        typeRef.dealias match {
           // Intersection Type
           // ----------------------------------------
           case AndType(left, right) =>
-            val resolvedLeft = left.asType match {
-              case '[t] =>
-                reflect.ReflectOnType[t](quotes)(left, false)
-            }
-            val resolvedRight = right.asType match {
-              case '[t] =>
-                reflect.ReflectOnType[t](quotes)(right, false)
-            }
-            val typeSymbols = List("L", "R")
-            LeftRightRef[IntersectionType](
-              Clazzes.INTERSECTION_CLASS,
-              typeSymbols,
-              resolvedLeft,
-              resolvedRight,
-              LRKind.INTERSECTION
-            )(using quotes)(using Type.of[IntersectionType]).asInstanceOf[RTypeRef[T]]
+            left.asType match
+              case '[lt] =>
+                right.asType match
+                  case '[rt] =>
+                    val resolvedLeft = reflect.ReflectOnType[lt](quotes)(left, false)
+                    val resolvedRight = reflect.ReflectOnType[rt](quotes)(right, false)
+                    val typeSymbols = List("L", "R")
+                    LeftRightRef[lt & rt](
+                      Clazzes.INTERSECTION_CLASS,
+                      typeSymbols,
+                      resolvedLeft,
+                      resolvedRight,
+                      LRKind.INTERSECTION
+                    )(using quotes)(using Type.of[lt & rt]).asInstanceOf[RTypeRef[T]]
 
           // Union Type
           // ----------------------------------------
           case OrType(left, right) =>
-            val resolvedLeft = left.asType match {
-              case '[t] =>
-                reflect.ReflectOnType[t](quotes)(left, false)
-            }
-            val resolvedRight = right.asType match {
-              case '[t] =>
-                reflect.ReflectOnType[t](quotes)(right, false)
-            }
-            val typeSymbols = List("L", "R")
-            LeftRightRef[UnionType](
-              Clazzes.UNION_CLASS,
-              typeSymbols,
-              resolvedLeft,
-              resolvedRight,
-              LRKind.UNION
-            )(using quotes)(using Type.of[UnionType]).asInstanceOf[RTypeRef[T]]
+            left.asType match
+              case '[lt] =>
+                right.asType match
+                  case '[rt] =>
+                    val resolvedLeft = reflect.ReflectOnType[lt](quotes)(left, false)
+                    val resolvedRight = reflect.ReflectOnType[rt](quotes)(right, false)
+                    val typeSymbols = List("L", "R")
+                    LeftRightRef[lt | rt](
+                      Clazzes.UNION_CLASS,
+                      typeSymbols,
+                      resolvedLeft,
+                      resolvedRight,
+                      LRKind.UNION
+                    )(using quotes)(using Type.of[lt | rt]).asInstanceOf[RTypeRef[T]]
         }
 
       // Most types will have a classSymbol and will be handled here...
@@ -115,11 +114,44 @@ object ReflectOnType: // extends NonCaseClassReflection:
             (false, false, classSymbol.fullName)
         }
 
-        typeRef match {
+        typeRef.dealias match {
+          case AndType(left, right) =>
+            left.asType match
+              case '[lt] =>
+                right.asType match
+                  case '[rt] =>
+                    val resolvedLeft = reflect.ReflectOnType[lt](quotes)(left, false)
+                    val resolvedRight = reflect.ReflectOnType[rt](quotes)(right, false)
+                    val typeSymbols = List("L", "R")
+                    LeftRightRef[lt & rt](
+                      Clazzes.INTERSECTION_CLASS,
+                      typeSymbols,
+                      resolvedLeft,
+                      resolvedRight,
+                      LRKind.INTERSECTION
+                    )(using quotes)(using Type.of[lt & rt]).asInstanceOf[RTypeRef[T]]
+
+          // Union Type
+          // ----------------------------------------
+          case OrType(left, right) =>
+            left.asType match
+              case '[lt] =>
+                right.asType match
+                  case '[rt] =>
+                    val resolvedLeft = reflect.ReflectOnType[lt](quotes)(left, false)
+                    val resolvedRight = reflect.ReflectOnType[rt](quotes)(right, false)
+                    val typeSymbols = List("L", "R")
+                    LeftRightRef[lt | rt](
+                      Clazzes.UNION_CLASS,
+                      typeSymbols,
+                      resolvedLeft,
+                      resolvedRight,
+                      LRKind.UNION
+                    )(using quotes)(using Type.of[lt | rt]).asInstanceOf[RTypeRef[T]]
+
           // Scala3 opaque type alias
           // ----------------------------------------
           case named: dotty.tools.dotc.core.Types.NamedType if classSymbol == Symbol.classSymbol(Clazzes.ANY_CLASS) && typeRef.isOpaqueAlias =>
-            implicit val q = quotes
             val translucentSuperType = typeRef.translucentSuperType
             val wrappedType = translucentSuperType.asType match
               case '[t] =>
@@ -130,7 +162,6 @@ object ReflectOnType: // extends NonCaseClassReflection:
           // Traits and classes w/type parameters are *not* here... they're AppliedTypes
           // ----------------------------------------
           case named: dotty.tools.dotc.core.Types.NamedType =>
-            implicit val q = quotes
             val isTypeParam = typeRef.typeSymbol.flags.is(Flags.Param) // Is 'T' or a "real" type?  (true if T)
             classSymbol match {
 
@@ -139,45 +170,46 @@ object ReflectOnType: // extends NonCaseClassReflection:
 
               case cs if is2xEnumeration =>
                 val enumerationClassSymbol = typeRef.qualifier.termSymbol.moduleClass
-                ScalaEnumerationRef(
-                  className,
-                  enumerationClassSymbol.declaredFields.map(_.name)
-                )(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
+                enumerationClassSymbol.declaredTypes.head.typeRef.asType match
+                  case '[y] =>
+                    ScalaEnumerationRef[y](
+                      className,
+                      enumerationClassSymbol.declaredFields.map(_.name)
+                    )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
 
+              // Symbol.requiredModule("co.blocke.scalajack.json.run.NonZeroInt").methodMembers
               case a if a == defn.AnyClass =>
-                implicit val q = quotes
-                PrimitiveRef[Any](Clazzes.ANY_CLASS)(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]] // Any type
+                typeRef.asType match
+                  case '[y] =>
+                    typeRef.typeSymbol.fullName match
+                      case "scala.Any" => AnyRef().asInstanceOf[RTypeRef[T]] // Any type
+                      case n => // presume NeoType (CAUTION--may not always be true in the future!)
+                        NeoTypeRef[y](typeRef.typeSymbol.name, n.replaceAll("""\.\w+\$package\$""", "").asInstanceOf[TypedName]).asInstanceOf[RTypeRef[T]]
 
               case cs if !isJavaEnum => // Non-parameterized classes
-                ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
+                // This chunk here catches type members who's values are applied types, eg type foo = List[Int]
+                typeRef.dealias match
+                  case AppliedType(t, tob) =>
+                    val foundType: Option[RTypeRef[T]] = ExtractorRegistry.extractors.collectFirst {
+                      case e if e.matches(quotes)(classSymbol) =>
+                        e.extractInfo[T](quotes)(t, tob, classSymbol)
+                    }
+                    foundType
+                      .getOrElse {
+                        // Nope--we've got a parameterized class or trait here
+                        ReflectOnClass(quotes)(typeRef, util.TypedName(quotes)(typeRef), resolveTypeSyms, tob)
+                      }
+                  case _ =>
+                    ReflectOnClass(quotes)(typeRef, typedName, resolveTypeSyms)
 
               case _: Symbol => // Java Enum
-                JavaEnumRef(
-                  aType.classSymbol.get.fullName,
-                  aType.classSymbol.get.children.map(_.name)
-                )(using quotes)(using Type.of[Any]).asInstanceOf[RTypeRef[T]]
+                typeRef.asType match
+                  case '[y] =>
+                    JavaEnumRef(
+                      aType.classSymbol.get.fullName,
+                      aType.classSymbol.get.children.map(_.name)
+                    )(using quotes)(using Type.of[y]).asInstanceOf[RTypeRef[T]]
             }
-
-          // Union Type (sometimes it pops up down here for some reason... hmm...)
-          // ----------------------------------------
-          case OrType(left, right) =>
-            implicit val q = quotes
-            val resolvedLeft = left.asType match {
-              case '[t] =>
-                reflect.ReflectOnType[t](quotes)(left, false)
-            }
-            val resolvedRight = right.asType match {
-              case '[t] =>
-                reflect.ReflectOnType[t](quotes)(right, false)
-            }
-            val typeSymbols = List("L", "R")
-            LeftRightRef[UnionType](
-              Clazzes.UNION_CLASS,
-              typeSymbols,
-              resolvedLeft,
-              resolvedRight,
-              LRKind.UNION
-            )(using quotes)(using Type.of[UnionType]).asInstanceOf[RTypeRef[T]]
 
           // Parameterized Types (classes, traits, & collections)
           // ----------------------------------------
