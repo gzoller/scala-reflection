@@ -160,7 +160,7 @@ Thanks also goes to pjfanning for multiple contributions to this project.
 ```
 
 ## Release Notes:
-* 2.0.1 - Host of fixes and improvements, eg support of NeoType
+* 2.0.1 - A host of fixes and improvements, eg support of NeoType, and Scala 3.3.3 LTS support
 * 2.0.0 - All-new refactor
 * 1.2.2 - Scala 3.3.0 LTS support
 * 1.2.0 - Experimental Scala.js support
