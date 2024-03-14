@@ -33,19 +33,19 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout current branch (full)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 8
 
       - name: Cache sbt
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: |
             ~/.sbt
@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload target directories
         if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: target-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.scala }}
           path: targets.tar
@@ -97,19 +97,19 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout current branch (full)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 8
 
       - name: Cache sbt
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: |
             ~/.sbt
@@ -121,7 +121,7 @@ jobs:
           key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
       - name: Download target directories (3.3.3)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.3
 
