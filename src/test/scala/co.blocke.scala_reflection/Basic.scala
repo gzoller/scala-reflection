@@ -21,6 +21,56 @@ class Basic extends munit.FunSuite:
         |      h: Short
         |      i: String
         |      j: Any
+        |      k: BigDecimal
+        |      l: BigInt
+        |      m: Boolean (Java)
+        |      n: Byte (Java)
+        |      o: Character (Java)
+        |      p: Double (Java)
+        |      q: Float (Java)
+        |      r: Integer (Java)
+        |      s: Long (Java)
+        |      t: Short (Java)
+        |      u: Number (Java)
+        |      v: BigDecimal (Java)
+        |      w: BigInteger (Java)
+        |""".stripMargin
+    )
+  }
+
+  test("Class of all time types") {
+    val result = RType.of[Time]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Time:
+        |   fields ->
+        |      a: Duration (Java)
+        |      b: Instant (Java)
+        |      c: LocalDate (Java)
+        |      d: LocalDateTime (Java)
+        |      e: LocalTime (Java)
+        |      f: MonthDay (Java)
+        |      g: OffsetDateTime (Java)
+        |      h: OffsetTime (Java)
+        |      i: Period (Java)
+        |      j: Year (Java)
+        |      k: YearMonth (Java)
+        |      l: ZonedDateTime (Java)
+        |      m: ZoneId (Java)
+        |      n: ZoneOffset (Java)
+        |""".stripMargin
+    )
+  }
+
+  test("Class of all net types") {
+    val result = RType.of[Net]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Net:
+        |   fields ->
+        |      a: URL (Java)
+        |      b: URI (Java)
+        |      c: UUID (Java)
         |""".stripMargin
     )
   }
@@ -78,6 +128,7 @@ class Basic extends munit.FunSuite:
       """co.blocke.scala_reflection.models.VehicleHolder:
         |   fields ->
         |      v: co.blocke.scala_reflection.models.Vehicle (sealed trait):
+        |         fields ->
         |         children ->
         |            co.blocke.scala_reflection.models.Truck:
         |               fields ->
@@ -100,6 +151,7 @@ class Basic extends munit.FunSuite:
       """co.blocke.scala_reflection.models.FlavorHolder:
         |   fields ->
         |      f: co.blocke.scala_reflection.models.Flavor (sealed trait):
+        |         fields ->
         |         children ->
         |            co.blocke.scala_reflection.models.Vanilla (object)
         |            co.blocke.scala_reflection.models.Chocolate (object)
@@ -121,8 +173,8 @@ class Basic extends munit.FunSuite:
   }
 
   test("Scala 2.x class") {
-    val result = RType.of[scala.math.BigDecimal]
-    assertEquals(result.pretty, "scala.math.BigDecimal (Scala 2)")
+    val result = RType.of[scala.math.Integral[Int]]
+    assertEquals(result.pretty, "scala.math.Integral (Scala 2)")
   }
 
   test("support value classes") {
@@ -269,10 +321,23 @@ class Basic extends munit.FunSuite:
     )
   }
 
+  test("Ensure NeoType integration works") {
+    val result = RType.of[NeoPerson]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.NeoPerson:
+        |   fields ->
+        |      age: NonEmptyList (Neotype)
+        |      desc: NonEmptyString (Neotype)
+        |      whatever: Any
+        |""".stripMargin
+    )
+  }
+
   test("Sample ScalaJS support test (JSON)") {
     val js = RType.ofJS[UberJS[Short]]
     assertEquals(
       js,
-      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.UberJS","typedName":"co.blocke.scala_reflection.models.UberJS[scala.Short]","typeParamSymbols":["T"],"typeParamValues":[{"rtype":"PrimitiveRType","name":"scala.Short"}],"typeMembers":[{"rtype":"TypeMemberRType","name":"S","typeSymbol":null,"memberType":{"rtype":"PrimitiveRType","name":"java.lang.String"}}],"fields":[{"name":"a","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"SeqRType","name":"scala.collection.immutable.List","typedName":"scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]","typeParamSymbols":["A"],"elementType":{"rtype":"EitherRType","name":"scala.util.Either","typedName":"scala.util.Either[scala.Int,scala.Boolean]","typeParamSymbols":["L","R"],"leftType":{"rtype":"PrimitiveRType","name":"scala.Int"},"rightType":{"rtype":"PrimitiveRType","name":"scala.Boolean"}}}},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"JavaMapRType","name":"java.util.HashMap","typedName":"java.util.HashMap[java.lang.String,scala.Union[scala.Int,scala.Long]]","typeParamSymbols":["K","V"],"elementType":{"rtype":"PrimitiveRType","name":"java.lang.String"},"elementType2":{"rtype":"UnionRType","name":"scala.Union","typedName":"scala.Union[scala.Int,scala.Long]","typeParamSymbols":["L","R"],"leftType":{"rtype":"PrimitiveRType","name":"scala.Int"},"rightType":{"rtype":"PrimitiveRType","name":"scala.Long"}}},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[co.blocke.scala_reflection.models.UberJS[scala.Int]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.UberJS","typedName":"co.blocke.scala_reflection.models.UberJS[scala.Int]","typeParamSymbols":["T"],"typeParamValues":[{"rtype":"PrimitiveRType","name":"scala.Int"}],"typeMembers":[{"rtype":"TypeMemberRType","name":"S","typeSymbol":null,"memberType":{"rtype":"PrimitiveRType","name":"java.lang.String"}}],"fields":[{"name":"a","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"SeqRType","name":"scala.collection.immutable.List","typedName":"scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]","typeParamSymbols":["A"],"elementType":{"rtype":"EitherRType","name":"scala.util.Either","typedName":"scala.util.Either[scala.Int,scala.Boolean]","typeParamSymbols":["L","R"],"leftType":{"rtype":"PrimitiveRType","name":"scala.Int"},"rightType":{"rtype":"PrimitiveRType","name":"scala.Boolean"}}}},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"JavaMapRType","name":"java.util.HashMap","typedName":"java.util.HashMap[java.lang.String,scala.Union[scala.Int,scala.Long]]","typeParamSymbols":["K","V"],"elementType":{"rtype":"PrimitiveRType","name":"java.lang.String"},"elementType2":{"rtype":"UnionRType","name":"scala.Union","typedName":"scala.Union[scala.Int,scala.Long]","typeParamSymbols":["L","R"],"leftType":{"rtype":"PrimitiveRType","name":"scala.Int"},"rightType":{"rtype":"PrimitiveRType","name":"scala.Long"}}},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[co.blocke.scala_reflection.models.UberJS[scala.Int]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"SelfRefRType","name":"co.blocke.scala_reflection.models.UberJS","typedName":"co.blocke.scala_reflection.models.UberJS[scala.Int]"}},"originalSymbol":null,"annotations":{}},{"name":"x","fieldType":{"rtype":"PrimitiveRType","name":"scala.Int"},"originalSymbol":"T","annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Blah","scala.Product","java.io.Serializable"],"isAppliedType":true,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[]}},"originalSymbol":null,"annotations":{}},{"name":"x","fieldType":{"rtype":"PrimitiveRType","name":"scala.Short"},"originalSymbol":"T","annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Blah","scala.Product","java.io.Serializable"],"isAppliedType":true,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[]}"""
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.UberJS","typedName":"co.blocke.scala_reflection.models.UberJS[scala.Short]","typeParamSymbols":["T"],"typeParamValues":[{"rtype":"ShortRType","name":"scala.Short"}],"typeMembers":[{"rtype":"TypeMemberRType","name":"S","typeSymbol":null,"memberType":{"rtype":"StringRType","name":"java.lang.String"}}],"fields":[{"name":"a","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"SeqRType","name":"scala.collection.immutable.List","typedName":"scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]","typeParamSymbols":["A"],"elementType":{"rtype":"EitherRType","name":"scala.util.Either","typedName":"scala.util.Either[scala.Int,scala.Boolean]","typeParamSymbols":["L","R"],"leftType":{"rtype":"IntRType","name":"scala.Int"},"rightType":{"rtype":"BooleanRType","name":"scala.Boolean"}}}},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"JavaMapRType","name":"java.util.HashMap","typedName":"java.util.HashMap[java.lang.String,scala.Union[scala.Int,scala.Long]]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"UnionRType","name":"scala.Union","typedName":"scala.Union[scala.Int,scala.Long]","typeParamSymbols":["L","R"],"leftType":{"rtype":"IntRType","name":"scala.Int"},"rightType":{"rtype":"LongRType","name":"scala.Long"}}},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[co.blocke.scala_reflection.models.UberJS[scala.Int]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.UberJS","typedName":"co.blocke.scala_reflection.models.UberJS[scala.Int]","typeParamSymbols":["T"],"typeParamValues":[{"rtype":"IntRType","name":"scala.Int"}],"typeMembers":[{"rtype":"TypeMemberRType","name":"S","typeSymbol":null,"memberType":{"rtype":"StringRType","name":"java.lang.String"}}],"fields":[{"name":"a","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"SeqRType","name":"scala.collection.immutable.List","typedName":"scala.collection.immutable.List[scala.util.Either[scala.Int,scala.Boolean]]","typeParamSymbols":["A"],"elementType":{"rtype":"EitherRType","name":"scala.util.Either","typedName":"scala.util.Either[scala.Int,scala.Boolean]","typeParamSymbols":["L","R"],"leftType":{"rtype":"IntRType","name":"scala.Int"},"rightType":{"rtype":"BooleanRType","name":"scala.Boolean"}}}},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"JavaMapRType","name":"java.util.HashMap","typedName":"java.util.HashMap[java.lang.String,scala.Union[scala.Int,scala.Long]]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"UnionRType","name":"scala.Union","typedName":"scala.Union[scala.Int,scala.Long]","typeParamSymbols":["L","R"],"leftType":{"rtype":"IntRType","name":"scala.Int"},"rightType":{"rtype":"LongRType","name":"scala.Long"}}},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[co.blocke.scala_reflection.models.UberJS[scala.Int]]","typeParamSymbols":["A"],"optionParamType":{"rtype":"SelfRefRType","name":"co.blocke.scala_reflection.models.UberJS","typedName":"co.blocke.scala_reflection.models.UberJS[scala.Int]"}},"originalSymbol":null,"annotations":{}},{"name":"x","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":"T","annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Blah","scala.Product","java.io.Serializable"],"isAppliedType":true,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}},"originalSymbol":null,"annotations":{}},{"name":"x","fieldType":{"rtype":"ShortRType","name":"scala.Short"},"originalSymbol":"T","annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Blah","scala.Product","java.io.Serializable"],"isAppliedType":true,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }

@@ -14,6 +14,8 @@ case class Scala2Ref[R](name: String)(using quotes: Quotes)(using tt: Type[R]) e
   val typedName: TypedName = name
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   val expr =
     Apply(
       TypeApply(

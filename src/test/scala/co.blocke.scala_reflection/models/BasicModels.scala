@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 package models
 
 import co.blocke.reflect.*
+import neotype.*
 
 // Basic Tasty classes
 case class Item(desc: String)
@@ -20,7 +21,41 @@ case class Prim(
     g: Long,
     h: Short,
     i: String,
-    j: Any
+    j: Any,
+    k: scala.math.BigDecimal,
+    l: scala.math.BigInt,
+    m: java.lang.Boolean,
+    n: java.lang.Byte,
+    o: java.lang.Character,
+    p: java.lang.Double,
+    q: java.lang.Float,
+    r: java.lang.Integer,
+    s: java.lang.Long,
+    t: java.lang.Short,
+    u: java.lang.Number,
+    v: java.math.BigDecimal,
+    w: java.math.BigInteger
+)
+case class Time(
+    a: java.time.Duration,
+    b: java.time.Instant,
+    c: java.time.LocalDate,
+    d: java.time.LocalDateTime,
+    e: java.time.LocalTime,
+    f: java.time.MonthDay,
+    g: java.time.OffsetDateTime,
+    h: java.time.OffsetTime,
+    i: java.time.Period,
+    j: java.time.Year,
+    k: java.time.YearMonth,
+    l: java.time.ZonedDateTime,
+    m: java.time.ZoneId,
+    n: java.time.ZoneOffset
+)
+case class Net(
+    a: java.net.URL,
+    b: java.net.URI,
+    c: java.util.UUID
 )
 
 // Match / dependent types
@@ -118,3 +153,16 @@ case class UberJS[T](
     x: T
 ) extends Blah[T]:
   type S = String
+
+// Test NeoType and differentiation from Any
+type NonEmptyString = NonEmptyString.Type
+given NonEmptyString: Newtype[String] with
+  inline def validate(input: String): Boolean =
+    input.nonEmpty
+
+type NonEmptyList = NonEmptyList.Type
+given NonEmptyList: Newtype[List[Int]] with
+  inline def validate(input: List[Int]): Boolean =
+    input.nonEmpty
+
+case class NeoPerson(age: NonEmptyList, desc: NonEmptyString, whatever: Any)

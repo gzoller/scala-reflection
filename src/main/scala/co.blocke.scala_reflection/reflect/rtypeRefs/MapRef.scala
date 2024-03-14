@@ -7,7 +7,7 @@ import rtypes.MapRType
 import util.{JsonField, JsonObjectBuilder}
 
 /** Arity 2 Collections, Map flavors, basiclly */
-case class MapRef[R](
+case class MapRef[R <: scala.collection.Map[_, _]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?], // map key
@@ -21,6 +21,9 @@ case class MapRef[R](
   override val typedName: TypedName = name + "[" + elementRef.typedName + "," + elementRef2.typedName + "]"
 
   val refType = tt
+  val isMutable = name.contains(".mutable.")
+
+  val unitVal = '{ null }.asExprOf[R]
 
   override val selectLimit: Int = 2
   override def select(i: Int): RTypeRef[?] =

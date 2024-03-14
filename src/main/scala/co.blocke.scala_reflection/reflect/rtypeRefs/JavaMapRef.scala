@@ -20,6 +20,8 @@ case class JavaMapRef[R](
 
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
   override val typedName: TypedName = name + "[" + elementRef.typedName + "," + elementRef2.typedName + "]"
   override val selectLimit: Int = 2
   override def select(i: Int): RTypeRef[?] =

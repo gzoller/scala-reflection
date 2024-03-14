@@ -22,6 +22,10 @@ case class ArrayRef[R](
   import quotes.reflect.*
   val refType = tt
 
+  val unitVal = '{ null }.asExprOf[R]
+
+  val isMutable = true
+
   val expr =
     Apply(
       TypeApply(
@@ -46,3 +50,12 @@ case class ArrayRef[R](
         JsonField("elementType", this.elementRef)
       )
     )
+
+  // override def toType(quotes: Quotes): quoted.Type[R] =
+  //   import quotes.reflect.*
+  //   val collectionType: quoted.Type[R] =
+  //     quotes.reflect.TypeRepr.typeConstructorOf(Class.forName(name)).asType.asInstanceOf[quoted.Type[R]]
+  //   val elType = elementRef.toType(quotes)
+  //   val collectionTypeRepr = TypeRepr.of[R](using collectionType)
+  //   val elTypeRepr = TypeRepr.of[elementRef.T](using elType)
+  //   AppliedType(collectionTypeRepr, List(elTypeRepr)).asType.asInstanceOf[quoted.Type[R]]

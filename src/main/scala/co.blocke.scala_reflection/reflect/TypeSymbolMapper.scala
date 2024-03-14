@@ -40,21 +40,24 @@ object TypeSymbolMapper:
     implicit val q = quotes
     val seenBefore = scala.collection.mutable.Map.empty[TypedName, Boolean]
 
+    inline def isSealed(symbol: Symbol) = symbol.flags.is(quotes.reflect.Flags.Sealed)
+
     classDef.parents
       .map(_.asInstanceOf[TypeTree].tpe)
-      .collect { case a: AppliedType => // for each AppliedType ancestor of this class...
-        val extendsType =
-          a.asType match
-            case '[t] =>
-              ReflectOnType[t](quotes)(a)(using seenBefore)
-        val initialMap = paramSymbols.map(ts => TypeRecord(ts, Nil))
-        val result = navLevel(extendsType, -1, initialMap) match {
-          case Left(r) =>
-            r // Doesn't matter if finished or not--return it.  The Left/Right was for navLevel internal abort-when-done
-          case Right(r) =>
-            r
-        }
-        (extendsType.name, result.map(_.path))
+      .collect {
+        case a: AppliedType if !isSealed(a.typeSymbol) => // for each AppliedType ancestor of this class...
+          val extendsType =
+            a.asType match
+              case '[t] =>
+                ReflectOnType[t](quotes)(a)(using seenBefore)
+          val initialMap = paramSymbols.map(ts => TypeRecord(ts, Nil))
+          val result = navLevel(extendsType, -1, initialMap) match {
+            case Left(r) =>
+              r // Doesn't matter if finished or not--return it.  The Left/Right was for navLevel internal abort-when-done
+            case Right(r) =>
+              r
+          }
+          (extendsType.name, result.map(_.path))
       }
       .toMap
 

@@ -1,10 +1,11 @@
 
+
 # scala-reflection
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.1.4/jar)
 
-Scala 2 provided a robust runtime reflection capability that was removed for Scala 3.  Runtime reflection turns out to be quite useful, and is sorely missed.  Scala 3's macro-based compile-time reflection is also more complex to use than the old reflection facility. The scala-reflection library does the hard work of navigating Scala 3 macro reflection and provides simple RType abstractions you can navigate at runtime to see what's inside your classes.
+Scala 2 provided a robust runtime reflection capability that was removed for Scala 3.  Runtime reflection turns out to be quite useful, and is sorely missed.  If you're not already fairly proficient with Scala 3 macros, the new macro-based, compile-time reflection is much more complex to use than the Scala 2 old reflection facility. The scala-reflection library exists to do the hard work of navigating Scala 3 macro reflection and provides simple RType abstractions you can navigate at runtime to see what's inside your classes.  If you are writing your own macros, you can still benefit by using scala-reflections RTypeRef objects and save yourself the headache of handling all the many corner cases of reflection.  (See ScalaJack 8 for examples of using RTypeRef's in your macros.)
 
 ## Configuration
 In your build.sbt file add the current version of the library to libraryDependences:
@@ -69,7 +70,7 @@ Unfortunately there's not (that I have found) a good fix to make sbt aware of th
 The scala-reflection library was first envisioned to facilitate migrating ScalaJack serialization, which depends heavily on runtime reflection, to Scala 3. One of ScalaJack's key features is its trait handling ability.
 
 ```scala
-trait  Pet[T] {
+sealed trait  Pet[T] {
   val  name: String
   val  numLegs: Int
   val  special: T
@@ -141,6 +142,7 @@ At this point the library can reflect on quite a lot of things in the Scala ecos
 * Collections, including several Java Collections
 * Tuples
 * Match/dependent types
+* NeoType support (detects NeoTypes) (https://github.com/kitlangton/neotype)
 
 See unit tests for detailed examples of usage.
 
@@ -153,10 +155,12 @@ I wish to thank three people who have helped make this library possible, with th
 Guillaume Martres (@smarter)
 Paolo G. Giarrusso (@Blaisorblade)
 Nicolas Stucki (@nicolasstucki)
+
+Thanks also goes to pjfanning for multiple contributions to this project.
 ```
-Thanks goes to pjfanning for multiple contributions to this project.
 
 ## Release Notes:
+* 2.0.1 - A host of fixes and improvements, eg support of NeoType, and Scala 3.3.3 LTS support
 * 2.0.0 - All-new refactor
 * 1.2.2 - Scala 3.3.0 LTS support
 * 1.2.0 - Experimental Scala.js support

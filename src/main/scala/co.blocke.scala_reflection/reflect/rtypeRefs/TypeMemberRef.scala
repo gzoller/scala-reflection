@@ -18,6 +18,8 @@ case class TypeMemberRef(
   val typedName: TypedName = name
   val refType = tt
 
+  val unitVal = '{ null }
+
   val expr =
     Apply(
       Select.unique(New(TypeTree.of[TypeMemberRType]), "<init>"),

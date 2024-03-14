@@ -7,6 +7,11 @@ import Clazzes.*
 import reflect.TypeExtractor
 import scala.quoted.*
 
+object SeqType {
+  type IsSeq[A <: scala.collection.Seq[_]] = A
+  type IsSet[A <: scala.collection.Set[_]] = A
+}
+
 case class SeqExtractor() extends TypeExtractor[SeqRef[_]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
@@ -27,11 +32,19 @@ case class SeqExtractor() extends TypeExtractor[SeqRef[_]]:
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
           else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    val a = quotes.reflect.AppliedType(t, tob).asType
+    val a = quotes.reflect.AppliedType(t, tob).asType.asInstanceOf[Type[? <: Seq[_]]]
     a match
-      case '[t] =>
+      case '[SeqType.IsSeq[t]] =>
         SeqRef[t](
           t.classSymbol.get.fullName,
           typeParamSymbols,
           seqOfRef
         ).asInstanceOf[RTypeRef[R]]
+      case '[SeqType.IsSet[t]] =>
+        SetRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          seqOfRef
+        ).asInstanceOf[RTypeRef[R]]
+      case '[z] =>
+        throw new Exception("HEY!  Unknown type... " + Type.show[z])

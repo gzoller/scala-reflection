@@ -8,9 +8,13 @@ case class TraitRType[R](
     typedName: TypedName,
     fields: List[FieldInfo],
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
-    typeParamValues: List[RType[_]] = Nil // Like Int, Boolean
+    typeParamValues: List[RType[_]] = Nil, // Like Int, Boolean
+    sealedChildren: List[RType[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    childrenAreObject: Boolean = false
 ) extends RType[R]
     with AppliedRType:
+
+  def isSealed: Boolean = sealedChildren.nonEmpty
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
