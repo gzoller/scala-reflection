@@ -103,9 +103,7 @@ object ReflectOnClass:
             case kid :: rest if kid.isInstanceOf[ObjectRef] => true
             case _                                          => false
 
-        // === Scala 2 Classes ===
-        if symbol.flags.is(quotes.reflect.Flags.Scala2x) then Scala2Ref[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
-        else if symbol.flags.is(quotes.reflect.Flags.Trait) then
+        if symbol.flags.is(quotes.reflect.Flags.Trait) then
 
           // ===
           // ===  Traits (normal, non-sealed)
@@ -132,55 +130,58 @@ object ReflectOnClass:
               }
               val paramMap: Map[TypeSymbol, RTypeRef[_]] = typeSymbols.zip(actualParamTypes).toMap
 
-              val traitFields = symbol.declaredFields.zipWithIndex.map { (f, index) =>
-                val fieldType =
-                  // A lot of complex messiness to sew down the mapped type:  Foo[T]( val x: List[T]) where we call Foo[W] from a higher class,
-                  // so T -> W.  We need resolveTypeParams to sew down for deeper nested types like List.  Ugh.
-                  scala.util
-                    .Try {
-                      if resolveTypeSyms then
-                        typeRef.memberType(f).asType match
-                          case '[t] =>
-                            reflect.ReflectOnType[t](quotes)(typeRef.memberType(f))
-                      else
-                        f.tree match {
-                          case vd: ValDef if vd.tpt.tpe.typeSymbol.flags.is(Flags.Param) =>
-                            paramMap.getOrElse(
-                              vd.tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
-                              vd.tpt.tpe.asType match
+              val traitFields = symbol.declaredFields
+                .filterNot(_.flags.is(Flags.Module))
+                .zipWithIndex
+                .map { (f, index) =>
+                  val fieldType =
+                    // A lot of complex messiness to sew down the mapped type:  Foo[T]( val x: List[T]) where we call Foo[W] from a higher class,
+                    // so T -> W.  We need resolveTypeParams to sew down for deeper nested types like List.  Ugh.
+                    scala.util
+                      .Try {
+                        if resolveTypeSyms then
+                          typeRef.memberType(f).asType match
+                            case '[t] =>
+                              reflect.ReflectOnType[t](quotes)(typeRef.memberType(f))
+                        else
+                          f.tree match {
+                            case vd: ValDef if vd.tpt.tpe.typeSymbol.flags.is(Flags.Param) =>
+                              paramMap.getOrElse(
+                                vd.tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
+                                vd.tpt.tpe.asType match
+                                  case '[t] =>
+                                    reflect.ReflectOnType[t](quotes)(vd.tpt.tpe)
+                              )
+                            case _ =>
+                              typeRef.memberType(f).asType match
                                 case '[t] =>
-                                  reflect.ReflectOnType[t](quotes)(vd.tpt.tpe)
-                            )
-                          case _ =>
-                            typeRef.memberType(f).asType match
-                              case '[t] =>
-                                reflect.ReflectOnType[t](quotes)(typeRef.memberType(f), false)
-                        }
+                                  reflect.ReflectOnType[t](quotes)(typeRef.memberType(f), false)
+                          }
+                      }
+                      .toOption
+                      .getOrElse {
+                        paramMap.getOrElse(
+                          f.tree.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
+                          f.tree.asInstanceOf[ValDef].tpt.tpe.asType match
+                            case '[t] =>
+                              reflect.ReflectOnType[t](quotes)(f.tree.asInstanceOf[ValDef].tpt.tpe)
+                        )
+                      }
+                  val typeSym =
+                    f.tree.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol] match {
+                      case ts if typeSymbols.contains(ts) => Some(ts)
+                      case _                              => None
                     }
-                    .toOption
-                    .getOrElse {
-                      paramMap.getOrElse(
-                        f.tree.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol],
-                        f.tree.asInstanceOf[ValDef].tpt.tpe.asType match
-                          case '[t] =>
-                            reflect.ReflectOnType[t](quotes)(f.tree.asInstanceOf[ValDef].tpt.tpe)
-                      )
-                    }
-                val typeSym =
-                  f.tree.asInstanceOf[ValDef].tpt.tpe.typeSymbol.name.asInstanceOf[TypeSymbol] match {
-                    case ts if typeSymbols.contains(ts) => Some(ts)
-                    case _                              => None
-                  }
-                ScalaFieldInfoRef(
-                  index,
-                  f.name,
-                  fieldType,
-                  Map.empty[String, Map[String, String]],
-                  None,
-                  typeSym,
-                  true
-                )(using quotes)
-              }
+                  ScalaFieldInfoRef(
+                    index,
+                    f.name,
+                    fieldType,
+                    Map.empty[String, Map[String, String]],
+                    None,
+                    typeSym,
+                    true
+                  )(using quotes)
+                }
 
               TraitRef[T](
                 className,
@@ -248,14 +249,10 @@ object ReflectOnClass:
 
           // Get direct superclasses (for reflecting field annotations)
           val dad = classDef.parents.headOption match {
-            case Some(tt: TypeTree) if !isValueClass && tt.tpe.classSymbol.get.fullName != "java.lang.Object" =>
+            case Some(tt: TypeTree) if !isValueClass && !List("java.lang.Object", "scala.Any").contains(tt.tpe.classSymbol.get.fullName) =>
               tt.tpe.asType match
                 case '[t] =>
-                  ReflectOnClass[t](quotes)(
-                    tt.tpe.asInstanceOf[TypeRef],
-                    util.TypedName(quotes)(tt.tpe),
-                    resolveTypeSyms
-                  ) match {
+                  reflect.ReflectOnType[t](quotes)(tt.tpe.asInstanceOf[TypeRef], resolveTypeSyms) match {
                     case ci: ClassRef[?] => Some(ci) // Any kind of class
                     case _               => None // e.g. Unknown
                   }
@@ -310,7 +307,8 @@ object ReflectOnClass:
             else TypeSymbolMapper.mapTypeSymbolsForClass(quotes)(classDef, typeSymbols)
 
           val constructorParams = // Annoying "ism"... different param order dep on whether class is parameterized or not!
-            if classDef.constructor.paramss.tail == Nil then classDef.constructor.paramss.head.params
+            if classDef.constructor.paramss == Nil then Nil
+            else if classDef.constructor.paramss.tail == Nil then classDef.constructor.paramss.head.params
             else classDef.constructor.paramss.tail.head.params
 
           if symbol.flags.is(Flags.Case) then

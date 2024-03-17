@@ -174,7 +174,12 @@ class Basic extends munit.FunSuite:
 
   test("Scala 2.x class") {
     val result = RType.of[scala.math.Integral[Int]]
-    assertEquals(result.pretty, "scala.math.Integral (Scala 2)")
+    assertEquals(
+      result.pretty,
+      """Integral[Int] (trait):
+        |   fields ->
+        |""".stripMargin
+    )
   }
 
   test("support value classes") {
