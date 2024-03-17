@@ -308,10 +308,6 @@ object Pretty:
       case t: AliasRType[?] =>
         showOfType(buf, seenBefore, tabLevel, s"alias ${lastPart(t.definedType)} defined as ", t.unwrappedType)
 
-      case t: Scala2RType[?] =>
-        buf.append(t.name + " (Scala 2)")
-        (buf, false, seenBefore)
-
       case t: JavaClassRType[?] =>
         if seenBefore.contains(t.typedName.toString) then
           buf.append(t.name + " (seen before, details above)\n")

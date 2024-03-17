@@ -20,7 +20,6 @@ object ReflectOnType: // extends NonCaseClassReflection:
   )(aType: quotes.reflect.TypeRepr, resolveTypeSyms: Boolean = true)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[T] =
     import quotes.reflect.*
 
-    // maybeNeoOrAny.getOrElse {
     val dealiased = aType.dealias
     val tname = util.TypedName(quotes)(dealiased)
     allBasicTypesMap
