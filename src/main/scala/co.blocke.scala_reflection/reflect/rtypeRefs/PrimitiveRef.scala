@@ -384,7 +384,7 @@ case class JCharacterRef()(using quotes: Quotes)(using tt: Type[java.lang.Charac
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ java.lang.Character('x') }
+  val unitVal = '{ java.lang.Character.valueOf('x') }
 
   val expr =
     Apply(
@@ -408,7 +408,7 @@ case class JDoubleRef()(using quotes: Quotes)(using tt: Type[java.lang.Double]) 
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ java.lang.Double(0.0) }
+  val unitVal = '{ java.lang.Double.valueOf(0.0) }
 
   val expr =
     Apply(
@@ -432,7 +432,7 @@ case class JFloatRef()(using quotes: Quotes)(using tt: Type[java.lang.Float]) ex
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ java.lang.Float(0.0f) }
+  val unitVal = '{ java.lang.Float.valueOf(0.0f) }
 
   val expr =
     Apply(
@@ -456,7 +456,7 @@ case class JIntegerRef()(using quotes: Quotes)(using tt: Type[java.lang.Integer]
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ java.lang.Integer(0) }
+  val unitVal = '{ java.lang.Integer.valueOf(0) }
 
   val expr =
     Apply(
@@ -480,7 +480,7 @@ case class JLongRef()(using quotes: Quotes)(using tt: Type[java.lang.Long]) exte
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ java.lang.Long(0L) }
+  val unitVal = '{ java.lang.Long.valueOf(0L) }
 
   val expr =
     Apply(
@@ -504,7 +504,7 @@ case class JShortRef()(using quotes: Quotes)(using tt: Type[java.lang.Short]) ex
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ java.lang.Short(0.toShort) }
+  val unitVal = '{ java.lang.Short.valueOf(0.toShort) }
 
   val expr =
     Apply(
