@@ -166,3 +166,15 @@ given NonEmptyList: Newtype[List[Int]] with
     input.nonEmpty
 
 case class NeoPerson(age: NonEmptyList, desc: NonEmptyString, whatever: Any)
+
+class Parent(val phase: Int, var stuff: List[String]):
+  private var _hidden: Boolean = false
+  def hidden: Boolean = _hidden
+  def hidden_=(h: Boolean) = _hidden = h
+
+  private var _nope: Boolean = false // should not generate due to @Ignore
+  @Ignore def nope: Boolean = _nope
+  def nope_=(h: Boolean) = _nope = h
+
+  var foo: String = "ok"
+  @Ignore var noFoo: String = "not ok"

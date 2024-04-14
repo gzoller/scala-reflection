@@ -84,7 +84,7 @@ object ReflectOnClass:
                 case '[e] if typeSymbols.isEmpty =>
                   c.tree match
                     case vd: ValDef =>
-                      ObjectRef(vd.symbol.fullName)
+                      ObjectRef[e](vd.symbol.fullName)
                     case _ =>
                       ReflectOnType[e](quotes)(c.typeRef).asInstanceOf[RTypeRef[?]]
 
@@ -100,8 +100,8 @@ object ReflectOnClass:
 
         val kidsAreObject =
           sealedChildrenRTypes match
-            case kid :: rest if kid.isInstanceOf[ObjectRef] => true
-            case _                                          => false
+            case kid :: rest if kid.isInstanceOf[ObjectRef[?]] => true
+            case _                                             => false
 
         if symbol.flags.is(quotes.reflect.Flags.Trait) then
 
@@ -359,12 +359,6 @@ object ReflectOnClass:
             // ===  Non-Case Classes
             // ===
 
-            // Include inherited methods (var & def), including inherited!
-            // Produces (val <field>, method <field>_=)
-            val nonConstructorFields =
-              ReflectOnField.nonCaseScalaField(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
-
-            // ensure all constructur fields are vals
             val constructorFields = symbol.declaredFields
               .filter(_.flags.is(Flags.ParamAccessor))
               .zipWithIndex
@@ -386,10 +380,15 @@ object ReflectOnClass:
                 )
               }
 
+            // Include inherited methods (var & def), including inherited!
+            // Produces (val <field>, method <field>_=)
+            val nonConstructorFields =
+              ReflectOnField.nonCaseScalaField(quotes)(symbol, typeRef.asInstanceOf[TypeRepr], constructorFields.map(_.name))
+
             val kidsAreObject =
               sealedChildrenRTypes match
-                case kid :: rest if kid.isInstanceOf[ObjectRef] => true
-                case _                                          => false
+                case kid :: rest if kid.isInstanceOf[ObjectRef[?]] => true
+                case _                                             => false
 
             ScalaClassRef[T](
               className,

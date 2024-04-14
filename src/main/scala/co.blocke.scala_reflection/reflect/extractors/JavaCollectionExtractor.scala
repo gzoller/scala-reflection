@@ -11,6 +11,7 @@ case class JavaCollectionExtractor() extends TypeExtractor[JavaCollectionRef[_]]
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     Try(Class.forName(symbol.fullName) <:< JCollectionClazz).toOption.getOrElse(false)
+      || symbol.fullName == "java.lang.Iterable"
 
   def extractInfo[R](
       quotes: Quotes

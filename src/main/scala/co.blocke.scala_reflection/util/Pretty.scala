@@ -296,7 +296,7 @@ object Pretty:
         buf.append("Enum (Java) having values " + t.values.mkString("(", ",", ")"))
         (buf, false, seenBefore)
 
-      case t: ObjectRType =>
+      case t: ObjectRType[?] =>
         buf.append(showSimpleName(t))
         buf.append(" (object)")
         (buf, false, seenBefore)
