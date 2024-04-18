@@ -7,7 +7,7 @@ import Clazzes.*
 import scala.quoted.*
 import scala.util.Try
 
-case class JavaCollectionExtractor() extends TypeExtractor[JavaCollectionRef[_]]:
+case class JavaCollectionExtractor() extends TypeExtractor[JavaCollectionRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     Try(Class.forName(symbol.fullName) <:< JCollectionClazz).toOption.getOrElse(false)

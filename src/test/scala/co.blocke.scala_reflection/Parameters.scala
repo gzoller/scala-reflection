@@ -340,7 +340,7 @@ class Parameters extends munit.FunSuite:
 
   test("Nested trait substitutions (inTermsOf)") {
     val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
-    val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]].asInstanceOf[TraitRType[_]]
+    val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]].asInstanceOf[TraitRType[?]]
     val result = RType.inTermsOf[T10[T11[Int, T5[Double, Char]], String]](inst.getClass)
     assertEquals(
       result.pretty,

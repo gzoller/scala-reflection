@@ -8,11 +8,11 @@ import reflect.TypeExtractor
 import scala.quoted.*
 
 object SeqType {
-  type IsSeq[A <: scala.collection.Seq[_]] = A
-  type IsSet[A <: scala.collection.Set[_]] = A
+  type IsSeq[A <: scala.collection.Seq[?]] = A
+  type IsSet[A <: scala.collection.Set[?]] = A
 }
 
-case class SeqExtractor() extends TypeExtractor[SeqRef[_]]:
+case class SeqExtractor() extends TypeExtractor[SeqRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     // Try here because non-library symbol won't have a class and will explode.
@@ -32,7 +32,7 @@ case class SeqExtractor() extends TypeExtractor[SeqRef[_]]:
           if tob.head.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob.head.typeSymbol.name)(using quotes)(using Type.of[Any])
           else reflect.ReflectOnType[u](quotes)(tob.head)
 
-    val a = quotes.reflect.AppliedType(t, tob).asType.asInstanceOf[Type[? <: Seq[_]]]
+    val a = quotes.reflect.AppliedType(t, tob).asType.asInstanceOf[Type[? <: Seq[?]]]
     a match
       case '[SeqType.IsSeq[t]] =>
         SeqRef[t](

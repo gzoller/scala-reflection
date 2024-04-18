@@ -6,7 +6,7 @@ import Clazzes.*
 import rtypeRefs.*
 import scala.quoted.*
 
-case class JavaMapExtractor() extends TypeExtractor[JavaMapRef[_]]:
+case class JavaMapExtractor() extends TypeExtractor[JavaMapRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     // Try here because non-library symbol won't have a class and will explode.

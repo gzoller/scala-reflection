@@ -59,7 +59,9 @@ object ReflectOnClass:
 
       // Class annotations -> annotation map
       val annoSymbol =
-        symbol.annotations.filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
+        symbol.annotations
+          .filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
+          .filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.experimental"))
       val classAnnos = annoSymbol.map { a =>
         val quotes.reflect.Apply(_, params) = a: @unchecked
         val annoName = a.symbol.signature.resultSig
@@ -128,7 +130,7 @@ object ReflectOnClass:
                     TypeSymbolRef(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)(using quotes)
                   }
               }
-              val paramMap: Map[TypeSymbol, RTypeRef[_]] = typeSymbols.zip(actualParamTypes).toMap
+              val paramMap: Map[TypeSymbol, RTypeRef[?]] = typeSymbols.zip(actualParamTypes).toMap
 
               val traitFields = symbol.declaredFields
                 .filterNot(_.flags.is(Flags.Module))
@@ -327,7 +329,7 @@ object ReflectOnClass:
                     typeRef
                   )
                   ReflectOnField(quotes)(
-                    fieldRef.asInstanceOf[RTypeRef[_]],
+                    fieldRef.asInstanceOf[RTypeRef[?]],
                     valDef,
                     idx,
                     dad,

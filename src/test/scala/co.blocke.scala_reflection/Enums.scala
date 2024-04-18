@@ -32,7 +32,7 @@ class Enums extends munit.FunSuite:
     val result = RType.of[Birthday]
     result match {
       case sc: ScalaClassRType[?] =>
-        val e = sc.fields(0).fieldType.asInstanceOf[ScalaEnumRType[_]]
+        val e = sc.fields(0).fieldType.asInstanceOf[ScalaEnumRType[?]]
         assertEquals(e.ordinal("Feb"), Some(1))
         assertEquals(e.valueAt(2), Some("Mar"))
       case _ => false
@@ -54,7 +54,7 @@ class Enums extends munit.FunSuite:
     val result = RType.of[Birthday]
     result match {
       case sc: ScalaClassRType[?] =>
-        val e = sc.fields(1).fieldType.asInstanceOf[ScalaEnumerationRType[_]]
+        val e = sc.fields(1).fieldType.asInstanceOf[ScalaEnumerationRType[?]]
         assertEquals(e.ordinal("Wednesday"), Some(99))
         assertEquals(e.valueAt(99), Some("Wednesday"))
       case _ => false

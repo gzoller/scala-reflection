@@ -11,7 +11,7 @@ object ReflectOnField:
       fieldType: RTypeRef[?],
       valDef: quotes.reflect.ValDef,
       index: Int,
-      dad: Option[ClassRef[_]],
+      dad: Option[ClassRef[?]],
       fieldDefaultMethods: Map[Int, (String, String)],
       isNonValConstructorField: Boolean = false
   ): FieldInfoRef =

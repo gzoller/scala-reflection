@@ -349,7 +349,6 @@ class Basic extends munit.FunSuite:
 
   test("var argument to class constructor works") {
     val result = RType.of[Parent]
-    println(result)
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.Parent:

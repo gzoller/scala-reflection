@@ -25,7 +25,7 @@ object Pretty:
     if rt.name.startsWith("scala.") || rt.name.startsWith("java.") then rt.name.split('.').last
     else rt.name
 
-  def typeString(rtypes: List[RType[_]]): String =
+  def typeString(rtypes: List[RType[?]]): String =
     val buf = new StringBuilder("[")
     rtypes.map { rt =>
       _typeString(rt, buf)

@@ -7,7 +7,7 @@ import rtypeRefs.*
 import scala.quoted.*
 import scala.util.matching.Regex
 
-case class TupleExtractor() extends TypeExtractor[TupleRef[_]]:
+case class TupleExtractor() extends TypeExtractor[TupleRef[?]]:
 
   val tupleFullName: Regex = """scala.Tuple(\d+)""".r
 

@@ -6,7 +6,7 @@ import rtypeRefs.*
 import Clazzes.*
 import scala.quoted.*
 
-case class TryExtractor() extends TypeExtractor[TryRef[_]]:
+case class TryExtractor() extends TypeExtractor[TryRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean = symbol.fullName == TryClazz.getName
 

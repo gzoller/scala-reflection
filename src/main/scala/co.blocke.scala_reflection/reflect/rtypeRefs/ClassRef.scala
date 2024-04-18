@@ -11,7 +11,7 @@ trait ClassRef[R] extends RTypeRef[R] with AppliedRef:
 
   val fields: List[FieldInfoRef]
   val typeParamSymbols: List[TypeSymbol]
-  val typeParamValues: List[RTypeRef[_]]
+  val typeParamValues: List[RTypeRef[?]]
   val annotations: Map[String, Map[String, String]]
   val mixins: List[String]
 
@@ -26,7 +26,7 @@ case class ScalaClassRef[R](
     name: String,
     typedName: TypedName,
     typeParamSymbols: List[TypeSymbol],
-    typeParamValues: List[RTypeRef[_]],
+    typeParamValues: List[RTypeRef[?]],
     typeMembers: List[TypeMemberRef],
     fields: List[FieldInfoRef],
     annotations: Map[String, Map[String, String]],
@@ -36,11 +36,12 @@ case class ScalaClassRef[R](
     isCaseClass: Boolean,
     isAbstractClass: Boolean,
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
-    sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    sealedChildren: List[RTypeRef[?]] = Nil, // Populated only if this is a sealed class or abstract class
     childrenAreObject: Boolean = false,
     typePaths: Map[String, List[List[Int]]]
 )(using quotes: Quotes)(using tt: Type[R])
-    extends ClassRef[R]:
+    extends ClassRef[R]
+    with Sealable:
   import quotes.reflect.*
   import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr, TypeSymbolToExpr}
 
@@ -122,7 +123,7 @@ case class JavaClassRef[R](
     name: String,
     fields: List[FieldInfoRef],
     typeParamSymbols: List[TypeSymbol],
-    typeParamValues: List[RTypeRef[_]],
+    typeParamValues: List[RTypeRef[?]],
     annotations: Map[String, Map[String, String]],
     mixins: List[String]
     // classType: Option[Type[_]] = None // Internal use only! (fixes broken Classloader for Java classes inside a macro)
