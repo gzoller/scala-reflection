@@ -6,6 +6,6 @@ package run
 object Main {
 
   def main(args: Array[String]): Unit =
-    println(RType.of[scala.math.Integral[Int]])
+    println(RType.of[model.SampleEnum].pretty)
     println("done")
 }

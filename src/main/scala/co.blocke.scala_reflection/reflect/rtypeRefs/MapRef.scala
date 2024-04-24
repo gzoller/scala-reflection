@@ -7,7 +7,7 @@ import rtypes.MapRType
 import util.{JsonField, JsonObjectBuilder}
 
 /** Arity 2 Collections, Map flavors, basiclly */
-case class MapRef[R <: scala.collection.Map[_, _]](
+case class MapRef[R <: scala.collection.Map[?, ?]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?], // map key

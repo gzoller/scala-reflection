@@ -7,7 +7,7 @@ import reflect.TypeExtractor
 import scala.quoted.*
 import rtypeRefs.{ScalaOptionRef, TypeSymbolRef}
 
-case class OptionExtractor() extends TypeExtractor[ScalaOptionRef[_]]:
+case class OptionExtractor() extends TypeExtractor[ScalaOptionRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean = symbol.fullName == Clazzes.OptionClazz.getName
 

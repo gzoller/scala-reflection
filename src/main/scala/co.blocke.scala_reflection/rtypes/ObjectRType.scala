@@ -1,8 +1,8 @@
 package co.blocke.scala_reflection
 package rtypes
 
-case class ObjectRType(
+case class ObjectRType[R](
     name: String
-) extends RType[Object]:
+) extends RType[R]:
 
   val typedName = name

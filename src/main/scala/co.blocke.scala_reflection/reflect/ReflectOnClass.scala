@@ -59,7 +59,9 @@ object ReflectOnClass:
 
       // Class annotations -> annotation map
       val annoSymbol =
-        symbol.annotations.filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
+        symbol.annotations
+          .filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
+          .filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.experimental"))
       val classAnnos = annoSymbol.map { a =>
         val quotes.reflect.Apply(_, params) = a: @unchecked
         val annoName = a.symbol.signature.resultSig
@@ -84,7 +86,7 @@ object ReflectOnClass:
                 case '[e] if typeSymbols.isEmpty =>
                   c.tree match
                     case vd: ValDef =>
-                      ObjectRef(vd.symbol.fullName)
+                      ObjectRef[e](vd.symbol.fullName)
                     case _ =>
                       ReflectOnType[e](quotes)(c.typeRef).asInstanceOf[RTypeRef[?]]
 
@@ -100,8 +102,8 @@ object ReflectOnClass:
 
         val kidsAreObject =
           sealedChildrenRTypes match
-            case kid :: rest if kid.isInstanceOf[ObjectRef] => true
-            case _                                          => false
+            case kid :: rest if kid.isInstanceOf[ObjectRef[?]] => true
+            case _                                             => false
 
         if symbol.flags.is(quotes.reflect.Flags.Trait) then
 
@@ -128,7 +130,7 @@ object ReflectOnClass:
                     TypeSymbolRef(oneTob.asInstanceOf[quotes.reflect.TypeRef].name)(using quotes)
                   }
               }
-              val paramMap: Map[TypeSymbol, RTypeRef[_]] = typeSymbols.zip(actualParamTypes).toMap
+              val paramMap: Map[TypeSymbol, RTypeRef[?]] = typeSymbols.zip(actualParamTypes).toMap
 
               val traitFields = symbol.declaredFields
                 .filterNot(_.flags.is(Flags.Module))
@@ -327,7 +329,7 @@ object ReflectOnClass:
                     typeRef
                   )
                   ReflectOnField(quotes)(
-                    fieldRef.asInstanceOf[RTypeRef[_]],
+                    fieldRef.asInstanceOf[RTypeRef[?]],
                     valDef,
                     idx,
                     dad,
@@ -359,12 +361,6 @@ object ReflectOnClass:
             // ===  Non-Case Classes
             // ===
 
-            // Include inherited methods (var & def), including inherited!
-            // Produces (val <field>, method <field>_=)
-            val nonConstructorFields =
-              ReflectOnField.nonCaseScalaField(quotes)(symbol, typeRef.asInstanceOf[TypeRepr])
-
-            // ensure all constructur fields are vals
             val constructorFields = symbol.declaredFields
               .filter(_.flags.is(Flags.ParamAccessor))
               .zipWithIndex
@@ -386,10 +382,15 @@ object ReflectOnClass:
                 )
               }
 
+            // Include inherited methods (var & def), including inherited!
+            // Produces (val <field>, method <field>_=)
+            val nonConstructorFields =
+              ReflectOnField.nonCaseScalaField(quotes)(symbol, typeRef.asInstanceOf[TypeRepr], constructorFields.map(_.name))
+
             val kidsAreObject =
               sealedChildrenRTypes match
-                case kid :: rest if kid.isInstanceOf[ObjectRef] => true
-                case _                                          => false
+                case kid :: rest if kid.isInstanceOf[ObjectRef[?]] => true
+                case _                                             => false
 
             ScalaClassRef[T](
               className,

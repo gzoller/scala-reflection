@@ -7,7 +7,7 @@ import rtypeRefs.*
 import scala.quoted.*
 import scala.util.Try
 
-case class ArrayExtractor() extends TypeExtractor[ArrayRef[_]]:
+case class ArrayExtractor() extends TypeExtractor[ArrayRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     // Try here because non-library symbol won't have a class and will explode.

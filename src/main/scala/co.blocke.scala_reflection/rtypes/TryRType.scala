@@ -11,7 +11,7 @@ case class TryRType[R](
     with AppliedRType:
 
   val typedName: TypedName = name + "[" + tryType.typedName + "]"
-  def typeParamValues: List[RType[_]] = List(tryType)
+  def typeParamValues: List[RType[?]] = List(tryType)
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

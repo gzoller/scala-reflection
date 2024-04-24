@@ -7,7 +7,7 @@ trait ClassRType[R] extends RType[R] with AppliedRType:
   val name: String
   val fields: List[FieldInfo]
   val typeParamSymbols: List[TypeSymbol]
-  val typeParamValues: List[RType[_]]
+  val typeParamValues: List[RType[?]]
   val annotations: Map[String, Map[String, String]]
   val mixins: List[String]
 
@@ -17,7 +17,7 @@ case class ScalaClassRType[R](
     name: String,
     typedName: TypedName,
     typeParamSymbols: List[TypeSymbol],
-    typeParamValues: List[RType[_]], // Like Int, Boolean
+    typeParamValues: List[RType[?]], // Like Int, Boolean
     typeMembers: List[TypeMemberRType],
     fields: List[FieldInfo],
     annotations: Map[String, Map[String, String]],
@@ -28,7 +28,7 @@ case class ScalaClassRType[R](
     isAbstractClass: Boolean,
     typePaths: Map[String, List[List[Int]]], // pre-computed path to each type symbol used (to get concrete types)
     nonConstructorFields: List[NonConstructorFieldInfo] = Nil, // Populated for non-case classes only
-    sealedChildren: List[RType[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    sealedChildren: List[RType[?]] = Nil, // Populated only if this is a sealed class or abstract class
     childrenAreObject: Boolean = false
 ) extends ClassRType[R]:
 
@@ -61,7 +61,7 @@ case class JavaClassRType[R](
     name: String,
     fields: List[FieldInfo],
     typeParamSymbols: List[TypeSymbol],
-    typeParamValues: List[RType[_]],
+    typeParamValues: List[RType[?]],
     annotations: Map[String, Map[String, String]],
     mixins: List[String]
 ) extends ClassRType[R]:

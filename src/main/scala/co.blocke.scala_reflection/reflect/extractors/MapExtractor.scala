@@ -7,10 +7,10 @@ import rtypeRefs.*
 import scala.quoted.*
 
 object MapType {
-  type IsMap[A <: scala.collection.Map[_, _]] = A
+  type IsMap[A <: scala.collection.Map[?, ?]] = A
 }
 
-case class MapExtractor() extends TypeExtractor[MapRef[_]]:
+case class MapExtractor() extends TypeExtractor[MapRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     // Try here because non-library symbol won't have a class and will explode.

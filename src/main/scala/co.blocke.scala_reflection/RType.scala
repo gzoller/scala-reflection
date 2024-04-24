@@ -23,7 +23,7 @@ object RType:
   given Compiler = Compiler.make(getClass.getClassLoader)
 
   // Chache of the "of()" (non-macro) reflected RTypes
-  val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[_]]
+  val rtypeCache = scala.collection.mutable.Map.empty[TypedName, RType[?]]
 
   // -----------------------------
   //  <<  MACRO ENTRY: of[T] >>       (Tasty Reflection)
@@ -58,7 +58,7 @@ object RType:
   inline def inTermsOf[T](clazz: Class[?]): RType[?] =
     of[T] match {
       case traitRType: rtypes.TraitRType[?] if traitRType.typeParamSymbols.nonEmpty =>
-        val classRType = of(clazz).asInstanceOf[rtypes.ScalaClassRType[_]]
+        val classRType = of(clazz).asInstanceOf[rtypes.ScalaClassRType[?]]
 
         val fn = (quotes: Quotes) ?=> {
           import quotes.reflect.*

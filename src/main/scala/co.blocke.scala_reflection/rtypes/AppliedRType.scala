@@ -8,4 +8,4 @@ trait AppliedRType:
   self: RType[?] =>
 
   val typeParamSymbols: List[TypeSymbol]
-  def typeParamValues: List[RType[_]]
+  def typeParamValues: List[RType[?]]

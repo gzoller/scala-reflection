@@ -157,12 +157,24 @@ case class UberJS[T](
 // Test NeoType and differentiation from Any
 type NonEmptyString = NonEmptyString.Type
 given NonEmptyString: Newtype[String] with
-  inline def validate(input: String): Boolean =
+  override inline def validate(input: String): Boolean =
     input.nonEmpty
 
 type NonEmptyList = NonEmptyList.Type
 given NonEmptyList: Newtype[List[Int]] with
-  inline def validate(input: List[Int]): Boolean =
+  override inline def validate(input: List[Int]): Boolean =
     input.nonEmpty
 
 case class NeoPerson(age: NonEmptyList, desc: NonEmptyString, whatever: Any)
+
+class Parent(val phase: Int, var stuff: List[String]):
+  private var _hidden: Boolean = false
+  def hidden: Boolean = _hidden
+  def hidden_=(h: Boolean) = _hidden = h
+
+  private var _nope: Boolean = false // should not generate due to @Ignore
+  @Ignore def nope: Boolean = _nope
+  def nope_=(h: Boolean) = _nope = h
+
+  var foo: String = "ok"
+  @Ignore var noFoo: String = "not ok"

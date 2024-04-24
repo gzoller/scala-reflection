@@ -5,7 +5,7 @@ import extractors.*
 
 object ExtractorRegistry:
 
-  lazy val extractors: List[TypeExtractor[_]] =
+  lazy val extractors: List[TypeExtractor[?]] =
     List(
       OptionExtractor(),
       EitherExtractor(),

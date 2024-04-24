@@ -25,6 +25,16 @@ case class NeoTypeRef[R](
 
   val refType = tt
 
+  // Ugly casting directly into internal Quotes/Compiler implementation. Eeek!
+  // Only way to get to Symbol.info equivalent, which is only exposed "naturally" in experimental context,
+  // which doesn't work for us at all.  This does the same thing, brute-forcing the issue.
+  val wrappedTypeRef =
+    val s = Symbol.requiredModule(typedName.toString).methodMember("validate").head.asInstanceOf[dotty.tools.dotc.core.Symbols.Symbol]
+    implicit val c: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx
+    s.denot.info.asInstanceOf[MethodType] match
+      case MethodType(_, pps, _) =>
+        reflect.ReflectOnType[T](quotes)(pps.head)(using scala.collection.mutable.Map.empty[TypedName, Boolean])
+
   val unitVal = '{ null.asInstanceOf[R] }
 
   val expr =

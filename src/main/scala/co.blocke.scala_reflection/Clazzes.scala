@@ -63,8 +63,8 @@ object Clazzes:
   // ======= Class Instances =======
   val ArrayClazz = Class.forName("scala.Array")
   val EitherClazz = Class.forName("scala.util.Either")
-  val JCollectionClazz = classOf[java.util.Collection[_]]
-  val JMapClazz = classOf[java.util.Map[_, _]]
+  val JCollectionClazz = classOf[java.util.Collection[?]]
+  val JMapClazz = classOf[java.util.Map[?, ?]]
   val MapClazz = Class.forName("scala.collection.Map")
   val OptionalClazz = Class.forName("java.util.Optional")
   val OptionClazz = Class.forName("scala.Option")
