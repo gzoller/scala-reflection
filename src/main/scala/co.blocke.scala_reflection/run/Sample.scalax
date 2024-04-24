@@ -3,6 +3,7 @@ package model
 
 import neotype.*
 
+/*
 trait Miss[E] { val x: E }
 case class Foom[X](x: X) extends Miss[X]
 
@@ -72,3 +73,14 @@ sealed trait Candy
 case class Veggies()
 
 type Food = Candy | Veggies
+*/
+object Size extends Enumeration {
+  val Small, Medium, Large = Value
+}
+object SizeWithType extends Enumeration {
+  type SizeWithType = Value
+  val Little, Grand = Value
+}
+import SizeWithType.*
+
+case class SampleEnum(e1: Size.Value, e2: Size.Value, e3: Size.Value, e4: Size.Value, e5: Size.Value, e6: SizeWithType)

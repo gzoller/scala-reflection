@@ -169,7 +169,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
 
               case cs if is2xEnumeration =>
                 val enumerationClassSymbol = typeRef.qualifier.termSymbol.moduleClass
-                enumerationClassSymbol.declaredTypes.head.typeRef.asType match
+                typeRef.asType match
                   case '[y] =>
                     ScalaEnumerationRef[y](
                       className,
