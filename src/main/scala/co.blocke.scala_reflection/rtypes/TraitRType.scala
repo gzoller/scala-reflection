@@ -8,8 +8,8 @@ case class TraitRType[R](
     typedName: TypedName,
     fields: List[FieldInfo],
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
-    typeParamValues: List[RType[_]] = Nil, // Like Int, Boolean
-    sealedChildren: List[RType[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    typeParamValues: List[RType[?]] = Nil, // Like Int, Boolean
+    sealedChildren: List[RType[?]] = Nil, // Populated only if this is a sealed class or abstract class
     childrenAreObject: Boolean = false
 ) extends RType[R]
     with AppliedRType:

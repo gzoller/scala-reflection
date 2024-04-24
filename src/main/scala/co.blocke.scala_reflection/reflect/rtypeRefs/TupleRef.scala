@@ -9,7 +9,7 @@ import util.{JsonField, JsonObjectBuilder}
 case class TupleRef[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
-    tupleRefs: List[RTypeRef[_]]
+    tupleRefs: List[RTypeRef[?]]
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]
     with AppliedRef:

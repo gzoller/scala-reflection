@@ -10,7 +10,7 @@ trait CollectionRType[R] extends AppliedRType:
   self: RType[?] =>
 
   val elementType: RType[?]
-  def typeParamValues: List[RType[_]] = List(elementType)
+  def typeParamValues: List[RType[?]] = List(elementType)
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

@@ -7,7 +7,7 @@ import rtypes.SeqRType
 import util.{JsonField, JsonObjectBuilder}
 
 /** Arity 1 Collections, e.g. List, Set, Seq */
-case class SeqRef[R <: scala.collection.Seq[_]](
+case class SeqRef[R <: scala.collection.Seq[?]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]

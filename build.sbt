@@ -27,7 +27,7 @@ inThisBuild(List(
 
 name := "scala-reflection"
 ThisBuild / organization := "co.blocke"
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.4.1"
 
 lazy val root = project
   .in(file("."))
@@ -46,13 +46,13 @@ lazy val root = project
       "org.scala-lang" %% "scala3-compiler"        % scalaVersion.value,
       "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value,
       "org.scala-lang" %% "scala3-staging"         % scalaVersion.value,
-      "io.github.kitlangton" %% "neotype"          % "0.0.9",
+      "io.github.kitlangton" %% "neotype"          % "0.2.4",
       "org.scalameta"  %% "munit"                  % "1.0.0-M9" % Test,
       "co.blocke"      %% "listzipper"             % "0.1.6" % Test
     )
   )
 
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"))
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
@@ -87,6 +87,7 @@ lazy val compilerOptions = Seq(
   "-language:implicitConversions",
   "-deprecation",
   // "-explain",
+  // "-experimental",
   "-encoding",
   "utf8"
 )

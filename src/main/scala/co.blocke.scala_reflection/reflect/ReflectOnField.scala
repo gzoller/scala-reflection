@@ -11,7 +11,7 @@ object ReflectOnField:
       fieldType: RTypeRef[?],
       valDef: quotes.reflect.ValDef,
       index: Int,
-      dad: Option[ClassRef[_]],
+      dad: Option[ClassRef[?]],
       fieldDefaultMethods: Map[Int, (String, String)],
       isNonValConstructorField: Boolean = false
   ): FieldInfoRef =
@@ -49,13 +49,14 @@ object ReflectOnField:
   // Reflect on any fields in a Scala plain class (non-case class) that are NOT in the constructor, i.e. defined in the body
   def nonCaseScalaField[Q](
       quotes: Quotes
-  )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): List[NonConstructorFieldInfoRef] =
+  )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr, constructorFieldNames: List[String])(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): List[NonConstructorFieldInfoRef] =
     import quotes.reflect.*
 
     // Include inherited methods (var & def), including inherited!
     // Produces (val <field>, method <field>_=)
     symbol.methodMembers
       .filter(_.name.endsWith("_="))
+      .filterNot(f => constructorFieldNames.contains(f.name.dropRight(2))) // filter out any 'var' constructor fields that slip through...
       .map { setter =>
         // Trying to get the setter... which could be a val (field) if declared is a var, or it could be a method
         // in the case of user-written getter/setter... OR it could be defined in the superclass

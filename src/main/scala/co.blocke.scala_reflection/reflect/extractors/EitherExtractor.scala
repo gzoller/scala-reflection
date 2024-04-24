@@ -5,7 +5,7 @@ package extractors
 import rtypeRefs.{LeftRightRef, TypeSymbolRef}
 import scala.quoted.*
 
-case class EitherExtractor() extends TypeExtractor[LeftRightRef[_]]:
+case class EitherExtractor() extends TypeExtractor[LeftRightRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean = symbol.fullName == Clazzes.EitherClazz.getName
 

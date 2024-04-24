@@ -7,7 +7,7 @@ trait OptionRType[R] extends RType[R] with AppliedRType:
   self: RType[?] =>
   val typeParamSymbols: List[TypeSymbol]
   val optionParamType: RType[?]
-  def typeParamValues: List[RType[_]] = List(optionParamType)
+  def typeParamValues: List[RType[?]] = List(optionParamType)
   val typedName: TypedName = name + "[" + optionParamType.typedName + "]"
 
 //-------------------

@@ -13,7 +13,7 @@ case class MapRType[R](
     with AppliedRType:
 
   val typedName: TypedName = name + "[" + elementType.typedName + "," + elementType2.typedName + "]"
-  def typeParamValues: List[RType[_]] = List(elementType, elementType2)
+  def typeParamValues: List[RType[?]] = List(elementType, elementType2)
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

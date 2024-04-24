@@ -5,7 +5,7 @@ import scala.quoted.Quotes
 case class TupleRType[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
-    typeParamValues: List[RType[_]]
+    typeParamValues: List[RType[?]]
 ) extends RType[R]
     with AppliedRType:
 
@@ -14,7 +14,7 @@ case class TupleRType[R](
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*
     val tupleType: quoted.Type[R] = super.toType(quotes)
-    val tupleElementTypes: List[quoted.Type[_]] = typeParamValues.map(tt => tt.toType(quotes))
+    val tupleElementTypes: List[quoted.Type[?]] = typeParamValues.map(tt => tt.toType(quotes))
     val tupleTypeRepr = TypeRepr.of[R](using tupleType)
     val tupleElementTypeRepr = typeParamValues.zip(tupleElementTypes).map { case (rt, rtType) =>
       TypeRepr.of[rt.T](using rtType.asInstanceOf[quoted.Type[rt.T]])

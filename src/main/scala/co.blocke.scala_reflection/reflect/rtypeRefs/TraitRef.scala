@@ -11,12 +11,13 @@ case class TraitRef[R](
     typedName: TypedName,
     fields: List[FieldInfoRef],
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
-    typeParamValues: List[RTypeRef[_]] = Nil, // Like Int, Boolean
-    sealedChildren: List[RTypeRef[_]] = Nil, // Populated only if this is a sealed class or abstract class
+    typeParamValues: List[RTypeRef[?]] = Nil, // Like Int, Boolean
+    sealedChildren: List[RTypeRef[?]] = Nil, // Populated only if this is a sealed trait
     childrenAreObject: Boolean = false
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]
-    with AppliedRef:
+    with AppliedRef
+    with Sealable:
   import quotes.reflect.*
   import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
 

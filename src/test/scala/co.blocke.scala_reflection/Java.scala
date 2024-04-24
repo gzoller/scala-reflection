@@ -99,7 +99,7 @@ class Java extends munit.FunSuite:
       |      other: Int
       |""".stripMargin
     )
-    assert(result.asInstanceOf[JavaClassRType[_]].mixins.contains("co.blocke.scala_reflection.models.SJCaptureJava"))
+    assert(result.asInstanceOf[JavaClassRType[?]].mixins.contains("co.blocke.scala_reflection.models.SJCaptureJava"))
   }
 
   test("Java parameterized class field member") {

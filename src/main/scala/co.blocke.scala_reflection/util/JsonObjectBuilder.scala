@@ -17,7 +17,7 @@ case class JsonField[J](name: String, value: J)(using t: Type[J]):
 // The cool thing is it uses quotes and reflection to discern the field types passed in.
 object JsonObjectBuilder:
 
-  def apply(quotes: Quotes)(sb: StringBuilder, items: List[JsonField[_]]): Unit =
+  def apply(quotes: Quotes)(sb: StringBuilder, items: List[JsonField[?]]): Unit =
     import quotes.reflect.*
 
     sb.append('{')
@@ -44,39 +44,39 @@ object JsonObjectBuilder:
         sb.append('[')
         repr match {
           case AppliedType(t, tob) =>
-            item.asInstanceOf[List[_]].map { listItem =>
+            item.asInstanceOf[List[?]].map { listItem =>
               matchOneType(quotes)(sb, tob.head, listItem)
               sb.append(',')
             }
         }
-        if item.asInstanceOf[List[_]].isEmpty then sb.append(']')
+        if item.asInstanceOf[List[?]].isEmpty then sb.append(']')
         else sb.setCharAt(sb.length() - 1, ']')
 
       case "Map" =>
         sb.append('{')
         repr match {
           case AppliedType(t, tob) =>
-            item.asInstanceOf[Map[String, _]].map { (mapKey, mapValue) =>
+            item.asInstanceOf[Map[String, ?]].map { (mapKey, mapValue) =>
               matchOneType(quotes)(sb, tob(0), mapKey)
               sb.append(':')
               matchOneType(quotes)(sb, tob(1), mapValue)
               sb.append(',')
             }
         }
-        if item.asInstanceOf[Map[String, _]].isEmpty then sb.append('}')
+        if item.asInstanceOf[Map[String, ?]].isEmpty then sb.append('}')
         else sb.setCharAt(sb.length() - 1, '}')
 
       case "Option" =>
-        if item.asInstanceOf[Option[_]].isEmpty then sb.append("null")
+        if item.asInstanceOf[Option[?]].isEmpty then sb.append("null")
         else
           repr match {
             case AppliedType(t, tob) =>
-              matchOneType(quotes)(sb, tob.head, item.asInstanceOf[Option[_]].get)
+              matchOneType(quotes)(sb, tob.head, item.asInstanceOf[Option[?]].get)
           }
 
       case "FieldInfoRef" | "NonConstructorFieldInfoRef" | "ScalaFieldInfoRef" =>
         item.asInstanceOf[FieldInfoRef].asJson(sb)(using quotes)
 
-      case _ => // Careful!  This is a bold assumption that everything else is RTypeRef[_]!
-        item.asInstanceOf[RTypeRef[_]].asJson(sb)(using quotes)
+      case _ => // Careful!  This is a bold assumption that everything else is RTypeRef[?]!
+        item.asInstanceOf[RTypeRef[?]].asJson(sb)(using quotes)
     }

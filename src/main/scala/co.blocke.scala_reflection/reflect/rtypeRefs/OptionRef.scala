@@ -41,7 +41,7 @@ case class ScalaOptionRef[R](
   val typedName: TypedName = name + "[" + optionParamType.typedName + "]"
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ None }.asExprOf[R]
 
   val expr =
     Apply(
@@ -70,7 +70,7 @@ case class JavaOptionalRef[R](
   val typedName: TypedName = name + "[" + optionParamType.typedName + "]"
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ java.util.Optional.empty().asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(

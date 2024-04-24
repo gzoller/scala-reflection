@@ -8,7 +8,7 @@ import reflect.TypeExtractor
 import scala.quoted.*
 import scala.util.Try
 
-case class JavaOptionalExtractor() extends TypeExtractor[JavaOptionalRef[_]]:
+case class JavaOptionalExtractor() extends TypeExtractor[JavaOptionalRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean =
     Try(Class.forName(symbol.fullName) =:= OptionalClazz).toOption.getOrElse(false)

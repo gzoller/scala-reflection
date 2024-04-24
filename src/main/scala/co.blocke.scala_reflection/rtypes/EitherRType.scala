@@ -12,7 +12,7 @@ case class EitherRType[R](
     with LeftRightRType[R]:
 
   val typedName: TypedName = name + "[" + leftType.typedName + "," + rightType.typedName + "]"
-  def typeParamValues: List[RType[_]] = List(leftType, rightType)
+  def typeParamValues: List[RType[?]] = List(leftType, rightType)
 
   override def toType(quotes: Quotes): quoted.Type[R] =
     import quotes.reflect.*

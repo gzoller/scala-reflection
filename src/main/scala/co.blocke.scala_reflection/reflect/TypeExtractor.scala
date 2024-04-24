@@ -3,7 +3,7 @@ package reflect
 
 import scala.quoted.Quotes
 
-trait TypeExtractor[T <: RTypeRef[_]]:
+trait TypeExtractor[T <: RTypeRef[?]]:
 
   def matches(quotes: Quotes)(symbol: quotes.reflect.Symbol): Boolean
 
