@@ -81,23 +81,44 @@ object ReflectOnClass:
         // sealed children, if any
         val sealedChildrenRTypes =
           if symbol.flags.is(quotes.reflect.Flags.Sealed) then
-            symbol.children.map { c =>
-              c.typeRef.asType match
-                case '[e] if typeSymbols.isEmpty =>
-                  c.tree match
-                    case vd: ValDef =>
-                      ObjectRef[e](vd.symbol.fullName)
-                    case _ =>
-                      ReflectOnType[e](quotes)(c.typeRef).asInstanceOf[RTypeRef[?]]
-
-                // Parameterized sealed trait
-                case '[e] =>
-                  typeRef match
-                    case AppliedType(t, tob) =>
-                      t.asType match
-                        case '[f] =>
-                          ReflectOnType[f](quotes)(c.typeRef.appliedTo(tob)).asInstanceOf[RTypeRef[?]]
-            }
+            typeRef match
+              case AppliedType(t, tob) => // parameterized sealed trait
+                symbol.children.map { c =>
+                  c.typeRef.asType match
+                    case '[e] =>
+                      c.tree match
+                        case vd: ValDef =>
+                          ObjectRef[e](vd.symbol.fullName)
+                        case _ =>
+                          if typeSymbols.isEmpty then ReflectOnType[e](quotes)(c.typeRef).asInstanceOf[RTypeRef[?]]
+                          else
+                            // All this drama below is covering the complex case where a sealed trait's child has more parameters
+                            // than the sealed trait, so some will be mapped to the concrete type of the trait, while the child
+                            // class' "extra" fields will remain type symbols.  It's a mess...  Far easier if it's 1-to-1
+                            // between parent and child, but...
+                            val childTypeParams = typeRef.typeSymbol.children.map(_.declaredTypes.map(_.typeRef)).head
+                            val s = c.asInstanceOf[dotty.tools.dotc.core.Symbols.Symbol]
+                            implicit val cc: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx
+                            s.denot.info match
+                              case dotty.tools.dotc.core.Types.ClassInfo(_, _, g, _, _) =>
+                                val applied = g.find(_.typeSymbol.fullName.toString == symbol.fullName).get.asInstanceOf[AppliedType]
+                                val finalTob = applied.args.zipWithIndex.foldLeft(childTypeParams) { case (childsParms, (parentParm, parentIdx)) =>
+                                  val i = childsParms.indexOf(parentParm)
+                                  if i < 0 then childsParms
+                                  else childsParms.updated(i, tob(parentIdx).asInstanceOf[TypeRef])
+                                }
+                                ReflectOnType[e](quotes)(c.typeRef.appliedTo(finalTob)).asInstanceOf[RTypeRef[?]]
+                }
+              case _ => // non-parameterized sealed trait
+                symbol.children.map { c =>
+                  c.typeRef.asType match
+                    case '[e] =>
+                      c.tree match
+                        case vd: ValDef =>
+                          ObjectRef[e](vd.symbol.fullName)
+                        case _ =>
+                          ReflectOnType[e](quotes)(c.typeRef).asInstanceOf[RTypeRef[?]]
+                }
           else Nil
 
         val kidsAreObject =

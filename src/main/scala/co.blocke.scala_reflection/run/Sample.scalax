@@ -74,13 +74,45 @@ case class Veggies()
 
 type Food = Candy | Veggies
 */
-object Size extends Enumeration {
-  val Small, Medium, Large = Value
-}
-object SizeWithType extends Enumeration {
-  type SizeWithType = Value
-  val Little, Grand = Value
-}
-import SizeWithType.*
+// object Size extends Enumeration {
+//   val Small, Medium, Large = Value
+// }
+// object SizeWithType extends Enumeration {
+//   type SizeWithType = Value
+//   val Little, Grand = Value
+// }
+// import SizeWithType.*
 
-case class SampleEnum(e1: Size.Value, e2: Size.Value, e3: Size.Value, e4: Size.Value, e5: Size.Value, e6: SizeWithType)
+// case class SampleEnum(e1: Size.Value, e2: Size.Value, e3: Size.Value, e4: Size.Value, e5: Size.Value, e6: SizeWithType)
+
+
+/*
+object VehicleClass extends Enumeration {
+  type VehicleClass = Value
+  val Land, Air, Sea = Value
+}
+import VehicleClass.*
+
+sealed trait Vehicle[K] { val kind: K }
+case class Car(passengers: Int) extends Vehicle[Land.type] { val kind: Land.type = Land }
+
+sealed trait Hobby[X, Y] { val thing1: X; val thing2: Y }
+sealed trait Artist[W, Z] { val instrument: W; val effort: Z }
+sealed trait PersonX[X, Y] { val who: X; val org: Y }
+
+case class Sports[A, B](thing1: A, thing2: B) extends Hobby[A, B]
+case class Painter[A, B](instrument: A, effort: B) extends Artist[A, B]
+case class Employee[A, B, C, D](who: Artist[C, Hobby[D, A]], org: B) extends PersonX[Artist[C, Hobby[D, A]], B]
+
+case class PP[Z](a:Z)
+*/
+
+sealed trait Basic[A,B]{
+  val a:A
+  val b:B
+}
+
+case class Complex(a:Int, b:Boolean) extends Basic[Int,Boolean]
+// case class Complex[Y,Z](a:Y, b:Z) extends Basic[Y,Z]
+
+// PersonX[String,Int] ==> Employee(Artist)
