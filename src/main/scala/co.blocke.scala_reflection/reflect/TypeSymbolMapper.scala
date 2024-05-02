@@ -14,6 +14,9 @@ import javax.management.ReflectionException
   *    case class Foo[A,B]( thing: A, other: Bar[B] )
   *
   * We'd fiscover that A is found on the first argument of Foo, and that B is found by diving into Bar and ultimately List to find B.
+  *
+  * NOTE: While this funcionality is very similar to TypeSymbolMapper2, the latter is designed for compile-time type symbol mapping,
+  * while this code is focused on runtime mapping, which is more generalized.
   */
 object TypeSymbolMapper:
 

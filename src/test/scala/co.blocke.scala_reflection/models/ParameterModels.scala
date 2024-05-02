@@ -100,3 +100,11 @@ case class AliasTypeSub(a: mystery)
 object Outside:
   case class PersonZ[Z](name: String, thing: Z)
   case class Blah[T](a: PersonZ[T])
+
+sealed trait Hobby[X, Y] { val thing1: X; val thing2: Y }
+sealed trait Artist[W, Z] { val instrument: W; val effort: Z }
+sealed trait PersonX[X, Y] { val who: X; val org: Y }
+
+case class Sports[A, B](thing1: A, thing2: B) extends Hobby[A, B]
+case class Painter[A, B](instrument: A, effort: B) extends Artist[A, B]
+case class EmployeeX[A, B, C, D](who: Artist[C, Hobby[D, A]], org: B) extends PersonX[Artist[C, Hobby[D, A]], B]
