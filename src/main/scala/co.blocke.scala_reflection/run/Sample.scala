@@ -115,4 +115,14 @@ sealed trait Basic[A,B]{
 case class Complex(a:Int, b:Boolean) extends Basic[Int,Boolean]
 // case class Complex[Y,Z](a:Y, b:Z) extends Basic[Y,Z]
 
+
+sealed trait Hobby[X, Y] { val thing1: X; val thing2: Y }
+sealed trait Artist[W, Z] { val instrument: W; val effort: Z }
+sealed trait Person[X, Y] { val who: X; val org: Y }
+
+case class Sports[A, B](thing1: A, thing2: B) extends Hobby[A, B]
+case class Painter[A, B](instrument: A, effort: B) extends Artist[A, B]
+case class Employee[A, B, C, D](who: Artist[C, Hobby[D, A]], org: B) extends Person[Artist[C, Hobby[D, A]], B]
+
+
 // PersonX[String,Int] ==> Employee(Artist)

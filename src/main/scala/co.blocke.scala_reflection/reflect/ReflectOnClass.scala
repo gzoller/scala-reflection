@@ -99,14 +99,15 @@ object ReflectOnClass:
                             val childTypeParams = typeRef.typeSymbol.children.map(_.declaredTypes.map(_.typeRef)).head
                             val s = c.asInstanceOf[dotty.tools.dotc.core.Symbols.Symbol]
                             implicit val cc: dotty.tools.dotc.core.Contexts.Context = quotes.asInstanceOf[scala.quoted.runtime.impl.QuotesImpl].ctx
+
+                            // For each parent tob element, descend all types (incl AppliedTypes) and find child symbols. Keep track of the "path"
+                            // to each symbol.  Then "run" each path against top-level (parent) tob (the one with the real types in it) and
+                            // map child type symbols to real types as much as possible.  Apply all those you find....
                             s.denot.info match
                               case dotty.tools.dotc.core.Types.ClassInfo(_, _, g, _, _) =>
                                 val applied = g.find(_.typeSymbol.fullName.toString == symbol.fullName).get.asInstanceOf[AppliedType]
-                                val finalTob = applied.args.zipWithIndex.foldLeft(childTypeParams) { case (childsParms, (parentParm, parentIdx)) =>
-                                  val i = childsParms.indexOf(parentParm)
-                                  if i < 0 then childsParms
-                                  else childsParms.updated(i, tob(parentIdx).asInstanceOf[TypeRef])
-                                }
+                                val path = TypeSymbolMapper2.mapTypeSymbolsForClass(quotes)(childTypeParams.map(_.name.asInstanceOf[TypeSymbol]), applied.args)
+                                val finalTob = TypeSymbolMapper2.applyPath(quotes)(childTypeParams, tob, path)
                                 ReflectOnType[e](quotes)(c.typeRef.appliedTo(finalTob)).asInstanceOf[RTypeRef[?]]
                 }
               case _ => // non-parameterized sealed trait
