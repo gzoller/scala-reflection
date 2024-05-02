@@ -469,3 +469,52 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin
     )
   }
+
+  test("Complex type parameter relationships work") {
+    val result = RType.of[PersonX[Artist[Int, Hobby[String, Double]], Boolean]]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.PersonX[Artist[Int,Hobby[String,Double]],Boolean] (sealed trait):
+      |   fields ->
+      |      who: [X] co.blocke.scala_reflection.models.Artist[Int,Hobby[String,Double]] (sealed trait):
+      |         fields ->
+      |            instrument: [W] Int
+      |            effort: [Z] co.blocke.scala_reflection.models.Hobby[String,Double] (sealed trait):
+      |               fields ->
+      |                  thing1: [X] String
+      |                  thing2: [Y] Double
+      |               children ->
+      |                  co.blocke.scala_reflection.models.Sports[String,Double]:
+      |                     fields ->
+      |                        thing1: [A] String
+      |                        thing2: [B] Double
+      |         children ->
+      |            co.blocke.scala_reflection.models.Painter[Int,String]:
+      |               fields ->
+      |                  instrument: [A] Int
+      |                  effort: [B] String
+      |      org: [Y] Boolean
+      |   children ->
+      |      co.blocke.scala_reflection.models.EmployeeX[Double,Boolean,Int,String]:
+      |         fields ->
+      |            who: co.blocke.scala_reflection.models.Artist[Int,Hobby[String,Double]] (sealed trait):
+      |               fields ->
+      |                  instrument: [W] Int
+      |                  effort: [Z] co.blocke.scala_reflection.models.Hobby[String,Double] (sealed trait):
+      |                     fields ->
+      |                        thing1: [X] String
+      |                        thing2: [Y] Double
+      |                     children ->
+      |                        co.blocke.scala_reflection.models.Sports[String,Double]:
+      |                           fields ->
+      |                              thing1: [A] String
+      |                              thing2: [B] Double
+      |               children ->
+      |                  co.blocke.scala_reflection.models.Painter[Int,String]:
+      |                     fields ->
+      |                        instrument: [A] Int
+      |                        effort: [B] String
+      |            org: [B] Boolean
+      |""".stripMargin
+    )
+  }
