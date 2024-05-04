@@ -160,7 +160,8 @@ Thanks also goes to pjfanning for multiple contributions to this project.
 ```
 
 ## Release Notes:
-* 2.0.4 - Support complex parameterized trait relationships
+* 2.0.6 - Fix an obscure bug related to complex parameterized trait relationships
+* 2.0.5 - Support complex parameterized trait relationships
 * 2.0.4 - Fixes for Option, Scala 2 Enumeration. Move to Scala 3.4.1 and Java 21 LTS
 * 2.0.3 - Get rid of some Java deprecation warnings
 * 2.0.2 - Re-enable deep reflection of Scala 2 classes

@@ -275,7 +275,7 @@ object Pretty:
           val allClassesSeenUpToNow2 = if t.sealedChildren.nonEmpty then
             buf.append(tabs(tabLevel + 1))
             buf.append("children ->\n")
-            t.sealedChildren.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
+            t.sealedChildren.foldLeft(t.typedName.toString :: allClassesSeenUpToNow) { (classesSeen, f) =>
               buf.append(tabs(tabLevel + 2))
               val (_, lastWasMultiLine, allClassesSeenUpToNow) = _pretty(f, buf, tabLevel + 2, classesSeen)
               if !lastWasMultiLine then buf.append("\n")

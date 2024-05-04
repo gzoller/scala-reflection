@@ -489,10 +489,10 @@ class Parameters extends munit.FunSuite:
       |                        thing1: [A] String
       |                        thing2: [B] Double
       |         children ->
-      |            co.blocke.scala_reflection.models.Painter[Int,String]:
+      |            co.blocke.scala_reflection.models.Painter[Int,Hobby[String,Double]]:
       |               fields ->
       |                  instrument: [A] Int
-      |                  effort: [B] String
+      |                  effort: [B] co.blocke.scala_reflection.models.Hobby (seen before, details above)
       |      org: [Y] Boolean
       |   children ->
       |      co.blocke.scala_reflection.models.EmployeeX[Double,Boolean,Int,String]:
@@ -510,10 +510,10 @@ class Parameters extends munit.FunSuite:
       |                              thing1: [A] String
       |                              thing2: [B] Double
       |               children ->
-      |                  co.blocke.scala_reflection.models.Painter[Int,String]:
+      |                  co.blocke.scala_reflection.models.Painter[Int,Hobby[String,Double]]:
       |                     fields ->
       |                        instrument: [A] Int
-      |                        effort: [B] String
+      |                        effort: [B] co.blocke.scala_reflection.models.Hobby (seen before, details above)
       |            org: [B] Boolean
       |""".stripMargin
     )

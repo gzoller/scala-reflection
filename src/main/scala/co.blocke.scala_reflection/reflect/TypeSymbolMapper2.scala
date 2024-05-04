@@ -50,19 +50,17 @@ object TypeSymbolMapper2:
 
   def applyPath(quotes: Quotes)(originalSyms: List[quotes.reflect.TypeRef], args: List[quotes.reflect.TypeRepr], path: Map[TypeSymbol, TypeRecord]): List[quotes.reflect.TypeRepr] =
     import quotes.reflect.*
-    def resolveType(record: TypeRecord): TypeRepr =
-      record.path
-        .foldLeft(args) { case (typeArgs, i) =>
-          typeArgs(i) match
-            case AppliedType(_, tob) => tob
-            case _                   => List(typeArgs(i))
-        }
-        .head
+    def resolveType(path: List[Int], argList: List[TypeRepr] = args): TypeRepr =
+      argList(path.head) match {
+        case e: AppliedType if path.size == 1 => e
+        case AppliedType(_, tob)              => resolveType(path.tail, tob)
+        case e                                => e
+      }
     originalSyms.map(s =>
       path
         .get(s.name.asInstanceOf[TypeSymbol])
         .map { p =>
-          if p.isFound then resolveType(p) else s
+          if p.isFound then resolveType(p.path) else s
         }
         .getOrElse(s)
     )
