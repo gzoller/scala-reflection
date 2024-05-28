@@ -4,6 +4,8 @@
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=86400)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/co.blocke/scala-reflection_3/badge.svg)](https://search.maven.org/artifact/co.blocke/scala-reflection_3/1.1.4/jar)
+[![Coveralls branch](https://img.shields.io/coveralls/gzoller/scala-reflection/master.svg?maxAge=360)](https://coveralls.io/github/gzoller/scala-reflection)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8178509ab79141e6be13334796bb4c5c)](https://app.codacy.com/gh/gzoller/scala-reflection/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 Scala 2 provided a robust runtime reflection capability that was removed for Scala 3.  Runtime reflection turns out to be quite useful, and is sorely missed.  If you're not already fairly proficient with Scala 3 macros, the new macro-based, compile-time reflection is much more complex to use than the Scala 2 old reflection facility. The scala-reflection library exists to do the hard work of navigating Scala 3 macro reflection and provides simple RType abstractions you can navigate at runtime to see what's inside your classes.  If you are writing your own macros, you can still benefit by using scala-reflections RTypeRef objects and save yourself the headache of handling all the many corner cases of reflection.  (See ScalaJack 8 for examples of using RTypeRef's in your macros.)
 
@@ -160,6 +162,7 @@ Thanks also goes to pjfanning for multiple contributions to this project.
 ```
 
 ## Release Notes:
+* 2.0.7 - Add Iterable support, fix unit null, and add a lot of test coverage
 * 2.0.6 - Fix an obscure bug related to complex parameterized trait relationships
 * 2.0.5 - Support complex parameterized trait relationships
 * 2.0.4 - Fixes for Option, Scala 2 Enumeration. Move to Scala 3.4.1 and Java 21 LTS
