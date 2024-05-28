@@ -68,7 +68,6 @@ object RType:
           val paths = classRType.typePaths.getOrElse(traitRType.name, throw new ReflectException(s"No path in class ${classRType.name} for trait ${traitRType.name}"))
           implicit val tt = traitRType.toType(quotes)
           val typeParamTypes = reflect.TypeSymbolMapper.runPath(quotes)(paths, TypeRepr.of[traitRType.T])
-//   def applyPath(quotes: Quotes)(originalSyms: List[quotes.reflect.TypeRef], args: List[quotes.reflect.TypeRepr], path: Map[TypeSymbol, TypeRecord]): List[quotes.reflect.TypeRepr] =
 
           // Apply type param paths from classRType against traitRType
           val classQuotedTypeRepr = TypeRepr.typeConstructorOf(classRType.clazz)

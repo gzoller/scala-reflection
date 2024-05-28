@@ -70,6 +70,7 @@ object Clazzes:
   val OptionClazz = Class.forName("scala.Option")
   val SeqClazz = Class.forName("scala.collection.Seq")
   val SetClazz = Class.forName("scala.collection.Set")
+  val IterableClazz = Class.forName("scala.collection.Iterable")
   val TryClazz = Class.forName("scala.util.Try")
 
   val AnyClazz = classOf[Any]
