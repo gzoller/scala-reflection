@@ -60,7 +60,7 @@ case class ScalaEnumerationRef[R](
   val typedName: TypedName = name
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(
@@ -86,7 +86,7 @@ case class JavaEnumRef[R](
   val typedName: TypedName = name
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(

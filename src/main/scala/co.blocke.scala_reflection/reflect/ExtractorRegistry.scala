@@ -9,9 +9,9 @@ object ExtractorRegistry:
     List(
       OptionExtractor(),
       EitherExtractor(),
+      MapExtractor(),
       SeqExtractor(),
       ArrayExtractor(),
-      MapExtractor(),
       TupleExtractor(),
       TryExtractor(),
       JavaCollectionExtractor(),

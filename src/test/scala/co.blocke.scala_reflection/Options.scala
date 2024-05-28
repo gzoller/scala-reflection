@@ -27,6 +27,10 @@ class Options extends munit.FunSuite:
       |      b: String
       |""".stripMargin
     )
+    assertEquals(
+      RType.ofJS[NormalOption],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.NormalOption","typedName":"co.blocke.scala_reflection.models.NormalOption","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"ScalaOptionRType","name":"scala.Option","typedName":"scala.Option[scala.Int]","typeParamSymbols":["A"],"optionParamType":{"rtype":"IntRType","name":"scala.Int"}},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"StringRType","name":"java.lang.String"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+    )
   }
 
   test("Java optional field") {
@@ -37,6 +41,10 @@ class Options extends munit.FunSuite:
       |   fields ->
       |      fld: Optional of Integer (Java)
       |""".stripMargin
+    )
+    assertEquals(
+      RType.ofJS[co.blocke.reflect.JavaOption1],
+      """{"rtype":"JavaClassRType","name":"co.blocke.reflect.JavaOption1","typedName":"co.blocke.reflect.JavaOption1","typeParamSymbols":[],"typeParamValues":[],"fields":[{"name":"fld","fieldType":{"rtype":"JavaOptionalRType","name":"java.util.Optional","typedName":"java.util.Optional[java.lang.Integer]","typeParamSymbols":["A"],"optionParamType":{"rtype":"JavaIntegerRType","name":"java.lang.Integer"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object"]}"""
     )
   }
 

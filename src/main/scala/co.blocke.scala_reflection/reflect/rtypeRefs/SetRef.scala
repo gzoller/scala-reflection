@@ -20,7 +20,7 @@ case class SetRef[R <: scala.collection.Set[?]](
   val refType = tt
   val isMutable = name.contains(".mutable.")
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(

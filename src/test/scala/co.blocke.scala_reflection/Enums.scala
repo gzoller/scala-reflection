@@ -14,6 +14,12 @@ class Enums extends munit.FunSuite:
       |      color: Enum (Java) having values (RED,GREEN,BLUE)
       |""".stripMargin
     )
+    val ord = result.asInstanceOf[JavaClassRType[_]].fields(0).asInstanceOf[NonConstructorFieldInfo].fieldType.asInstanceOf[JavaEnumRType[_]].ordinal("GREEN").get
+    assertEquals(ord, 1)
+    assertEquals(
+      result.asInstanceOf[JavaClassRType[_]].fields(0).asInstanceOf[NonConstructorFieldInfo].fieldType.asInstanceOf[JavaEnumRType[_]].valueAt(2).map(_.toString),
+      Some("BLUE")
+    )
   }
 
   test("Scala Enums (old and new)") {
@@ -37,6 +43,14 @@ class Enums extends munit.FunSuite:
         assertEquals(e.valueAt(2), Some("Mar"))
       case _ => false
     }
+  }
+
+  test("Enum Json generation") {
+    val js = RType.ofJS[Birthday]
+    assertEquals(
+      js,
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Birthday","typedName":"co.blocke.scala_reflection.models.Birthday","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"m","fieldType":{"rtype":"ScalaEnumRef","name":"co.blocke.scala_reflection.models.Month","typedName":"co.blocke.scala_reflection.models.Month","values":["Jan","Feb","Mar"]},"originalSymbol":null,"annotations":{}},{"name":"d","fieldType":{"rtype":"ScalaEnumerationRef","name":"co.blocke.scala_reflection.models.WeekDay","typedName":"co.blocke.scala_reflection.models.WeekDay","values":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+    )
   }
 
   test("Scala Enum ADT") {

@@ -31,7 +31,7 @@ case class ScalaClassRef[R](
     fields: List[FieldInfoRef],
     annotations: Map[String, Map[String, String]],
     mixins: List[String],
-    override val isAppliedType: Boolean,
+    isAppliedType: Boolean,
     isValueClass: Boolean,
     isCaseClass: Boolean,
     isAbstractClass: Boolean,
@@ -60,7 +60,7 @@ case class ScalaClassRef[R](
           val argss = List(List(fields(0).fieldRef.unitVal.asTerm))
           argss.tail.foldLeft(Apply(constructor, argss.head))((acc, args) => Apply(acc, args)).asExprOf[R]
       }
-    else '{ null }.asExprOf[R]
+    else '{ null.asInstanceOf[R] }.asExprOf[R]
 
   def isSealed: Boolean = sealedChildren.nonEmpty
 
@@ -135,7 +135,7 @@ case class JavaClassRef[R](
   val typedName: TypedName = name
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(

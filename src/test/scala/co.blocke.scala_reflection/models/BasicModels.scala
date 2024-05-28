@@ -115,7 +115,7 @@ class FoomNC(val a: Int, val b: String, @FieldAnno(idx = 0) c: Option[FoomNC]) {
   private var cantSee: Boolean = true
   val nope: Float = 1.2
 
-  private var _age = 0
+  private var _age = 1
   def age = _age
   @FieldAnno(idx = 2) def age_=(g: Int): Unit = _age = g
 }

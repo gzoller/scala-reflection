@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 
 import munit.*
 import models.*
+import rtypes.{NeoTypeRType, ScalaClassRType, ScalaFieldInfo}
 
 class Basic extends munit.FunSuite:
 
@@ -36,6 +37,10 @@ class Basic extends munit.FunSuite:
         |      w: BigInteger (Java)
         |""".stripMargin
     )
+    assertEquals(
+      RType.ofJS[Prim],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Prim","typedName":"co.blocke.scala_reflection.models.Prim","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"BooleanRType","name":"scala.Boolean"},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"ByteRType","name":"scala.Byte"},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"CharRType","name":"scala.Char"},"originalSymbol":null,"annotations":{}},{"name":"d","fieldType":{"rtype":"DoubleRType","name":"scala.Double"},"originalSymbol":null,"annotations":{}},{"name":"e","fieldType":{"rtype":"FloatRType","name":"scala.Float"},"originalSymbol":null,"annotations":{}},{"name":"f","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":null,"annotations":{}},{"name":"g","fieldType":{"rtype":"LongRType","name":"scala.Long"},"originalSymbol":null,"annotations":{}},{"name":"h","fieldType":{"rtype":"ShortRType","name":"scala.Short"},"originalSymbol":null,"annotations":{}},{"name":"i","fieldType":{"rtype":"StringRType","name":"java.lang.String"},"originalSymbol":null,"annotations":{}},{"name":"j","fieldType":{"rtype":"AnyRType","name":"scala.Any"},"originalSymbol":null,"annotations":{}},{"name":"k","fieldType":{"rtype":"BigDecimalRType","name":"scala.math.BigDecimal"},"originalSymbol":null,"annotations":{}},{"name":"l","fieldType":{"rtype":"BigIntRType","name":"scala.math.BigInt"},"originalSymbol":null,"annotations":{}},{"name":"m","fieldType":{"rtype":"JavaBooleanRType","name":"java.lang.Boolean"},"originalSymbol":null,"annotations":{}},{"name":"n","fieldType":{"rtype":"JavaByteRType","name":"java.lang.Byte"},"originalSymbol":null,"annotations":{}},{"name":"o","fieldType":{"rtype":"JavaCharacterRType","name":"java.lang.Character"},"originalSymbol":null,"annotations":{}},{"name":"p","fieldType":{"rtype":"JavaDoubleRType","name":"java.lang.Double"},"originalSymbol":null,"annotations":{}},{"name":"q","fieldType":{"rtype":"JavaFloatRType","name":"java.lang.Float"},"originalSymbol":null,"annotations":{}},{"name":"r","fieldType":{"rtype":"JavaIntegerRType","name":"java.lang.Integer"},"originalSymbol":null,"annotations":{}},{"name":"s","fieldType":{"rtype":"JavaLongRType","name":"java.lang.Long"},"originalSymbol":null,"annotations":{}},{"name":"t","fieldType":{"rtype":"JavaShortRType","name":"java.lang.Short"},"originalSymbol":null,"annotations":{}},{"name":"u","fieldType":{"rtype":"JavaNumberRType","name":"java.lang.Number"},"originalSymbol":null,"annotations":{}},{"name":"v","fieldType":{"rtype":"JavaBigDecimalRType","name":"java.math.BigDecimal"},"originalSymbol":null,"annotations":{}},{"name":"w","fieldType":{"rtype":"JavaBigIntegerRType","name":"java.math.BigInteger"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+    )
   }
 
   test("Class of all time types") {
@@ -60,6 +65,10 @@ class Basic extends munit.FunSuite:
         |      n: ZoneOffset (Java)
         |""".stripMargin
     )
+    assertEquals(
+      RType.ofJS[Time],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Time","typedName":"co.blocke.scala_reflection.models.Time","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"DurationRType","name":"java.time.Duration"},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"InstantRType","name":"java.time.Instant"},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"LocalDateRType","name":"java.time.LocalDate"},"originalSymbol":null,"annotations":{}},{"name":"d","fieldType":{"rtype":"LocalDateTimeRType","name":"java.time.LocalDateTime"},"originalSymbol":null,"annotations":{}},{"name":"e","fieldType":{"rtype":"LocalTimeRType","name":"java.time.LocalTime"},"originalSymbol":null,"annotations":{}},{"name":"f","fieldType":{"rtype":"MonthDayRType","name":"java.time.MonthDay"},"originalSymbol":null,"annotations":{}},{"name":"g","fieldType":{"rtype":"OffsetDateTimeRType","name":"java.time.OffsetDateTime"},"originalSymbol":null,"annotations":{}},{"name":"h","fieldType":{"rtype":"OffsetTimeRType","name":"java.time.OffsetTime"},"originalSymbol":null,"annotations":{}},{"name":"i","fieldType":{"rtype":"PeriodRType","name":"java.time.Period"},"originalSymbol":null,"annotations":{}},{"name":"j","fieldType":{"rtype":"YearRType","name":"java.time.Year"},"originalSymbol":null,"annotations":{}},{"name":"k","fieldType":{"rtype":"YearMonthRType","name":"java.time.YearMonth"},"originalSymbol":null,"annotations":{}},{"name":"l","fieldType":{"rtype":"ZonedDateTimeRType","name":"java.time.ZonedDateTime"},"originalSymbol":null,"annotations":{}},{"name":"m","fieldType":{"rtype":"ZoneIdRType","name":"java.time.ZoneId"},"originalSymbol":null,"annotations":{}},{"name":"n","fieldType":{"rtype":"ZoneOffsetRType","name":"java.time.ZoneOffset"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+    )
   }
 
   test("Class of all net types") {
@@ -72,6 +81,10 @@ class Basic extends munit.FunSuite:
         |      b: URI (Java)
         |      c: UUID (Java)
         |""".stripMargin
+    )
+    assertEquals(
+      RType.ofJS[Net],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Net","typedName":"co.blocke.scala_reflection.models.Net","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"URLRType","name":"java.net.URL"},"originalSymbol":null,"annotations":{}},{"name":"b","fieldType":{"rtype":"URIRType","name":"java.net.URI"},"originalSymbol":null,"annotations":{}},{"name":"c","fieldType":{"rtype":"UUIDRType","name":"java.util.UUID"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -88,6 +101,10 @@ class Basic extends munit.FunSuite:
         |            desc: String
         |      allDone: Boolean
         |""".stripMargin
+    )
+    assertEquals(
+      RType.ofJS[Person],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Person","typedName":"co.blocke.scala_reflection.models.Person","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"name","fieldType":{"rtype":"StringRType","name":"java.lang.String"},"originalSymbol":null,"annotations":{}},{"name":"age","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":null,"annotations":{}},{"name":"item","fieldType":{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Item","typedName":"co.blocke.scala_reflection.models.Item","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"desc","fieldType":{"rtype":"StringRType","name":"java.lang.String"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false},"originalSymbol":null,"annotations":{}},{"name":"allDone","fieldType":{"rtype":"BooleanRType","name":"scala.Boolean"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -142,6 +159,10 @@ class Basic extends munit.FunSuite:
         |                  numberOfEngines: Int
         |""".stripMargin
     )
+    assertEquals(
+      RType.ofJS[VehicleHolder],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.VehicleHolder","typedName":"co.blocke.scala_reflection.models.VehicleHolder","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"v","fieldType":{"rtype":"TraitRType","name":"co.blocke.scala_reflection.models.Vehicle","typedName":"co.blocke.scala_reflection.models.Vehicle","typeParamSymbols":[],"typeParamValues":[],"sealedChildren":[{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Truck","typedName":"co.blocke.scala_reflection.models.Truck","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"numberOfWheels","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Vehicle","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false},{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Car","typedName":"co.blocke.scala_reflection.models.Car","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"numberOfWheels","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":null,"annotations":{}},{"name":"color","fieldType":{"rtype":"StringRType","name":"java.lang.String"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Vehicle","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false},{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Plane","typedName":"co.blocke.scala_reflection.models.Plane","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"numberOfEngines","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","co.blocke.scala_reflection.models.Vehicle","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}],"childrenAreObject":false},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+    )
   }
 
   test("sealed trait with case objects") {
@@ -169,6 +190,10 @@ class Basic extends munit.FunSuite:
         |      eId: alias EMP_ID defined as Int
         |      age: Int
         |""".stripMargin
+    )
+    assertEquals(
+      RType.ofJS[Employee],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Employee","typedName":"co.blocke.scala_reflection.models.Employee","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"eId","fieldType":{"rtype":"AliasRType","name":"EMP_ID","typedName":"EMP_ID","definedType":"co.blocke.scala_reflection.models.BasicModels$package.EMP_ID","unwrappedType":{"rtype":"IntRType","name":"scala.Int"}},"originalSymbol":null,"annotations":{}},{"name":"age","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -336,6 +361,10 @@ class Basic extends munit.FunSuite:
         |      desc: NonEmptyString (Neotype)
         |      whatever: Any
         |""".stripMargin
+    )
+    assertEquals(
+      result.asInstanceOf[ScalaClassRType[_]].fields(0).asInstanceOf[ScalaFieldInfo].fieldType.asInstanceOf[NeoTypeRType[_]].clazz.getName,
+      "java.lang.Object"
     )
   }
 

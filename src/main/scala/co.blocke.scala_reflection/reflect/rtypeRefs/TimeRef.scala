@@ -26,7 +26,7 @@ case class DurationRef()(using quotes: Quotes)(using tt: Type[java.time.Duration
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.Duration]
+  val unitVal = '{ null.asInstanceOf[java.time.Duration] }.asExprOf[java.time.Duration]
 
   val expr =
     Apply(
@@ -50,7 +50,7 @@ case class InstantRef()(using quotes: Quotes)(using tt: Type[java.time.Instant])
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.Instant]
+  val unitVal = '{ null.asInstanceOf[java.time.Instant] }.asExprOf[java.time.Instant]
 
   val expr =
     Apply(
@@ -74,7 +74,7 @@ case class LocalDateRef()(using quotes: Quotes)(using tt: Type[java.time.LocalDa
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.LocalDate]
+  val unitVal = '{ null.asInstanceOf[java.time.LocalDate] }.asExprOf[java.time.LocalDate]
 
   val expr =
     Apply(
@@ -98,7 +98,7 @@ case class LocalDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Loc
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.LocalDateTime]
+  val unitVal = '{ null.asInstanceOf[java.time.LocalDateTime] }.asExprOf[java.time.LocalDateTime]
 
   val expr =
     Apply(
@@ -122,7 +122,7 @@ case class LocalTimeRef()(using quotes: Quotes)(using tt: Type[java.time.LocalTi
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.LocalTime]
+  val unitVal = '{ null.asInstanceOf[java.time.LocalTime] }.asExprOf[java.time.LocalTime]
 
   val expr =
     Apply(
@@ -146,7 +146,7 @@ case class MonthDayRef()(using quotes: Quotes)(using tt: Type[java.time.MonthDay
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.MonthDay]
+  val unitVal = '{ null.asInstanceOf[java.time.MonthDay] }.asExprOf[java.time.MonthDay]
 
   val expr =
     Apply(
@@ -170,7 +170,7 @@ case class OffsetDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Of
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.OffsetDateTime]
+  val unitVal = '{ null.asInstanceOf[java.time.OffsetDateTime] }.asExprOf[java.time.OffsetDateTime]
 
   val expr =
     Apply(
@@ -194,7 +194,7 @@ case class OffsetTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Offset
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.OffsetTime]
+  val unitVal = '{ null.asInstanceOf[java.time.OffsetTime] }.asExprOf[java.time.OffsetTime]
 
   val expr =
     Apply(
@@ -218,7 +218,7 @@ case class PeriodRef()(using quotes: Quotes)(using tt: Type[java.time.Period]) e
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.Period]
+  val unitVal = '{ null.asInstanceOf[java.time.Period] }.asExprOf[java.time.Period]
 
   val expr =
     Apply(
@@ -242,7 +242,7 @@ case class YearRef()(using quotes: Quotes)(using tt: Type[java.time.Year]) exten
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.Year]
+  val unitVal = '{ null.asInstanceOf[java.time.Year] }.asExprOf[java.time.Year]
 
   val expr =
     Apply(
@@ -266,7 +266,7 @@ case class YearMonthRef()(using quotes: Quotes)(using tt: Type[java.time.YearMon
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.YearMonth]
+  val unitVal = '{ null.asInstanceOf[java.time.YearMonth] }.asExprOf[java.time.YearMonth]
 
   val expr =
     Apply(
@@ -290,7 +290,7 @@ case class ZonedDateTimeRef()(using quotes: Quotes)(using tt: Type[java.time.Zon
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.ZonedDateTime]
+  val unitVal = '{ null.asInstanceOf[java.time.ZonedDateTime] }.asExprOf[java.time.ZonedDateTime]
 
   val expr =
     Apply(
@@ -314,7 +314,7 @@ case class ZoneIdRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneId]) e
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.ZoneId]
+  val unitVal = '{ null.asInstanceOf[java.time.ZoneId] }.asExprOf[java.time.ZoneId]
 
   val expr =
     Apply(
@@ -338,7 +338,7 @@ case class ZoneOffsetRef()(using quotes: Quotes)(using tt: Type[java.time.ZoneOf
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.time.ZoneOffset]
+  val unitVal = '{ null.asInstanceOf[java.time.ZoneOffset] }.asExprOf[java.time.ZoneOffset]
 
   val expr =
     Apply(
@@ -362,7 +362,7 @@ case class JObjectRef()(using quotes: Quotes)(using tt: Type[java.lang.Object]) 
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.lang.Object]
+  val unitVal = '{ null.asInstanceOf[java.lang.Object] }.asExprOf[java.lang.Object]
 
   val expr =
     Apply(

@@ -19,7 +19,7 @@ case class TryRef[R](
   val typedName: TypedName = name + "[" + tryRef.typedName + "]"
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val selectLimit: Int = 1
 

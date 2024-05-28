@@ -291,6 +291,10 @@ class Parameters extends munit.FunSuite:
       |            b: [Q] String
     |""".stripMargin
     )
+    assertEquals(
+      RType.ofJS[TryHolder],
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.TryHolder","typedName":"co.blocke.scala_reflection.models.TryHolder","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"TryRType","name":"scala.util.Try","typedName":"scala.util.Try[co.blocke.scala_reflection.models.DuoTypes[java.lang.String,scala.Int]]","typeParamSymbols":["A"],"tryType":{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.DuoTypes","typedName":"co.blocke.scala_reflection.models.DuoTypes[java.lang.String,scala.Int]","typeParamSymbols":["Q","U"],"typeParamValues":[{"rtype":"StringRType","name":"java.lang.String"},{"rtype":"IntRType","name":"scala.Int"}],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"IntRType","name":"scala.Int"},"originalSymbol":"U","annotations":{}},{"name":"b","fieldType":{"rtype":"StringRType","name":"java.lang.String"},"originalSymbol":"Q","annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":true,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+    )
   }
 
   test("Trait type substitution") {
@@ -440,7 +444,7 @@ class Parameters extends munit.FunSuite:
     )
   }
 
-  test("InTermsOf deep type substitution (inTermsOf)") {
+  test("InTermsOf deep type substitution (inTermsOf) - LR Types (Union)") {
     val result =
       RType.inTermsOf[Basis[List[Option[Int | Boolean]]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
     assertEquals(
@@ -450,6 +454,102 @@ class Parameters extends munit.FunSuite:
       |      a: Int
       |      b: String
       |      c: [T] List of Option of Union of:
+      |         left--Int
+      |         right--Boolean
+      |""".stripMargin
+    )
+  }
+
+  test("InTermsOf deep type substitution (inTermsOf) - LR Types (Either)") {
+    val result =
+      RType.inTermsOf[Basis[List[Option[Either[Int, Boolean]]]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[Option[Either[Int,Boolean]]]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of Option of Either of:
+      |         left--Int
+      |         right--Boolean
+      |""".stripMargin
+    )
+  }
+
+  test("InTermsOf deep type substitution (inTermsOf) - Java Optional") {
+    val result =
+      RType.inTermsOf[Basis[List[java.util.Optional[Int]]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[Optional[Int]]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of Optional of Int
+      |""".stripMargin
+    )
+  }
+
+  test("InTermsOf deep type substitution (inTermsOf) - Java Class") {
+    val result =
+      RType.inTermsOf[Basis[List[co.blocke.reflect.Person]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[Person]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of co.blocke.reflect.Person (Java):
+      |         fields ->
+      |            age: Int
+      |            name: String
+      |            other: Int
+      |""".stripMargin
+    )
+  }
+
+  test("InTermsOf deep type substitution (inTermsOf) - Tuple") {
+    val result =
+      RType.inTermsOf[Basis[List[(Int, Boolean)]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[(Int,Boolean)]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of Tuple of:
+      |         0: Int
+      |         1: Boolean
+      |""".stripMargin
+    )
+  }
+
+  test("InTermsOf deep type substitution (inTermsOf) - Java Map") {
+    val result =
+      RType.inTermsOf[Basis[List[java.util.Map[Int, Boolean]]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[Map[Int]]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of Java Map of:
+      |         key: Int
+      |         value: Boolean
+      |""".stripMargin
+    )
+  }
+
+  test("InTermsOf deep type substitution (inTermsOf) - LR Types (Intersection)") {
+    val result =
+      RType.inTermsOf[Basis[List[Option[Int & Boolean]]]](Class.forName("co.blocke.scala_reflection.models.Thingy2"))
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.Thingy2[List[Option[Int & Boolean]]]:
+      |   fields ->
+      |      a: Int
+      |      b: String
+      |      c: [T] List of Option of Intersection of:
       |         left--Int
       |         right--Boolean
       |""".stripMargin

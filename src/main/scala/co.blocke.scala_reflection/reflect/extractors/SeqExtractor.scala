@@ -10,6 +10,7 @@ import scala.quoted.*
 object SeqType {
   type IsSeq[A <: scala.collection.Seq[?]] = A
   type IsSet[A <: scala.collection.Set[?]] = A
+  type IsIterable[A <: scala.collection.Iterable[?]] = A
 }
 
 case class SeqExtractor() extends TypeExtractor[SeqRef[?]]:
@@ -18,7 +19,8 @@ case class SeqExtractor() extends TypeExtractor[SeqRef[?]]:
     // Try here because non-library symbol won't have a class and will explode.
     val isSeq = scala.util.Try(SeqClazz.isAssignableFrom(Class.forName(symbol.fullName))).toOption.getOrElse(false)
     val isSet = scala.util.Try(SetClazz.isAssignableFrom(Class.forName(symbol.fullName))).toOption.getOrElse(false)
-    isSeq || isSet
+    val isIterable = scala.util.Try(IterableClazz.isAssignableFrom(Class.forName(symbol.fullName))).toOption.getOrElse(false)
+    isSeq || isSet || isIterable
 
   def extractInfo[R](
       quotes: Quotes
@@ -46,5 +48,11 @@ case class SeqExtractor() extends TypeExtractor[SeqRef[?]]:
           typeParamSymbols,
           seqOfRef
         ).asInstanceOf[RTypeRef[R]]
+      case '[SeqType.IsIterable[t]] =>
+        IterableRef[t](
+          t.classSymbol.get.fullName,
+          typeParamSymbols,
+          seqOfRef
+        ).asInstanceOf[RTypeRef[R]]
       case '[z] =>
-        throw new Exception("HEY!  Unknown type... " + Type.show[z])
+        throw new Exception("Unknown seq type... " + Type.show[z])

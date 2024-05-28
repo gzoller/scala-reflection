@@ -6,6 +6,7 @@ case class Coll1(a: List[String])
 case class Coll2(a: scala.collection.immutable.HashSet[String])
 case class Coll3(a: Map[String, Float])
 case class Coll4(a: scala.collection.immutable.ListMap[String, Boolean])
+case class Coll5(a: Iterable[String])
 
 // Collections - mutable
 case class Coll1m(a: scala.collection.mutable.ListBuffer[String])
