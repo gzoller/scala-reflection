@@ -3,10 +3,11 @@ package reflect
 package rtypeRefs
 
 import scala.quoted.*
-import rtypes.JavaCollectionRType
+import rtypes.IterableRType
 import util.{JsonField, JsonObjectBuilder}
 
-case class JavaCollectionRef[R](
+/** Arity 1 Collections, e.g. List, Set, Seq */
+case class IterableRef[R <: scala.collection.Iterable[?]](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?]
@@ -17,13 +18,14 @@ case class JavaCollectionRef[R](
   import Liftables.ListTypeSymbolToExpr
 
   val refType = tt
+  val isMutable = name.contains(".mutable.")
 
   val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(
       TypeApply(
-        Select.unique(New(TypeTree.of[JavaCollectionRType[R]]), "<init>"),
+        Select.unique(New(TypeTree.of[IterableRType[R]]), "<init>"),
         List(TypeTree.of[R])
       ),
       List(
@@ -37,7 +39,7 @@ case class JavaCollectionRef[R](
     JsonObjectBuilder(quotes)(
       sb,
       List(
-        JsonField("rtype", "JavaCollectionRType"),
+        JsonField("rtype", "IterableRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),

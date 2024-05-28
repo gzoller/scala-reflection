@@ -26,7 +26,7 @@ case class URLRef()(using quotes: Quotes)(using tt: Type[java.net.URL]) extends 
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.net.URL]
+  val unitVal = '{ null.asInstanceOf[java.net.URL] }.asExprOf[java.net.URL]
 
   val expr =
     Apply(
@@ -50,7 +50,7 @@ case class URIRef()(using quotes: Quotes)(using tt: Type[java.net.URI]) extends 
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.net.URI]
+  val unitVal = '{ null.asInstanceOf[java.net.URI] }.asExprOf[java.net.URI]
 
   val expr =
     Apply(
@@ -75,7 +75,7 @@ case class UUIDRef()(using quotes: Quotes)(using tt: Type[java.util.UUID]) exten
   override val isNullable = true
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[java.util.UUID]
+  val unitVal = '{ null.asInstanceOf[java.util.UUID] }.asExprOf[java.util.UUID]
 
   val expr =
     Apply(

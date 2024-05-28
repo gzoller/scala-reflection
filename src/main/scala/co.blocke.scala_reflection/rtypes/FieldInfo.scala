@@ -60,8 +60,6 @@ case class NonConstructorFieldInfo(
     originalSymbol: Option[TypeSymbol] = None
 ) extends FieldInfo:
 
-  def reIndex(i: Int): FieldInfo = this.copy(index = i)
-
-  lazy val defaultValue: Option[Object] =
-    val clazz = Class.forName(fieldType.name)
-    Some(clazz.getMethod(getterLabel).invoke(clazz.getDeclaredConstructor().newInstance()))
+  // Can't have default values for non-constructor fields b/c we can't instantiate
+  // classes w/o knowing all the constructor parameters
+  lazy val defaultValue: Option[Object] = None

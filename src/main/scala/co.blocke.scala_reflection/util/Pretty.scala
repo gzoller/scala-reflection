@@ -129,6 +129,9 @@ object Pretty:
       case t: SetRType[?] =>
         showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
+      case t: IterableRType[?] =>
+        showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
+
       case t: ArrayRType[?] =>
         showOfType(buf, seenBefore, tabLevel, "Array of ", t.elementType)
 

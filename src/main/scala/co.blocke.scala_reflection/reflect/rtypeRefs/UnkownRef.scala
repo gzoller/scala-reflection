@@ -12,7 +12,7 @@ case class UnknownRef[R](name: String)(using quotes: Quotes)(using tt: Type[R]) 
   val typedName: TypedName = name
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val expr =
     Apply(
