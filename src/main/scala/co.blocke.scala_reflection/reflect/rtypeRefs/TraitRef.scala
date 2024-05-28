@@ -23,7 +23,7 @@ case class TraitRef[R](
 
   val refType = tt
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val selectLimit: Int = fields.size
   def select(i: Int): RTypeRef[?] =

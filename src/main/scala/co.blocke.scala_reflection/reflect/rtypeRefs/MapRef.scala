@@ -23,7 +23,7 @@ case class MapRef[R <: scala.collection.Map[?, ?]](
   val refType = tt
   val isMutable = name.contains(".mutable.")
 
-  val unitVal = '{ null }.asExprOf[R]
+  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   override val selectLimit: Int = 2
   override def select(i: Int): RTypeRef[?] =
