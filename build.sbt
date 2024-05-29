@@ -27,8 +27,8 @@ inThisBuild(List(
 
 name := "scala-reflection"
 ThisBuild / organization := "co.blocke"
-ThisBuild / scalaVersion := "3.3.3"
-ThisBuild / githubWorkflowScalaVersions := Seq("3.3.3")
+ThisBuild / scalaVersion := "3.4.2"
+ThisBuild / githubWorkflowScalaVersions := Seq("3.4.2")
 
 lazy val root = project
   .in(file("."))
