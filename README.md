@@ -162,6 +162,8 @@ Thanks also goes to pjfanning for multiple contributions to this project.
 ```
 
 ## Release Notes:
+
+* 2.0.9 - Move to Scala 3.5.2 and support bounded wildcard type parameters for collections
 * 2.0.8 - Move to Scala 3.4.2 to support new code coverage instrumentation
 * 2.0.7 - Add Iterable support, fix unit null, and add a lot of test coverage
 * 2.0.6 - Fix an obscure bug related to complex parameterized trait relationships
