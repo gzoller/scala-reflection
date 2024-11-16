@@ -22,6 +22,7 @@ object ReflectOnType: // extends NonCaseClassReflection:
 
     val dealiased = aType.dealias
     val tname = util.TypedName(quotes)(dealiased)
+    val z: Boolean = if tname.toString.contains("Any") then true else false
     allBasicTypesMap
       .get(tname)
       .map(fn => fn(quotes))
@@ -34,7 +35,8 @@ object ReflectOnType: // extends NonCaseClassReflection:
         }
 
         className match
-          case Clazzes.ANY_CLASS => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
+          case Clazzes.ANYVAL_CLASS => AnyValRef()(using quotes)(using aType.asType.asInstanceOf[Type[AnyVal]]).asInstanceOf[RTypeRef[T]]
+          case Clazzes.ANY_CLASS    => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)
           case _ if seenBefore.get(tname) == Some(true) =>
             SelfRefRef[T](className, tname)(using quotes)(using aType.asType.asInstanceOf[Type[T]])
           case _ => reflectOnType[T](quotes)(aType, tname, resolveTypeSyms)

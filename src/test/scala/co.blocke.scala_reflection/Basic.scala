@@ -363,7 +363,7 @@ class Basic extends munit.FunSuite:
         |""".stripMargin
     )
     assertEquals(
-      result.asInstanceOf[ScalaClassRType[_]].fields(0).asInstanceOf[ScalaFieldInfo].fieldType.asInstanceOf[NeoTypeRType[_]].clazz.getName,
+      result.asInstanceOf[ScalaClassRType[?]].fields(0).asInstanceOf[ScalaFieldInfo].fieldType.asInstanceOf[NeoTypeRType[?]].clazz.getName,
       "java.lang.Object"
     )
   }

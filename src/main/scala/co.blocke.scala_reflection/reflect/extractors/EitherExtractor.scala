@@ -2,7 +2,7 @@ package co.blocke.scala_reflection
 package reflect
 package extractors
 
-import rtypeRefs.{LeftRightRef, TypeSymbolRef}
+import rtypeRefs.*
 import scala.quoted.*
 
 case class EitherExtractor() extends TypeExtractor[LeftRightRef[?]]:
@@ -13,20 +13,42 @@ case class EitherExtractor() extends TypeExtractor[LeftRightRef[?]]:
       quotes: Quotes
   )(t: quotes.reflect.TypeRepr, tob: List[quotes.reflect.TypeRepr], symbol: quotes.reflect.Symbol)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[R] =
     implicit val q = quotes
+    import quotes.reflect.*
 
     val typeParamSymbols = List("L", "R")
 
     val leftRef =
-      tob(0).asType match
-        case '[t] =>
-          if tob(0).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(0).typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[t](quotes)(tob(0))
-
+      tob(0).dealias match
+        case TypeBounds(low, high) => // Detect wildcards: List[? <: Thing]
+          low.asType match
+            case '[l] =>
+              high.asType match
+                case '[h] =>
+                  WildcardRef(
+                    reflect.ReflectOnType[l](quotes)(low),
+                    reflect.ReflectOnType[h](quotes)(high)
+                  )
+        case _ =>
+          tob(0).asType match
+            case '[u] =>
+              if tob(0).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(0).typeSymbol.name)(using quotes)(using Type.of[Any])
+              else reflect.ReflectOnType[u](quotes)(tob(0))
     val rightRef =
-      tob(1).asType match
-        case '[t] =>
-          if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
-          else reflect.ReflectOnType[t](quotes)(tob(1))
+      tob(1).dealias match
+        case TypeBounds(low, high) => // Detect wildcards: List[? <: Thing]
+          low.asType match
+            case '[l] =>
+              high.asType match
+                case '[h] =>
+                  WildcardRef(
+                    reflect.ReflectOnType[l](quotes)(low),
+                    reflect.ReflectOnType[h](quotes)(high)
+                  )
+        case _ =>
+          tob(1).asType match
+            case '[u] =>
+              if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
+              else reflect.ReflectOnType[u](quotes)(tob(1))
 
     val a = quotes.reflect.AppliedType(t, tob).asType
     a match

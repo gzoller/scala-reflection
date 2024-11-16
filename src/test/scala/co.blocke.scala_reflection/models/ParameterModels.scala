@@ -108,3 +108,16 @@ sealed trait PersonX[X, Y] { val who: X; val org: Y }
 case class Sports[A, B](thing1: A, thing2: B) extends Hobby[A, B]
 case class Painter[A, B](instrument: A, effort: B) extends Artist[A, B]
 case class EmployeeX[A, B, C, D](who: Artist[C, Hobby[D, A]], org: B) extends PersonX[Artist[C, Hobby[D, A]], B]
+
+case class WildThing(
+    x: AnyVal,
+    a: List[? <: Thingy2[String]],
+    b: List[? >: Thingy2[String]],
+    c: List[? >: Int <: AnyVal],
+    d: Option[? <: Thingy2[String]],
+    e: Try[? <: Thingy2[String]],
+    f: Map[? <: Thingy2[String], ? >: Int],
+    g: (? <: Thingy2[String], ? >: Int)
+)
+
+case class NamedThing[T >: Int <: AnyVal](a: String)

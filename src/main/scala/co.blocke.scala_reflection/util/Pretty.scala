@@ -299,6 +299,17 @@ object Pretty:
         buf.append("Enum (Java) having values " + t.values.mkString("(", ",", ")"))
         (buf, false, seenBefore)
 
+      case t: WildcardRType =>
+        buf.append("Wildcard type: " + t.name)
+        if t.lowBoundsType.isDefined then
+          buf.append(" >: ")
+          _typeString(t.lowBoundsType.get, buf)
+        if t.highBoundsType.isDefined then
+          buf.append(" <: ")
+          _typeString(t.highBoundsType.get, buf)
+        buf.append("\n")
+        (buf, true, seenBefore)
+
       case t: ObjectRType[?] =>
         buf.append(showSimpleName(t))
         buf.append(" (object)")
