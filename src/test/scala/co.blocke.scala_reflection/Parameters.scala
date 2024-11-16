@@ -618,3 +618,36 @@ class Parameters extends munit.FunSuite:
       |""".stripMargin
     )
   }
+
+  test("Bounded wildard parameters") {
+    val result = RType.of[WildThing]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.WildThing:
+      |   fields ->
+      |      x: AnyVal
+      |      a: List of Wildcard type: ? <: Thingy2[String]
+      |      b: List of Wildcard type: ? >: Thingy2[String]
+      |      c: List of Wildcard type: ? >: Int
+      |      d: Option of Wildcard type: ? <: Thingy2[String]
+      |      e: Try of Wildcard type: ? <: Thingy2[String]
+      |      f: Map of:
+      |         key: Wildcard type: ? <: Thingy2[String]
+      |         value: Wildcard type: ? >: Int
+      |      g: Tuple of:
+      |         0: Wildcard type: ? <: Thingy2[String]
+      |         1: Wildcard type: ? >: Int
+      |""".stripMargin
+    )
+  }
+
+  test("Bounded wildard parameters") {
+    val result = RType.of[NamedThing[?]]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.NamedThing[Any]:
+      |   fields ->
+      |      a: String
+      |""".stripMargin
+    )
+  }

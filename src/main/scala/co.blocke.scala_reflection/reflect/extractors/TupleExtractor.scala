@@ -17,13 +17,25 @@ case class TupleExtractor() extends TypeExtractor[TupleRef[?]]:
       quotes: Quotes
   )(t: quotes.reflect.TypeRepr, tob: List[quotes.reflect.TypeRepr], symbol: quotes.reflect.Symbol)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): RTypeRef[R] =
     implicit val q = quotes
+    import quotes.reflect.*
 
     val elementTypes =
       tob.map { oneTob =>
-        oneTob.asType match
-          case '[u] =>
-            if oneTob.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(oneTob.typeSymbol.name)(using quotes)(using Type.of[Any])
-            else reflect.ReflectOnType[u](quotes)(oneTob)
+        oneTob.dealias match
+          case TypeBounds(low, high) => // Detect wildcards: List[? <: Thing]
+            low.asType match
+              case '[l] =>
+                high.asType match
+                  case '[h] =>
+                    WildcardRef(
+                      reflect.ReflectOnType[l](quotes)(low),
+                      reflect.ReflectOnType[h](quotes)(high)
+                    )
+          case _ =>
+            oneTob.asType match
+              case '[u] =>
+                if oneTob.typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(oneTob.typeSymbol.name)(using quotes)(using Type.of[Any])
+                else reflect.ReflectOnType[u](quotes)(oneTob)
       }
     val (_, typeParamSymbols) = elementTypes.foldLeft(('A', List.empty[String])) { case ((sym, acc), b) =>
       ((sym + 1).toChar, acc :+ sym.toString())

@@ -569,6 +569,30 @@ case class AnyRef()(using quotes: Quotes)(using tt: Type[Any]) extends RTypeRef[
       )
     )
 
+case class AnyValRef()(using quotes: Quotes)(using tt: Type[AnyVal]) extends RTypeRef[AnyVal] with PrimitiveRef:
+  import quotes.reflect.*
+  val name = Clazzes.ANYVAL_CLASS
+  val typedName: TypedName = name
+  override val isNullable = true
+  val refType = tt
+
+  val unitVal = '{ null.asInstanceOf[AnyVal] }
+
+  val expr =
+    Apply(
+      Select.unique(New(TypeTree.of[AnyValRType]), "<init>"),
+      Nil
+    ).asExprOf[RType[AnyVal]]
+
+  def asJson(sb: StringBuilder)(using quotes: Quotes): Unit =
+    JsonObjectBuilder(quotes)(
+      sb,
+      List(
+        JsonField("rtype", "AnyValRType"),
+        JsonField("name", name)
+      )
+    )
+
 object PrimitiveRef:
   // Pre-bake primitive types w/cached builder functions
   // Note: AnyRef is NOT in the map, because it would match everything in ReflectOnType!

@@ -27,8 +27,8 @@ inThisBuild(List(
 
 name := "scala-reflection"
 ThisBuild / organization := "co.blocke"
-ThisBuild / scalaVersion := "3.4.2"
-ThisBuild / githubWorkflowScalaVersions := Seq("3.4.2")
+ThisBuild / scalaVersion := "3.5.2"
+ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
 
 lazy val root = project
   .in(file("."))
@@ -59,12 +59,6 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
   RefPredicate.StartsWith(Ref.Tag("v"))
 )
-ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("coverage", "test")))
-ThisBuild / githubWorkflowBuildPostamble := Seq(
-  WorkflowStep.Run(commands = List("echo 'branch ${{github.ref}}'"), name = Some("showme")),
-  WorkflowStep.Sbt(List("coverageReport")),
-  WorkflowStep.Use(cond = Some("""contains(github.ref, 'release')"""), ref = UseRef.Public("coverallsapp","github-action", "v2"), name = Some("Coveralls"))
-)
 
 ThisBuild / githubWorkflowPublish := Seq(
   WorkflowStep.Sbt(
@@ -93,7 +87,7 @@ lazy val compilerOptions = Seq(
   "-feature",
   "-language:implicitConversions",
   "-deprecation",
-  // "-explain",
+  "-explain",
   // "-experimental",
   "-encoding",
   "utf8"
