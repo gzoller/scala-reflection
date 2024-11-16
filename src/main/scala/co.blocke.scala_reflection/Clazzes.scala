@@ -17,6 +17,7 @@ object Clazzes:
   val SHORT_CLASS = "scala.Short"
   val STRING_CLASS = "java.lang.String"
   val ANY_CLASS = "scala.Any"
+  val ANYVAL_CLASS = "scala.AnyVal"
   val ENUMERATION_CLASS = "scala.Enumeration.Value"
 
   // ======= Java Class Names =======

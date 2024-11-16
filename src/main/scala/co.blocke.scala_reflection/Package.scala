@@ -1,6 +1,7 @@
 package co.blocke.scala_reflection
 
-import scala.quoted.Quotes
+// import scala.quoted.Quotes
+import scala.quoted.{Expr, Quotes, Type}
 
 /** Mnemonic symbol for a type--typically a paramaterized type, e.g. Foo[T], where T is the symbol */
 opaque type TypeSymbol = String
@@ -18,7 +19,7 @@ val NONE = "<none>"
 
 val NEOTYPE = "neotype.Newtype"
 
-inline def annoSymToString(quotes: Quotes)(terms: List[quotes.reflect.Term]): Map[String, String] =
+def annoSymToString(quotes: Quotes)(terms: List[quotes.reflect.Term]): Map[String, String] =
   import quotes.reflect.*
   terms.collect {
     case NamedArg(argName, Literal(BooleanConstant(argValue))) => (argName -> argValue.toString)
@@ -42,3 +43,8 @@ def foldLeftBreak[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
         case Left(b)  => foldLeftBreak(as)(b)(op)
       }
   }
+
+def ofOption[T](xs: Option[Expr[T]])(using Type[T])(using q: Quotes): Expr[Option[T]] =
+  import q.reflect.*
+  if xs.isEmpty then '{ None }
+  else '{ Some(${ xs.get }) }

@@ -14,10 +14,10 @@ class Enums extends munit.FunSuite:
       |      color: Enum (Java) having values (RED,GREEN,BLUE)
       |""".stripMargin
     )
-    val ord = result.asInstanceOf[JavaClassRType[_]].fields(0).asInstanceOf[NonConstructorFieldInfo].fieldType.asInstanceOf[JavaEnumRType[_]].ordinal("GREEN").get
+    val ord = result.asInstanceOf[JavaClassRType[?]].fields(0).asInstanceOf[NonConstructorFieldInfo].fieldType.asInstanceOf[JavaEnumRType[?]].ordinal("GREEN").get
     assertEquals(ord, 1)
     assertEquals(
-      result.asInstanceOf[JavaClassRType[_]].fields(0).asInstanceOf[NonConstructorFieldInfo].fieldType.asInstanceOf[JavaEnumRType[_]].valueAt(2).map(_.toString),
+      result.asInstanceOf[JavaClassRType[?]].fields(0).asInstanceOf[NonConstructorFieldInfo].fieldType.asInstanceOf[JavaEnumRType[?]].valueAt(2).map(_.toString),
       Some("BLUE")
     )
   }

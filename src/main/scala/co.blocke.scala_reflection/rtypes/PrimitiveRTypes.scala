@@ -69,6 +69,11 @@ case class AnyRType() extends RType[Any] with PrimitiveRType:
   val typedName: TypedName = name
   override val isNullable: Boolean = true
 
+case class AnyValRType() extends RType[AnyVal] with PrimitiveRType:
+  val name = ANYVAL_CLASS
+  val typedName: TypedName = name
+  override val isNullable: Boolean = true
+
 //------ JAVA ------
 case class JavaBigDecimalRType() extends RType[java.math.BigDecimal] with PrimitiveRType:
   val name = JBIG_DECIMAL_CLASS
