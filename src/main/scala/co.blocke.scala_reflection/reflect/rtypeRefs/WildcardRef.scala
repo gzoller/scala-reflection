@@ -30,7 +30,6 @@ case class WildcardRef(name: String, lowBoundsRef: Option[RTypeRef[?]], highBoun
         Expr(name).asTerm,
         ofOption(lowBoundsRef.map(_.expr)).asTerm,
         ofOption(highBoundsRef.map(_.expr)).asTerm
-        // if highBoundsRef.isEmpty then '{ None: Option[RTypeRef[?]] } else '{ Some(${highBoundsRef.get.expr}) }
       )
     ).asExprOf[RType[Any]]
 
