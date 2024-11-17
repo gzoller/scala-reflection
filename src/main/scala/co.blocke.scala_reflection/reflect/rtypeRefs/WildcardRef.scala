@@ -10,10 +10,10 @@ import util.{JsonField, JsonObjectBuilder}
   */
 
 object WildcardRef:
-    def apply(lowBoundsRef: RTypeRef[?], highBoundsRef: RTypeRef[?])(using quotes: Quotes)(using tt: Type[Any]): WildcardRef =
-        val low = if lowBoundsRef.name.contains("scala.Nothing") || lowBoundsRef.name.contains("scala.Any") then None else Some(lowBoundsRef)
-        val hi = if highBoundsRef.name.contains("scala.Nothing") || highBoundsRef.name.contains("scala.Any") then None else Some(highBoundsRef)
-        WildcardRef("?", low, hi)
+  def apply(lowBoundsRef: RTypeRef[?], highBoundsRef: RTypeRef[?])(using quotes: Quotes)(using tt: Type[Any]): WildcardRef =
+    val low = if lowBoundsRef.name.contains("scala.Nothing") || lowBoundsRef.name.contains("scala.Any") then None else Some(lowBoundsRef)
+    val hi = if highBoundsRef.name.contains("scala.Nothing") || highBoundsRef.name.contains("scala.Any") then None else Some(highBoundsRef)
+    WildcardRef("?", low, hi)
 
 case class WildcardRef(name: String, lowBoundsRef: Option[RTypeRef[?]], highBoundsRef: Option[RTypeRef[?]])(using quotes: Quotes)(using tt: Type[Any]) extends RTypeRef[Any]:
   import quotes.reflect.*

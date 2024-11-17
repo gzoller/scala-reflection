@@ -125,7 +125,6 @@ case class Complex(a: Int, b: Boolean) extends Basic[Int, Boolean]
 
 // // PersonX[String,Int] ==> Employee(Artist)
 
-
 class Message
 class Command extends Message
 class System extends Message

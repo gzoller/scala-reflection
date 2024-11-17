@@ -25,8 +25,8 @@ inThisBuild(List(
   //coverageFailOnMinimum       := true
 ))
 
-logLevel := Level.Debug
 name := "scala-reflection"
+ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / organization := "co.blocke"
 ThisBuild / scalaVersion := "3.5.2"
 ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
