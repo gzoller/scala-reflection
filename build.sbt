@@ -25,6 +25,7 @@ inThisBuild(List(
   //coverageFailOnMinimum       := true
 ))
 
+logLevel := Level.Debug
 name := "scala-reflection"
 ThisBuild / organization := "co.blocke"
 ThisBuild / scalaVersion := "3.5.2"
