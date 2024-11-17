@@ -1,2 +1,0 @@
-service_name: github
-coverage_threshold: 85 # Minimum coverage percentage required
