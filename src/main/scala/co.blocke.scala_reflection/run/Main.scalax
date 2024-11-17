@@ -11,6 +11,6 @@ object Main {
     // println(RType.of[PP[Vehicle[VehicleClass]]].pretty)
     // println("done")
 
-    println(RType.of[Person[Artist[Int, Hobby[String, Double]], Boolean]].pretty)
+    println(RType.of[XMIT].pretty)
 
 }

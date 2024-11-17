@@ -2,6 +2,7 @@ package co.blocke.scala_reflection
 package model
 
 import neotype.*
+import dotty.tools.dotc.reporting.Message
 
 /*
 trait Miss[E] { val x: E }
@@ -123,3 +124,10 @@ case class Complex(a: Int, b: Boolean) extends Basic[Int, Boolean]
 // case class Employee[A, B, C, D](who: Artist[C, Hobby[D, A]], org: B) extends Person[Artist[C, Hobby[D, A]], B]
 
 // // PersonX[String,Int] ==> Employee(Artist)
+
+class Message
+class Command extends Message
+class System extends Message
+
+case class XMIT(content: List[? <: Message]) // blows up
+//case class REC[T <: Message]() // works
