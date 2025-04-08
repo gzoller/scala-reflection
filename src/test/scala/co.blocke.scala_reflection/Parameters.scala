@@ -48,7 +48,7 @@ class Parameters extends munit.FunSuite:
     val result = RType.of[Map[Int, WithDefault]]
     assertEquals(
       result.pretty,
-      """Map of:
+      """Map of: (preserve order: false)
       |   key: Int
       |   value: co.blocke.scala_reflection.models.WithDefault:
       |      fields ->
@@ -269,7 +269,7 @@ class Parameters extends munit.FunSuite:
       |         fields ->
       |            a: [U] Byte
       |            b: [Q] Int
-      |      b: Map of:
+      |      b: Map of: (preserve order: false)
       |         key: String
       |         value: co.blocke.scala_reflection.models.DuoTypes[Float,Short]:
       |            fields ->
@@ -399,7 +399,7 @@ class Parameters extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.MapItC[Int,Double,String,Boolean]:
       |   fields ->
-      |      x: Map of:
+      |      x: Map of: (preserve order: false)
       |         key: Int
       |         value: Option of Double
       |      s: Array of String
@@ -533,7 +533,7 @@ class Parameters extends munit.FunSuite:
       |   fields ->
       |      a: Int
       |      b: String
-      |      c: [T] List of Java Map of:
+      |      c: [T] List of Java Map of: (preserve order: false)
       |         key: Int
       |         value: Boolean
       |""".stripMargin
@@ -631,7 +631,7 @@ class Parameters extends munit.FunSuite:
       |      c: List of Wildcard type: ? >: Int
       |      d: Option of Wildcard type: ? <: Thingy2[String]
       |      e: Try of Wildcard type: ? <: Thingy2[String]
-      |      f: Map of:
+      |      f: Map of: (preserve order: false)
       |         key: Wildcard type: ? <: Thingy2[String]
       |         value: Wildcard type: ? >: Int
       |      g: Tuple of:

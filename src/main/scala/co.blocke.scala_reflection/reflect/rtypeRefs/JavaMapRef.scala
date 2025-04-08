@@ -9,6 +9,7 @@ import util.{JsonField, JsonObjectBuilder}
 /** Arity 2 Collections, Map flavors, basiclly */
 case class JavaMapRef[R](
     name: String,
+    isOrdered: Boolean,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?], // map key
     elementRef2: RTypeRef[?] // map value
@@ -39,6 +40,7 @@ case class JavaMapRef[R](
       ),
       List(
         Expr(name).asTerm,
+        Expr(isOrdered).asTerm,
         Expr(typeParamSymbols).asTerm,
         elementRef.expr.asTerm,
         elementRef2.expr.asTerm
@@ -52,6 +54,7 @@ case class JavaMapRef[R](
         JsonField("rtype", "JavaMapRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
+        JsonField("isOrdered", this.isOrdered),
         JsonField("typeParamSymbols", this.typeParamSymbols),
         JsonField("elementType", this.elementRef),
         JsonField("elementType2", this.elementRef2)
