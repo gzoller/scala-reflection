@@ -53,8 +53,8 @@ jobs:
           cache: sbt
 
       - name: Setup sbt
-        uses: coursier/setup-sbt@v2
-        
+        uses: coursier/setup-sbt@v1
+
       - name: sbt update
         if: matrix.java == 'zulu@21' && steps.setup-java-zulu-21.outputs.cache-hit == 'false'
         shell: bash
