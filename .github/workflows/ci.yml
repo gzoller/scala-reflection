@@ -43,6 +43,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
+  
       - name: Setup Java (zulu@21)
         id: setup-java-zulu-21
         if: matrix.java == 'zulu@21'
