@@ -57,14 +57,14 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll3:
       |   fields ->
-      |      a: Map of:
+      |      a: Map of: (preserve order: false)
       |         key: String
       |         value: Float
       |""".stripMargin
     )
     assertEquals(
       RType.ofJS[Coll3],
-      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll3","typedName":"co.blocke.scala_reflection.models.Coll3","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.immutable.Map","typedName":"scala.collection.immutable.Map[java.lang.String,scala.Float]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"FloatRType","name":"scala.Float"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll3","typedName":"co.blocke.scala_reflection.models.Coll3","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.immutable.Map","typedName":"scala.collection.immutable.Map[java.lang.String,scala.Float]","isOrdered":false,"typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"FloatRType","name":"scala.Float"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -74,14 +74,14 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll4:
       |   fields ->
-      |      a: ListMap of:
+      |      a: ListMap of: (preserve order: true)
       |         key: String
       |         value: Boolean
       |""".stripMargin
     )
     assertEquals(
       RType.ofJS[Coll4],
-      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll4","typedName":"co.blocke.scala_reflection.models.Coll4","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.immutable.ListMap","typedName":"scala.collection.immutable.ListMap[java.lang.String,scala.Boolean]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"BooleanRType","name":"scala.Boolean"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll4","typedName":"co.blocke.scala_reflection.models.Coll4","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.immutable.ListMap","typedName":"scala.collection.immutable.ListMap[java.lang.String,scala.Boolean]","isOrdered":true,"typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"BooleanRType","name":"scala.Boolean"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -121,14 +121,14 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll3m:
       |   fields ->
-      |      a: mutable Map of:
+      |      a: mutable Map of: (preserve order: false)
       |         key: String
       |         value: Float
       |""".stripMargin
     )
     assertEquals(
       RType.ofJS[Coll3m],
-      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll3m","typedName":"co.blocke.scala_reflection.models.Coll3m","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.mutable.Map","typedName":"scala.collection.mutable.Map[java.lang.String,scala.Float]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"FloatRType","name":"scala.Float"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll3m","typedName":"co.blocke.scala_reflection.models.Coll3m","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.mutable.Map","typedName":"scala.collection.mutable.Map[java.lang.String,scala.Float]","isOrdered":false,"typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"FloatRType","name":"scala.Float"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -138,14 +138,14 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.Coll4m:
       |   fields ->
-      |      a: mutable HashMap of:
+      |      a: mutable HashMap of: (preserve order: false)
       |         key: String
       |         value: Boolean
       |""".stripMargin
     )
     assertEquals(
       RType.ofJS[Coll4m],
-      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll4m","typedName":"co.blocke.scala_reflection.models.Coll4m","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.mutable.HashMap","typedName":"scala.collection.mutable.HashMap[java.lang.String,scala.Boolean]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"BooleanRType","name":"scala.Boolean"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
+      """{"rtype":"ScalaClassRType","name":"co.blocke.scala_reflection.models.Coll4m","typedName":"co.blocke.scala_reflection.models.Coll4m","typeParamSymbols":[],"typeParamValues":[],"typeMembers":[],"fields":[{"name":"a","fieldType":{"rtype":"MapRType","name":"scala.collection.mutable.HashMap","typedName":"scala.collection.mutable.HashMap[java.lang.String,scala.Boolean]","isOrdered":false,"typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"BooleanRType","name":"scala.Boolean"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object","scala.Product","java.io.Serializable"],"isAppliedType":false,"isValueClass":false,"isCaseClass":true,"isAbstractClass":false,"nonConstructorFields":[],"sealedChildren":[],"childrenAreObject":false}"""
     )
   }
 
@@ -155,7 +155,7 @@ class Collections extends munit.FunSuite:
       result.pretty,
       """co.blocke.scala_reflection.models.NestedColl:
       |   fields ->
-      |      a: Map of:
+      |      a: Map of: (preserve order: false)
       |         key: String
       |         value: List of Option of Int
       |""".stripMargin

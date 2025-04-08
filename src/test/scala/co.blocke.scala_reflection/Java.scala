@@ -18,13 +18,16 @@ class Java extends munit.FunSuite:
       |      a: Java List of Int
       |      b: Optional of Java ArrayList of Int
       |      c: Java Stack of String
-      |      d: Java Queue of Map of:
+      |      d: Java Queue of Map of: (preserve order: false)
       |         key: Int
       |         value: String
       |      e: Java Set of Boolean
-      |      f: Java Map of:
+      |      f: Java Map of: (preserve order: false)
       |         key: Int
       |         value: String
+      |      g: Java LinkedHashMap of: (preserve order: true)
+      |         key: String
+      |         value: Int
       |""".stripMargin
     )
   }
@@ -63,7 +66,7 @@ class Java extends munit.FunSuite:
       result.pretty,
       """co.blocke.reflect.JavaCollections (Java):
       |   fields ->
-      |      hMap: Java HashMap of:
+      |      hMap: Java HashMap of: (preserve order: false)
       |         key: String
       |         value: Integer (Java)
       |      myArr: Array of String
@@ -76,7 +79,7 @@ class Java extends munit.FunSuite:
     )
     assertEquals(
       RType.ofJS[JavaCollections],
-      """{"rtype":"JavaClassRType","name":"co.blocke.reflect.JavaCollections","typedName":"co.blocke.reflect.JavaCollections","typeParamSymbols":[],"typeParamValues":[],"fields":[{"name":"hMap","fieldType":{"rtype":"JavaMapRType","name":"java.util.HashMap","typedName":"java.util.HashMap[java.lang.String,java.lang.Integer]","typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"JavaIntegerRType","name":"java.lang.Integer"}},"originalSymbol":null,"annotations":{}},{"name":"myArr","fieldType":{"rtype":"ArrayRType","name":"[Ljava.lang.String;","typedName":"[Ljava.lang.String;[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"myList","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.ArrayList","typedName":"java.util.ArrayList[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"myQ","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.concurrent.BlockingQueue","typedName":"java.util.concurrent.BlockingQueue[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"myTree","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.TreeSet","typedName":"java.util.TreeSet[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"nested","fieldType":{"rtype":"ArrayRType","name":"[Ljava.util.List;","typedName":"[Ljava.util.List;[java.util.List[java.lang.Integer]]","typeParamSymbols":["A"],"elementType":{"rtype":"JavaCollectionRType","name":"java.util.List","typedName":"java.util.List[java.lang.Integer]","typeParamSymbols":["A"],"elementType":{"rtype":"JavaIntegerRType","name":"java.lang.Integer"}}},"originalSymbol":null,"annotations":{}},{"name":"pushPop","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.Stack","typedName":"java.util.Stack[java.lang.Long]","typeParamSymbols":["A"],"elementType":{"rtype":"JavaLongRType","name":"java.lang.Long"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object"]}"""
+      """{"rtype":"JavaClassRType","name":"co.blocke.reflect.JavaCollections","typedName":"co.blocke.reflect.JavaCollections","typeParamSymbols":[],"typeParamValues":[],"fields":[{"name":"hMap","fieldType":{"rtype":"JavaMapRType","name":"java.util.HashMap","typedName":"java.util.HashMap[java.lang.String,java.lang.Integer]","isOrdered":false,"typeParamSymbols":["K","V"],"elementType":{"rtype":"StringRType","name":"java.lang.String"},"elementType2":{"rtype":"JavaIntegerRType","name":"java.lang.Integer"}},"originalSymbol":null,"annotations":{}},{"name":"myArr","fieldType":{"rtype":"ArrayRType","name":"[Ljava.lang.String;","typedName":"[Ljava.lang.String;[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"myList","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.ArrayList","typedName":"java.util.ArrayList[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"myQ","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.concurrent.BlockingQueue","typedName":"java.util.concurrent.BlockingQueue[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"myTree","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.TreeSet","typedName":"java.util.TreeSet[java.lang.String]","typeParamSymbols":["A"],"elementType":{"rtype":"StringRType","name":"java.lang.String"}},"originalSymbol":null,"annotations":{}},{"name":"nested","fieldType":{"rtype":"ArrayRType","name":"[Ljava.util.List;","typedName":"[Ljava.util.List;[java.util.List[java.lang.Integer]]","typeParamSymbols":["A"],"elementType":{"rtype":"JavaCollectionRType","name":"java.util.List","typedName":"java.util.List[java.lang.Integer]","typeParamSymbols":["A"],"elementType":{"rtype":"JavaIntegerRType","name":"java.lang.Integer"}}},"originalSymbol":null,"annotations":{}},{"name":"pushPop","fieldType":{"rtype":"JavaCollectionRType","name":"java.util.Stack","typedName":"java.util.Stack[java.lang.Long]","typeParamSymbols":["A"],"elementType":{"rtype":"JavaLongRType","name":"java.lang.Long"}},"originalSymbol":null,"annotations":{}}],"annotations":{},"mixins":["java.lang.Object"]}"""
     )
   }
 

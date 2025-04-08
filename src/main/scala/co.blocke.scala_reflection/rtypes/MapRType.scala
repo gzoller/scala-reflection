@@ -6,6 +6,7 @@ import scala.quoted.Quotes
 /** Arity 2 Collections, Map flavors, basiclly */
 case class MapRType[R](
     name: String,
+    isOrdered: Boolean,
     typeParamSymbols: List[TypeSymbol],
     elementType: RType[?], // map key
     elementType2: RType[?] // map value

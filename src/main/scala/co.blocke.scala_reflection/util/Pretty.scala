@@ -147,7 +147,7 @@ object Pretty:
         (buf, true, allClassesSeenUpToNow)
 
       case t: MapRType[?] =>
-        buf.append(cleanCollectionNames(t) + " of:\n")
+        buf.append(cleanCollectionNames(t) + s" of: (preserve order: ${t.isOrdered})\n")
         buf.append(tabs(tabLevel + 1))
         buf.append("key: ")
         val (_, lastWasMultiLine_1, classesSeen_1) = _pretty(t.elementType, buf, tabLevel + 1, seenBefore)
@@ -363,7 +363,7 @@ object Pretty:
         showOfType(buf, seenBefore, tabLevel, cleanCollectionNames(t) + " of ", t.elementType)
 
       case t: JavaMapRType[?] =>
-        buf.append(cleanCollectionNames(t) + " of:\n")
+        buf.append(cleanCollectionNames(t) + s" of: (preserve order: ${t.isOrdered})\n")
         buf.append(tabs(tabLevel + 1))
         buf.append("key: ")
         val (_, lastWasMultiLine_1, classesSeen_1) = _pretty(t.elementType, buf, tabLevel + 1, seenBefore)

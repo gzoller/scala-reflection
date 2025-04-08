@@ -52,11 +52,13 @@ case class JavaMapExtractor() extends TypeExtractor[JavaMapRef[?]]:
               if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
               else reflect.ReflectOnType[u](quotes)(tob(1))
 
-    val a = quotes.reflect.AppliedType(t, tob).asType
-    a match
+    val a = quotes.reflect.AppliedType(t, tob)
+    a.asType match
       case '[t] =>
+        val typeName = a.tycon.typeSymbol.fullName
         JavaMapRef[t](
           t.classSymbol.get.fullName,
+          typeName == "java.util.LinkedHashMap",
           typeParamSymbols,
           elementRef,
           elementRef2

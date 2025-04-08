@@ -8,6 +8,15 @@ import scala.quoted.*
 
 object MapType {
   type IsMap[A <: scala.collection.Map[?, ?]] = A
+
+  val insertionOrderMapTypes = Set(
+    "scala.collection.immutable.ListMap",
+    "scala.collection.immutable.LinkedHashMap", // Scala 2.13+
+    "scala.collection.immutable.SeqMap",
+    "scala.collection.mutable.LinkedHashMap",
+    "scala.collection.mutable.ListMap",
+    "scala.collection.mutable.SeqMap"
+  )
 }
 
 case class MapExtractor() extends TypeExtractor[MapRef[?]]:
@@ -57,11 +66,14 @@ case class MapExtractor() extends TypeExtractor[MapRef[?]]:
               if tob(1).typeSymbol.flags.is(quotes.reflect.Flags.Param) then TypeSymbolRef(tob(1).typeSymbol.name)(using quotes)(using Type.of[Any])
               else reflect.ReflectOnType[u](quotes)(tob(1))
 
-    val a = quotes.reflect.AppliedType(t, tob).asType
-    a match
+    val a = quotes.reflect.AppliedType(t, tob)
+    a.asType match
       case '[MapType.IsMap[t]] =>
+        val typeName = a.tycon.typeSymbol.fullName
+        val maintainsOrder = MapType.insertionOrderMapTypes.contains(typeName)
         MapRef[t](
           t.classSymbol.get.fullName,
+          maintainsOrder,
           typeParamSymbols,
           elementRef,
           elementRef2
