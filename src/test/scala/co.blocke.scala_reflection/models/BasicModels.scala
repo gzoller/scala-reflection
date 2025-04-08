@@ -131,7 +131,8 @@ case class JColl(
     c: java.util.Stack[String],
     d: java.util.Queue[Map[Int, String]],
     e: java.util.Set[Boolean],
-    f: java.util.Map[Int, String]
+    f: java.util.Map[Int, String],
+    g: java.util.LinkedHashMap[String, Int]
 )
 
 // Mixin tests

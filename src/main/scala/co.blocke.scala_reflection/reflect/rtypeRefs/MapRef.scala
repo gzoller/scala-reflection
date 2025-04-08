@@ -9,6 +9,7 @@ import util.{JsonField, JsonObjectBuilder}
 /** Arity 2 Collections, Map flavors, basiclly */
 case class MapRef[R <: scala.collection.Map[?, ?]](
     name: String,
+    isOrdered: Boolean,
     typeParamSymbols: List[TypeSymbol],
     elementRef: RTypeRef[?], // map key
     elementRef2: RTypeRef[?] // map value
@@ -41,6 +42,7 @@ case class MapRef[R <: scala.collection.Map[?, ?]](
       ),
       List(
         Expr(name).asTerm,
+        Expr(isOrdered).asTerm,
         Expr(typeParamSymbols).asTerm,
         elementRef.expr.asTerm,
         elementRef2.expr.asTerm
@@ -54,6 +56,7 @@ case class MapRef[R <: scala.collection.Map[?, ?]](
         JsonField("rtype", "MapRType"),
         JsonField("name", this.name),
         JsonField("typedName", this.typedName),
+        JsonField("isOrdered", this.isOrdered),
         JsonField("typeParamSymbols", this.typeParamSymbols),
         JsonField("elementType", this.elementRef),
         JsonField("elementType2", this.elementRef2)
