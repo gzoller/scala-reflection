@@ -6,27 +6,19 @@ import reflect.rtypeRefs.*
 
 object UniqueFinder:
 
-  /**
-   * This is used to determine if every child class of a sealed trait has a unique, non-optional field
-   * that, if present, will uniquely identify the class. If even one child class has single unique field
-   * then None is returned.
-   */
+  /** This is used to determine if every child class of a sealed trait has a unique, non-optional field
+    * that, if present, will uniquely identify the class. If even one child class has single unique field
+    * then None is returned.
+    */
   def uniqueFieldHashMap(classLikes: List[RTypeRef[?]]): Map[String, List[String]] =
     val flatClasses = flattenClassRefs(classLikes)
-    flatClasses.groupMap { cls =>
-      val hash = cls.fields
-        .map(_.name)
-        .sorted
-        .mkString("#")
-        .##.toString
-      hash
-    }(_.name)
+    flatClasses.groupMap(cls => hashOf(cls.fields))(_.name)
 
   private def flattenClassRefs(classLikes: List[RTypeRef[?]]): List[ClassRef[?]] =
     classLikes.flatMap {
       case c: ClassRef[?] => List(c)
       case t: TraitRef[?] => flattenClassRefs(t.sealedChildren)
-      case _ => Nil
+      case _              => Nil
     }
 
   val LEFT: Char = 'L'
@@ -45,10 +37,10 @@ object UniqueFinder:
     ref match
       case o: OptionRef[?] =>
         o.optionParamType match
-          case c: ClassRef[?] => Set(hashOf(c.fields))
-          case t: TraitRef[?] => t.sealedChildren.flatMap(collectHashes).toSet
+          case c: ClassRef[?]       => Set(hashOf(c.fields))
+          case t: TraitRef[?]       => t.sealedChildren.flatMap(collectHashes).toSet
           case lrr: LeftRightRef[?] => computeUniqueFields(lrr.leftRef, lrr.rightRef).keySet
-          case _ => Set.empty
+          case _                    => Set.empty
 
       case c: ClassRef[?] =>
         Set(hashOf(c.fields))
@@ -62,5 +54,5 @@ object UniqueFinder:
       case _ =>
         Set.empty
 
-  private def hashOf(fields: List[FieldInfoRef]): String =
+  def hashOf(fields: List[FieldInfoRef]): String =
     fields.map(_.name).sorted.mkString("#").##.toString
