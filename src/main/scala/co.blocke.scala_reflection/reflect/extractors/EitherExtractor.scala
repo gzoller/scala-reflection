@@ -4,6 +4,7 @@ package extractors
 
 import rtypeRefs.*
 import scala.quoted.*
+import util.UniqueFinder
 
 case class EitherExtractor() extends TypeExtractor[LeftRightRef[?]]:
 
@@ -58,5 +59,6 @@ case class EitherExtractor() extends TypeExtractor[LeftRightRef[?]]:
           typeParamSymbols,
           leftRef,
           rightRef,
-          rtypeRefs.LRKind.EITHER
+          rtypeRefs.LRKind.EITHER,
+          UniqueFinder.computeUniqueFields(leftRef, rightRef)
         ).asInstanceOf[RTypeRef[R]]

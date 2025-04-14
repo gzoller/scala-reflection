@@ -27,7 +27,8 @@ case class LeftRightRef[R](
     typeParamSymbols: List[TypeSymbol],
     leftRef: RTypeRef[?],
     rightRef: RTypeRef[?],
-    lrkind: LRKind
+    lrkind: LRKind,
+    uniqueFields: Map[String, Char]
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]
     with AppliedRef:
@@ -76,7 +77,8 @@ case class LeftRightRef[R](
             Expr(name).asTerm,
             Expr(typeParamSymbols).asTerm,
             leftRef.expr.asTerm,
-            rightRef.expr.asTerm
+            rightRef.expr.asTerm,
+            Expr(uniqueFields).asTerm
           )
         ).asExprOf[RType[R]]
 

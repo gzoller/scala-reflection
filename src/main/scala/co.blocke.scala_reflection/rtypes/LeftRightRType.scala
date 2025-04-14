@@ -8,3 +8,4 @@ trait LeftRightRType[R] extends AppliedRType:
 
   val leftType: RType[?]
   val rightType: RType[?]
+  val uniqueFields: Map[String, Char]

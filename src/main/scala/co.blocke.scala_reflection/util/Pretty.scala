@@ -160,6 +160,9 @@ object Pretty:
 
       case t: LeftRightRType[?] =>
         buf.append(showSimpleName(t) + " of:\n")
+        if t.uniqueFields.nonEmpty then
+          buf.append(tabs(tabLevel + 1))
+          buf.append("unique field hash count-- " + t.uniqueFields.size + "\n")
         buf.append(tabs(tabLevel + 1))
         buf.append("left--")
         val (_, lastWasMultiLine, classesSeenBefore1) = _pretty(t.leftType, buf, tabLevel + 2, seenBefore)
@@ -188,6 +191,9 @@ object Pretty:
             if t.isAbstractClass then buf.append("abstract ")
             buf.append("class)")
           buf.append(":\n")
+          if t.isSealed then
+            buf.append(tabs(tabLevel + 1))
+            buf.append("unique fields -> " + t.uniqueFields.map { case (_, v) => s"(hash)->$v" } + "\n")
           buf.append(tabs(tabLevel + 1))
           buf.append("fields ->\n")
           val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
@@ -265,6 +271,9 @@ object Pretty:
           if t.typeParamValues.nonEmpty then buf.append(typeString(t.typeParamValues))
           else if t.typeParamSymbols.nonEmpty then buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]"))
           buf.append(s" (${if t.isSealed then "sealed " else ""}trait):\n")
+          if t.isSealed then
+            buf.append(tabs(tabLevel + 1))
+            buf.append("unique fields -> " + t.uniqueFields.map { case (_, v) => s"(hash)->$v" } + "\n")
           buf.append(tabs(tabLevel + 1))
           buf.append("fields ->\n")
           val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>

@@ -36,6 +36,7 @@ class LeftRight extends munit.FunSuite:
       |            allDone: Boolean
       |      b: co.blocke.scala_reflection.models.Item (seen before, details above)
       |      c: Either of:
+      |         unique field hash count-- 2
       |         left--co.blocke.scala_reflection.models.Person (seen before, details above)
       |         right--co.blocke.scala_reflection.models.Item (seen before, details above)
       |""".stripMargin
@@ -77,6 +78,7 @@ class LeftRight extends munit.FunSuite:
       """co.blocke.scala_reflection.models.BothSidesParam[String,Double]:
       |   fields ->
       |      a: Either of:
+      |         unique field hash count-- 1
       |         left--String
       |         right--Option of co.blocke.scala_reflection.models.ParamOption[Double]:
       |               fields ->
@@ -92,6 +94,7 @@ class LeftRight extends munit.FunSuite:
       """co.blocke.scala_reflection.models.Together:
       |   fields ->
       |      a: Intersection of:
+      |         unique field hash count-- 1
       |         left--Int
       |         right--co.blocke.scala_reflection.models.Person:
       |               fields ->
@@ -112,6 +115,7 @@ class LeftRight extends munit.FunSuite:
       """co.blocke.scala_reflection.models.Apart:
       |   fields ->
       |      a: Union of:
+      |         unique field hash count-- 1
       |         left--Option of co.blocke.scala_reflection.models.Person:
       |               fields ->
       |                  name: String
@@ -132,12 +136,31 @@ class LeftRight extends munit.FunSuite:
       """co.blocke.scala_reflection.models.ApartWithType[Int,Boolean]:
       |   fields ->
       |      a: Union of:
+      |         unique field hash count-- 1
       |         left--Option of co.blocke.scala_reflection.models.Thingy[Int]:
       |               fields ->
       |                  name: String
       |                  payload: [Z] Int
       |         right--Boolean
       |""".stripMargin
+    )
+  }
+  test("Scala Intersection type with type parameters (2 classes in LR)") {
+    val result = RType.of[ApartWithType[Int, Dog]]
+    assertEquals(
+      result.pretty,
+      """co.blocke.scala_reflection.models.ApartWithType[Int,Dog]:
+        |   fields ->
+        |      a: Union of:
+        |         unique field hash count-- 2
+        |         left--Option of co.blocke.scala_reflection.models.Thingy[Int]:
+        |               fields ->
+        |                  name: String
+        |                  payload: [Z] Int
+        |         right--co.blocke.scala_reflection.models.Dog:
+        |               fields ->
+        |                  name: String
+        |""".stripMargin
     )
   }
 

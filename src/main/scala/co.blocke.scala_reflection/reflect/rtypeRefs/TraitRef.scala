@@ -13,7 +13,8 @@ case class TraitRef[R](
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
     typeParamValues: List[RTypeRef[?]] = Nil, // Like Int, Boolean
     sealedChildren: List[RTypeRef[?]] = Nil, // Populated only if this is a sealed trait
-    childrenAreObject: Boolean = false
+    childrenAreObject: Boolean = false,
+    uniqueFields: Map[String, List[String]] // Map[FieldNameHash, List[ClassName]]
 )(using quotes: Quotes)(using tt: Type[R])
     extends RTypeRef[R]
     with AppliedRef
@@ -21,9 +22,9 @@ case class TraitRef[R](
   import quotes.reflect.*
   import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
 
-  val refType = tt
+  val refType: Type[R] = tt
 
-  val unitVal = '{ null.asInstanceOf[R] }.asExprOf[R]
+  val unitVal: Expr[R] = '{ null.asInstanceOf[R] }.asExprOf[R]
 
   val selectLimit: Int = fields.size
   def select(i: Int): RTypeRef[?] =
@@ -45,7 +46,8 @@ case class TraitRef[R](
         Expr(typeParamSymbols).asTerm,
         Expr.ofList(typeParamValues.map(_.expr)).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm,
-        Expr(childrenAreObject).asTerm
+        Expr(childrenAreObject).asTerm,
+        Expr(uniqueFields).asTerm
       )
     ).asExprOf[RType[R]]
 

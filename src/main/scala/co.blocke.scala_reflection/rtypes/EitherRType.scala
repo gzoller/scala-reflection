@@ -7,7 +7,8 @@ case class EitherRType[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],
     leftType: RType[?],
-    rightType: RType[?]
+    rightType: RType[?],
+    uniqueFields: Map[String, Char]
 ) extends RType[R]
     with LeftRightRType[R]:
 

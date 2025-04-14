@@ -4,6 +4,7 @@ package reflect
 import scala.quoted.*
 import rtypeRefs.*
 import rtypeRefs.{AliasRef, JavaEnumRef, LeftRightRef, PrimitiveRef, ScalaEnumerationRef, SelfRefRef, TypeSymbolRef, UnknownRef}
+import util.UniqueFinder
 
 /** ReflectOnType in the initial point of entry and triage when we get a Type to reflect on.  Most of the time this Type
   * will be some class, but we can't assume that.  Intersection and Union types are not classes and have no classSymbol.
@@ -69,7 +70,8 @@ object ReflectOnType: // extends NonCaseClassReflection:
                       typeSymbols,
                       resolvedLeft,
                       resolvedRight,
-                      LRKind.INTERSECTION
+                      LRKind.INTERSECTION,
+                      UniqueFinder.computeUniqueFields(resolvedLeft, resolvedRight)
                     )(using quotes)(using Type.of[lt & rt]).asInstanceOf[RTypeRef[T]]
 
           // Union Type
@@ -87,7 +89,8 @@ object ReflectOnType: // extends NonCaseClassReflection:
                       typeSymbols,
                       resolvedLeft,
                       resolvedRight,
-                      LRKind.UNION
+                      LRKind.UNION,
+                      UniqueFinder.computeUniqueFields(resolvedLeft, resolvedRight)
                     )(using quotes)(using Type.of[lt | rt]).asInstanceOf[RTypeRef[T]]
         }
 
@@ -129,7 +132,8 @@ object ReflectOnType: // extends NonCaseClassReflection:
                       typeSymbols,
                       resolvedLeft,
                       resolvedRight,
-                      LRKind.INTERSECTION
+                      LRKind.INTERSECTION,
+                      UniqueFinder.computeUniqueFields(resolvedLeft, resolvedRight)
                     )(using quotes)(using Type.of[lt & rt]).asInstanceOf[RTypeRef[T]]
 
           // Union Type
@@ -147,7 +151,8 @@ object ReflectOnType: // extends NonCaseClassReflection:
                       typeSymbols,
                       resolvedLeft,
                       resolvedRight,
-                      LRKind.UNION
+                      LRKind.UNION,
+                      UniqueFinder.computeUniqueFields(resolvedLeft, resolvedRight)
                     )(using quotes)(using Type.of[lt | rt]).asInstanceOf[RTypeRef[T]]
 
           // Scala3 opaque type alias

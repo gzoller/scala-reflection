@@ -35,6 +35,7 @@ class Parameters extends munit.FunSuite:
     assertEquals(
       result.pretty,
       """Either of:
+      |   unique field hash count-- 1
       |   left--Int
       |   right--co.blocke.scala_reflection.models.WithDefault:
       |         fields ->
@@ -112,6 +113,7 @@ class Parameters extends munit.FunSuite:
     assertEquals(
       result.pretty,
       """Union of:
+      |   unique field hash count-- 1
       |   left--String
       |   right--co.blocke.scala_reflection.models.WithDefault:
       |         fields ->
@@ -575,11 +577,14 @@ class Parameters extends munit.FunSuite:
     assertEquals(
       result.pretty,
       """co.blocke.scala_reflection.models.PersonX[Artist[Int,Hobby[String,Double]],Boolean] (sealed trait):
+      |   unique fields -> List((hash)->List(co.blocke.scala_reflection.models.EmployeeX))
       |   fields ->
       |      who: [X] co.blocke.scala_reflection.models.Artist[Int,Hobby[String,Double]] (sealed trait):
+      |         unique fields -> List((hash)->List(co.blocke.scala_reflection.models.Painter))
       |         fields ->
       |            instrument: [W] Int
       |            effort: [Z] co.blocke.scala_reflection.models.Hobby[String,Double] (sealed trait):
+      |               unique fields -> List((hash)->List(co.blocke.scala_reflection.models.Sports))
       |               fields ->
       |                  thing1: [X] String
       |                  thing2: [Y] Double
@@ -598,9 +603,11 @@ class Parameters extends munit.FunSuite:
       |      co.blocke.scala_reflection.models.EmployeeX[Double,Boolean,Int,String]:
       |         fields ->
       |            who: co.blocke.scala_reflection.models.Artist[Int,Hobby[String,Double]] (sealed trait):
+      |               unique fields -> List((hash)->List(co.blocke.scala_reflection.models.Painter))
       |               fields ->
       |                  instrument: [W] Int
       |                  effort: [Z] co.blocke.scala_reflection.models.Hobby[String,Double] (sealed trait):
+      |                     unique fields -> List((hash)->List(co.blocke.scala_reflection.models.Sports))
       |                     fields ->
       |                        thing1: [X] String
       |                        thing2: [Y] Double

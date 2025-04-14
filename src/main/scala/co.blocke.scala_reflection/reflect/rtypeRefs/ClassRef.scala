@@ -38,6 +38,7 @@ case class ScalaClassRef[R](
     nonConstructorFields: List[NonConstructorFieldInfoRef] = Nil, // Populated for non-case classes only
     sealedChildren: List[RTypeRef[?]] = Nil, // Populated only if this is a sealed class or abstract class
     childrenAreObject: Boolean = false,
+    uniqueFields: Map[String, List[String]],
     typePaths: Map[String, List[List[Int]]]
 )(using quotes: Quotes)(using tt: Type[R])
     extends ClassRef[R]
@@ -86,7 +87,8 @@ case class ScalaClassRef[R](
         Expr(typePaths).asTerm,
         Expr.ofList(nonConstructorFields.map(_.expr.asInstanceOf[Expr[NonConstructorFieldInfo]])).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm,
-        Expr(childrenAreObject).asTerm
+        Expr(childrenAreObject).asTerm,
+        Expr(uniqueFields).asTerm
       )
     ).asExprOf[RType[R]]
 

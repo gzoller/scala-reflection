@@ -214,7 +214,8 @@ object ReflectOnClass:
                 typeSymbols,
                 typeSymbolValues,
                 sealedChildrenRTypes,
-                kidsAreObject
+                kidsAreObject,
+                util.UniqueFinder.uniqueFieldHashMap(sealedChildrenRTypes)
               )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 
             case _ =>
@@ -239,7 +240,8 @@ object ReflectOnClass:
                 util.TypedName(quotes)(typeRef),
                 traitFields,
                 sealedChildren = sealedChildrenRTypes,
-                childrenAreObject = kidsAreObject
+                childrenAreObject = kidsAreObject,
+                uniqueFields = util.UniqueFinder.uniqueFieldHashMap(sealedChildrenRTypes)
               )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
           }
 
@@ -375,6 +377,7 @@ object ReflectOnClass:
               Nil,
               sealedChildrenRTypes,
               kidsAreObject,
+              util.UniqueFinder.uniqueFieldHashMap(sealedChildrenRTypes),
               typeParamPaths
             )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
           else
@@ -430,6 +433,7 @@ object ReflectOnClass:
               nonConstructorFields,
               sealedChildrenRTypes,
               kidsAreObject,
+              util.UniqueFinder.uniqueFieldHashMap(sealedChildrenRTypes),
               typeParamPaths
             )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
 

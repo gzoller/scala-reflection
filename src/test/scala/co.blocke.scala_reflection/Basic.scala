@@ -145,6 +145,7 @@ class Basic extends munit.FunSuite:
       """co.blocke.scala_reflection.models.VehicleHolder:
         |   fields ->
         |      v: co.blocke.scala_reflection.models.Vehicle (sealed trait):
+        |         unique fields -> List((hash)->List(co.blocke.scala_reflection.models.Plane), (hash)->List(co.blocke.scala_reflection.models.Truck), (hash)->List(co.blocke.scala_reflection.models.Car))
         |         fields ->
         |         children ->
         |            co.blocke.scala_reflection.models.Truck:
@@ -172,6 +173,7 @@ class Basic extends munit.FunSuite:
       """co.blocke.scala_reflection.models.FlavorHolder:
         |   fields ->
         |      f: co.blocke.scala_reflection.models.Flavor (sealed trait):
+        |         unique fields -> List()
         |         fields ->
         |         children ->
         |            co.blocke.scala_reflection.models.Vanilla (object)
@@ -305,6 +307,7 @@ class Basic extends munit.FunSuite:
         |   fields ->
         |      owner: String
         |      pet: co.blocke.scala_reflection.models.Animal (sealed abstract class):
+        |         unique fields -> List((hash)->List(co.blocke.scala_reflection.models.Dog, co.blocke.scala_reflection.models.Cat))
         |         fields ->
         |            animalType: String
         |         children ->
