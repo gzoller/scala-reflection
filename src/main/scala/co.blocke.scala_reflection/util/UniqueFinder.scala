@@ -56,3 +56,6 @@ object UniqueFinder:
 
   def hashOf(fields: List[FieldInfoRef]): String =
     fields.map(_.name).sorted.mkString("#").##.toString
+
+  def hashOfStrings(fields: List[String]): String =
+    fields.sorted.mkString("#").##.toString
