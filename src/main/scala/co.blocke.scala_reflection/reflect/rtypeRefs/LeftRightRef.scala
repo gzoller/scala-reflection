@@ -3,6 +3,7 @@ package reflect
 package rtypeRefs
 
 import scala.quoted.*
+import scala.annotation.tailrec
 import rtypes.{EitherRType, IntersectionRType, UnionRType}
 import util.{JsonField, JsonObjectBuilder}
 
@@ -92,3 +93,26 @@ case class LeftRightRef[R](
         JsonField("rightType", rightRef)
       )
     )
+
+  // Some candy for ScalaJack
+  lazy val hasOptionChild: Option[(String, Language)] = {
+    @tailrec
+    def loop(current: LeftRightRef[?], path: String): (String, Language) =
+      current.rightRef match {
+        case _: ScalaOptionRef[?]  => (path + "r", Language.Scala)
+        case _: JavaOptionalRef[?] => (path + "r", Language.Java)
+        case t: LeftRightRef[?]    => loop(t, path + "r")
+        case _ =>
+          current.leftRef match {
+            case _: ScalaOptionRef[?]  => (path + "l", Language.Scala)
+            case _: JavaOptionalRef[?] => (path + "l", Language.Java)
+            case t: LeftRightRef[?]    => loop(t, path + "l")
+            case _                     => ("", Language.Scala)
+          }
+      }
+
+    loop(this, "") match {
+      case (recipe, lang) if recipe.nonEmpty => Some((recipe, lang))
+      case _                                 => None
+    }
+  }

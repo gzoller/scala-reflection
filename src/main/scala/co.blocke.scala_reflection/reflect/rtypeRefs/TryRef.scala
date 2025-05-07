@@ -51,3 +51,11 @@ case class TryRef[R](
         JsonField("tryType", this.tryRef)
       )
     )
+
+  // candy for ScalaJack
+  lazy val hasOptionChild: Option[Language] =
+    tryRef match
+      case o: ScalaOptionRef[?]  => Some(Language.Scala)
+      case o: JavaOptionalRef[?] => Some(Language.Java)
+      case lr: LeftRightRef[?]   => lr.hasOptionChild.map(_._2)
+      case _                     => None

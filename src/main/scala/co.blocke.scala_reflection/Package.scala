@@ -48,3 +48,7 @@ def ofOption[T](xs: Option[Expr[T]])(using Type[T])(using q: Quotes): Expr[Optio
   import q.reflect.*
   if xs.isEmpty then '{ None }
   else '{ Some(${ xs.get }) }
+
+enum Language {
+  case Scala, Java
+}
