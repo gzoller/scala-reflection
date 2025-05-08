@@ -54,11 +54,22 @@ lazy val root = project
   )
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "21"))
-ThisBuild / githubWorkflowOSes := Seq("ubuntu-20.04", "windows-latest")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
   RefPredicate.StartsWith(Ref.Tag("v"))
+)
+
+ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "21")) // ← uncommented and fixed
+ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
+
+ThisBuild / githubWorkflowJobSetup := Seq(
+  WorkflowStep.Use(
+    UseRef.Public("actions", "checkout", "v4")
+  ),
+  WorkflowStep.Use(
+    UseRef.Public("coursier", "setup-action", "v1")
+  )
 )
 
 ThisBuild / githubWorkflowPublish := Seq(
