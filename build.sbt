@@ -69,6 +69,14 @@ ThisBuild / githubWorkflowJobSetup := Seq(
   ),
   WorkflowStep.Use(
     UseRef.Public("coursier", "setup-action", "v1")
+  ),
+  WorkflowStep.Run(
+    name = Some("Install sbt"),
+    commands = List(
+      "cs install sbt",
+      "echo \"$HOME/.local/share/coursier/bin\" >> $GITHUB_PATH",
+      "sbt sbtVersion"
+    )
   )
 )
 

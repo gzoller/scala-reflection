@@ -37,6 +37,13 @@ jobs:
 
       - uses: coursier/setup-action@v1
 
+      - name: Install sbt
+        shell: bash
+        run: |
+          cs install sbt
+          echo "$HOME/.local/share/coursier/bin" >> $GITHUB_PATH
+          sbt sbtVersion
+
       - name: Check that workflows are up to date
         shell: bash
         run: sbt githubWorkflowCheck
@@ -75,6 +82,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: coursier/setup-action@v1
+
+      - name: Install sbt
+        run: |
+          cs install sbt
+          echo "$HOME/.local/share/coursier/bin" >> $GITHUB_PATH
+          sbt sbtVersion
 
       - name: Download target directories (3.5.2)
         uses: actions/download-artifact@v4
