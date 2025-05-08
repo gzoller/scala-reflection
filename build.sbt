@@ -1,4 +1,5 @@
 import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
+import xerial.sbt.Sonatype.sonatypeCentralHost
 import scoverage.ScoverageKeys._
 
 lazy val isCI = sys.env.get("CI").contains("true")
@@ -52,6 +53,7 @@ lazy val root = project
     )
   )
 
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-20.04", "windows-latest")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
