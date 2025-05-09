@@ -97,7 +97,7 @@ ThisBuild / githubWorkflowPublish := Seq(
 // Settings
 //==========================
 lazy val settings = Seq(
-  javacOptions ++= Seq("-source", "21", "-target", "21"),
+  javacOptions ++= Seq("--release", "21"),
   scalacOptions ++= compilerOptions,
   testFrameworks += new TestFramework("munit.Framework")
 )
