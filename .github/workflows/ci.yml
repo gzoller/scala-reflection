@@ -29,7 +29,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         scala: [3.5.2]
-        java: [zulu@21]
+        java: [temurin@21]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
@@ -76,7 +76,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        java: [zulu@21]
+        java: [temurin@21]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

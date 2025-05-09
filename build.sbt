@@ -1,4 +1,4 @@
-import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
+import org.typelevel.sbt.gha.JavaSpec.Distribution
 import xerial.sbt.Sonatype.sonatypeCentralHost
 import scoverage.ScoverageKeys._
 
@@ -60,7 +60,7 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq(
 )
 
 ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "21")) // ← uncommented and fixed
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Distribution.Temurin, "21"))
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
 
 ThisBuild / githubWorkflowJobSetup := Seq(
