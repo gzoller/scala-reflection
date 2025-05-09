@@ -65,6 +65,13 @@ ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
 
 ThisBuild / githubWorkflowJobSetup := Seq(
   WorkflowStep.Use(
+    UseRef.Public("actions", "setup-java", "v4"),
+    params = Map(
+      "distribution" -> "temurin",
+      "java-version" -> "21"
+    )
+  ),
+  WorkflowStep.Use(
     UseRef.Public("actions", "checkout", "v4")
   ),
   WorkflowStep.Use(
