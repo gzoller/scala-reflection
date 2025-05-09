@@ -163,6 +163,7 @@ Thanks also goes to pjfanning for multiple contributions to this project.
 
 ## Release Notes:
 
+* 2.0.13 - Adds data to LeftRight and Try refs indicating if they have a child that's an Option 
 * 2.0.12 - Support Java/Scala Map flavors that preserve insertion order
 * 2.0.11 - Yet another attempt to fix this insufferable ci/cd publish
 * 2.0.10 - Clean up CI/CD workflow and fix sonatype publish, which keeps breaking
