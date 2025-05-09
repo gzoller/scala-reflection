@@ -1,5 +1,8 @@
-import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
+import org.typelevel.sbt.gha.JavaSpec.Distribution
+import xerial.sbt.Sonatype.sonatypeCentralHost
 import scoverage.ScoverageKeys._
+
+disablePlugins(TypelevelMimaPlugin) // we use our own versioning for now via gitflow-packager
 
 lazy val isCI = sys.env.get("CI").contains("true")
 
@@ -25,6 +28,12 @@ inThisBuild(List(
 
 name := "scala-reflection"
 ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/gzoller/scala-reflection"),
+    "scm:git@github.com:gzoller/scala-reflection.git"
+  )
+)
 ThisBuild / organization := "co.blocke"
 ThisBuild / scalaVersion := "3.5.2"
 ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
@@ -52,11 +61,43 @@ lazy val root = project
     )
   )
 
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "21"))
-ThisBuild / githubWorkflowOSes := Seq("ubuntu-20.04", "windows-latest")
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
   RefPredicate.StartsWith(Ref.Tag("v"))
+)
+
+ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Distribution.Temurin, "21"))
+ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
+
+ThisBuild / githubWorkflowJobSetup := Seq(
+  WorkflowStep.Run(
+    name = Some("Ignore line ending differences in git"),
+    cond = Some("contains(runner.os, 'windows')"),
+    commands = List("bash -c 'git config --global core.autocrlf false'")
+  ),
+  WorkflowStep.Use(
+    UseRef.Public("actions", "setup-java", "v4"),
+    params = Map(
+      "distribution" -> "temurin",
+      "java-version" -> "21"
+    )
+  ),
+  WorkflowStep.Use(
+    UseRef.Public("actions", "checkout", "v4")
+  ),
+  WorkflowStep.Use(
+    UseRef.Public("coursier", "setup-action", "v1")
+  ),
+  WorkflowStep.Run(
+    name = Some("Install sbt"),
+    commands = List(
+      "cs install sbt",
+      "echo \"$HOME/.local/share/coursier/bin\" >> $GITHUB_PATH",
+      "sbt sbtVersion"
+    )
+  )
 )
 
 ThisBuild / githubWorkflowPublish := Seq(
@@ -76,7 +117,7 @@ ThisBuild / githubWorkflowPublish := Seq(
 // Settings
 //==========================
 lazy val settings = Seq(
-  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+  javacOptions ++= Seq("--release", "21"),
   scalacOptions ++= compilerOptions,
   testFrameworks += new TestFramework("munit.Framework")
 )
