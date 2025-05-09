@@ -1,16 +1,10 @@
 
-
-
-
-
-
-
 name: Coveralls Publish
 
 on:
   pull_request:
-      branches:
-        - main
+    branches:
+      - main
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -40,14 +34,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (zulu@21)
-        id: setup-java-zulu-21
-        if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
-          distribution: zulu
+          distribution: temurin
           java-version: 21
-          cache: sbt
+
+      - name: Install sbt
+        shell: bash
+        run: |
+          cs install sbt
+          echo "$HOME/.local/share/coursier/bin" >> $GITHUB_PATH
+          sbt sbtVersion
 
       - name: sbt update
         if: matrix.java == 'zulu@21' && steps.setup-java-zulu-21.outputs.cache-hit == 'false'
