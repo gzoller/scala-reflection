@@ -33,6 +33,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
       - uses: actions/checkout@v4
 
       - uses: coursier/setup-action@v1
@@ -79,6 +84,11 @@ jobs:
         java: [temurin@21]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
       - uses: actions/checkout@v4
 
       - uses: coursier/setup-action@v1
