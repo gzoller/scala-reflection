@@ -2,6 +2,8 @@ import org.typelevel.sbt.gha.JavaSpec.Distribution
 import xerial.sbt.Sonatype.sonatypeCentralHost
 import scoverage.ScoverageKeys._
 
+disablePlugins(TypelevelMimaPlugin) // we use our own versioning for now via gitflow-packager
+
 lazy val isCI = sys.env.get("CI").contains("true")
 
 inThisBuild(List(
@@ -26,6 +28,12 @@ inThisBuild(List(
 
 name := "scala-reflection"
 ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/gzoller/scala-reflection"),
+    "scm:git@github.com:gzoller/scala-reflection.git"
+  )
+)
 ThisBuild / organization := "co.blocke"
 ThisBuild / scalaVersion := "3.5.2"
 ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
@@ -62,6 +70,8 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq(
 ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Distribution.Temurin, "21"))
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
+//ThisBuild / tlCiHeaderCheck := false
+//ThisBuild / tlCiGenerateCi := false
 
 ThisBuild / githubWorkflowJobSetup := Seq(
   WorkflowStep.Use(

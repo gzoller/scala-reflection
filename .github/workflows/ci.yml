@@ -9,9 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: ['**']
+    branches: ['**', '!update/**', '!pr/**']
   push:
-    branches: ['**']
+    branches: ['**', '!update/**', '!pr/**']
     tags: [v*]
 
 env:
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Test
+    name: Test
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: sbt githubWorkflowCheck
 
-      - name: Build project
+      - name: Test
         shell: bash
         run: sbt '++ ${{ matrix.scala }}' test
 
@@ -109,6 +109,23 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
+      - name: Import signing key
+        if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE == ''
+        env:
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        run: echo $PGP_SECRET | base64 -d -i - | gpg --import
+
+      - name: Import signing key and strip passphrase
+        if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE != ''
+        env:
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        run: |
+          echo "$PGP_SECRET" | base64 -d -i - > /tmp/signing-key.gpg
+          echo "$PGP_PASSPHRASE" | gpg --pinentry-mode loopback --passphrase-fd 0 --import /tmp/signing-key.gpg
+          (echo "$PGP_PASSPHRASE"; echo; echo) | gpg --command-fd 0 --pinentry-mode loopback --change-passphrase $(gpg --list-secret-keys --with-colons 2> /dev/null | grep '^sec:' | cut --delimiter ':' --fields 5 | tail -n 1)
+
       - env:
           CI_SNAPSHOT_RELEASE: +publishSigned
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
@@ -116,3 +133,32 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
         run: sbt ci-release
+
+  dependency-submission:
+    name: Submit Dependencies
+    if: github.event.repository.fork == false && github.event_name != 'pull_request'
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        java: [temurin@21]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: actions/checkout@v4
+
+      - uses: coursier/setup-action@v1
+
+      - name: Install sbt
+        run: |
+          cs install sbt
+          echo "$HOME/.local/share/coursier/bin" >> $GITHUB_PATH
+          sbt sbtVersion
+
+      - name: Submit Dependencies
+        uses: scalacenter/sbt-dependency-submission@v2
+        with:
+          configs-ignore: test scala-tool scala-doc-tool test-internal
