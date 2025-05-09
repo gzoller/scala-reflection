@@ -70,10 +70,13 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq(
 ThisBuild / githubWorkflowScalaVersions := Seq("3.5.2")
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Distribution.Temurin, "21"))
 ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "windows-latest")
-//ThisBuild / tlCiHeaderCheck := false
-//ThisBuild / tlCiGenerateCi := false
 
 ThisBuild / githubWorkflowJobSetup := Seq(
+  WorkflowStep.Run(
+    name = Some("Ignore line ending differences in git"),
+    cond = Some("contains(runner.os, 'windows')"),
+    commands = List("bash -c 'git config --global core.autocrlf false'")
+  ),
   WorkflowStep.Use(
     UseRef.Public("actions", "setup-java", "v4"),
     params = Map(
