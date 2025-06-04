@@ -131,3 +131,9 @@ class System extends Message
 
 case class XMIT(content: List[? <: Message]) // blows up
 //case class REC[T <: Message]() // works
+
+import scala.annotation.*
+case class xmlLabel(name: String) extends StaticAnnotation
+
+@Foom("wow")
+case class GregsTest(foo: String, @xmlLabel("blather") bar: Int)

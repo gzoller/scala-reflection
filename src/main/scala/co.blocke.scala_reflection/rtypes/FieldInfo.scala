@@ -1,9 +1,6 @@
 package co.blocke.scala_reflection
 package rtypes
 
-import scala.quoted.*
-import util.{JsonField, JsonObjectBuilder}
-
 /** Base information we keep for all class fields, regardless of whether Scala or Java
   */
 trait FieldInfo:

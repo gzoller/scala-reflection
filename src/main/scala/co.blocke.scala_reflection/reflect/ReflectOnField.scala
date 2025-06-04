@@ -15,7 +15,6 @@ object ReflectOnField:
       fieldDefaultMethods: Map[Int, (String, String)],
       isNonValConstructorField: Boolean = false
   ): FieldInfoRef =
-    import quotes.reflect.*
 
     // Get any field annotations (from body of class--they're not on the constructor fields)
     val fieldAnnos = dad match {
@@ -24,11 +23,7 @@ object ReflectOnField:
           .flatMap(_.fields.find(_.name == valDef.name))
           .map(_.annotations)
           .getOrElse(Map.empty[String, Map[String, String]])
-        baseAnnos ++ valDef.symbol.annotations.map { a =>
-          val Apply(_, params) = a: @unchecked
-          val annoName = a.symbol.signature.resultSig
-          (annoName, annoSymToString(quotes)(params))
-        }.toMap
+        baseAnnos ++ extractAnnotationInfo(quotes)(valDef.symbol.annotations)
     }
 
     // Figure out the original type symbols, i.e. T, (if any)
@@ -104,7 +99,6 @@ object ReflectOnField:
   )(symbol: quotes.reflect.Symbol, classRepr: quotes.reflect.TypeRepr)(using seenBefore: scala.collection.mutable.Map[TypedName, Boolean]): List[NonConstructorFieldInfoRef] =
     import quotes.reflect.*
 
-    val allMethods = symbol.methodMembers
     val getterMethods = symbol.methodMembers.filter(_.name.startsWith("get"))
     val setterMethods = getterMethods.map(g => symbol.methodMember("set" + g.name.drop(3)).headOption)
     getterMethods

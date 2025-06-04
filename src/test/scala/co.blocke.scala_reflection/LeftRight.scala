@@ -3,7 +3,6 @@ package co.blocke.scala_reflection
 import munit.*
 import rtypes.*
 import models.*
-import scala.util.{Left, Right}
 
 class LeftRight extends munit.FunSuite:
 

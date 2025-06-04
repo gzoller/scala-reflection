@@ -62,11 +62,7 @@ object ReflectOnClass:
         symbol.annotations
           .filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.internal."))
           .filter(a => !a.symbol.signature.resultSig.startsWith("scala.annotation.experimental"))
-      val classAnnos = annoSymbol.map { a =>
-        val quotes.reflect.Apply(_, params) = a: @unchecked
-        val annoName = a.symbol.signature.resultSig
-        (annoName, annoSymToString(quotes)(params))
-      }.toMap
+      val classAnnos = extractAnnotationInfo(quotes)(annoSymbol)
 
       // Is this class annotated to skip reflection?   If so, return UnknownInfo
       if classAnnos.contains("co.blocke.scala_reflection.Ignore") then UnknownRef[T](symbol.fullName)(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])

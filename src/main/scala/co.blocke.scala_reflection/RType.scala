@@ -1,8 +1,6 @@
 package co.blocke.scala_reflection
 
 import scala.quoted.*
-import reflect.rtypeRefs.{ScalaClassRef, SelfRefRef, TraitRef, UnknownRef}
-import rtypes.{AppliedRType, TraitRType}
 
 trait RType[R]:
   type T = R // R is saved for accessibility during casting, ie myRType.asInstanceOf[fooRType.T]

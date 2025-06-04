@@ -22,7 +22,6 @@ object ReflectOnType: // extends NonCaseClassReflection:
 
     val dealiased = aType.dealias
     val tname = util.TypedName(quotes)(dealiased)
-    val z: Boolean = if tname.toString.contains("Any") then true else false
     allBasicTypesMap
       .get(tname)
       .map(fn => fn(quotes))

@@ -11,7 +11,7 @@ enum LRKind(name: String) {
   case EITHER extends LRKind("EitherRType")
   case INTERSECTION extends LRKind("IntersectionRType")
   case UNION extends LRKind("UnionRType")
-  override def toString(): String = this.name
+  override def toString: String = this.name
 }
 
 given LRKindToExpr: ToExpr[LRKind] with {
@@ -33,7 +33,7 @@ case class LeftRightRef[R](
     extends RTypeRef[R]
     with AppliedRef:
   import quotes.reflect.*
-  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
+  import Liftables.ListTypeSymbolToExpr
 
   val typedName: TypedName = name + "[" + leftRef.typedName + "," + rightRef.typedName + "]"
   val refType = tt

@@ -1,8 +1,6 @@
 package co.blocke.scala_reflection
 package rtypes
 
-import scala.quoted.Quotes
-
 trait LeftRightRType[R] extends AppliedRType:
   self: RType[?] =>
 

@@ -3,7 +3,6 @@ package reflect
 package extractors
 
 import rtypeRefs.*
-import reflect.TypeExtractor
 import scala.quoted.*
 import rtypeRefs.{ScalaOptionRef, TypeSymbolRef}
 

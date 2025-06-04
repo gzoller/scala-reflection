@@ -9,10 +9,8 @@ package rtypeRefs
 
 import scala.quoted.*
 import rtypes.*
-import rtypeRefs.*
 import Clazzes.*
 import util.{JsonField, JsonObjectBuilder}
-import scala.math.{BigDecimal, BigInt}
 
 /** Reference for all Java & Scala primitive types
   */

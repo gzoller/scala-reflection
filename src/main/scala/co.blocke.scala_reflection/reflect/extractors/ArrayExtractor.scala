@@ -5,7 +5,6 @@ package extractors
 import Clazzes.*
 import rtypeRefs.*
 import scala.quoted.*
-import scala.util.Try
 
 case class ArrayExtractor() extends TypeExtractor[ArrayRef[?]]:
 

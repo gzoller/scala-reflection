@@ -2,10 +2,6 @@ package co.blocke.scala_reflection
 package reflect
 
 import scala.quoted.*
-import scala.annotation.tailrec
-import rtypeRefs.*
-import rtypes.*
-import javax.management.ReflectionException
 
 /** The goal of TypeSymbolFinder is to deep-dive through a class and find where in the type tree each type parameter is located.
   * For example:
