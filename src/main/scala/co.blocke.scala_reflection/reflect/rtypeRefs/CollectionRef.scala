@@ -2,8 +2,6 @@ package co.blocke.scala_reflection
 package reflect
 package rtypeRefs
 
-import scala.quoted.Quotes
-
 /** Marker trait for all Scala/Java collections */
 trait CollectionRef[R] extends AppliedRef:
   self: RTypeRef[R] =>

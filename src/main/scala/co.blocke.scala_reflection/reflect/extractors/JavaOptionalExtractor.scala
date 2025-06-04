@@ -4,7 +4,6 @@ package extractors
 
 import Clazzes.*
 import rtypeRefs.*
-import reflect.TypeExtractor
 import scala.quoted.*
 import scala.util.Try
 

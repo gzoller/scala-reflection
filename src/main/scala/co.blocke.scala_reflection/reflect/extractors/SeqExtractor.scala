@@ -4,7 +4,6 @@ package extractors
 
 import rtypeRefs.*
 import Clazzes.*
-import reflect.TypeExtractor
 import scala.quoted.*
 
 object SeqType {

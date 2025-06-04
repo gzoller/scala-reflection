@@ -43,7 +43,7 @@ case class ScalaClassRef[R](
     extends ClassRef[R]
     with Sealable:
   import quotes.reflect.*
-  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr, TypeSymbolToExpr}
+  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr}
 
   val refType = tt
 
@@ -130,7 +130,7 @@ case class JavaClassRef[R](
 )(using quotes: Quotes)(using tt: Type[R])
     extends ClassRef[R]:
   import quotes.reflect.*
-  import Liftables.{ListTypeSymbolToExpr, TypedNameToExpr, TypeSymbolToExpr}
+  import Liftables.ListTypeSymbolToExpr
 
   val typedName: TypedName = name
   val refType = tt

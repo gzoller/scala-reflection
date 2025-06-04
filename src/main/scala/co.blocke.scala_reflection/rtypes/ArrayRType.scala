@@ -1,8 +1,6 @@
 package co.blocke.scala_reflection
 package rtypes
 
-import scala.quoted.*
-
 case class ArrayRType[R](
     name: String,
     typeParamSymbols: List[TypeSymbol],

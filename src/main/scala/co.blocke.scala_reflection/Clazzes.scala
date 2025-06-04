@@ -1,7 +1,5 @@
 package co.blocke.scala_reflection
 
-import co.blocke.scala_reflection.rtypes.IntersectionRType
-
 object Clazzes:
 
   // ======= Scala Class Names =======

@@ -141,7 +141,7 @@ object Pretty:
           buf.append(tabs(tabLevel + 1))
           buf.append(s"$i: ")
           val (_, lastWasMultiLine, classesSeenBefore) = _pretty(rt, buf, tabLevel + 1, classesSeen)
-          if !lastWasMultiLine then buf.append("\n")
+          if !lastWasMultiLine then { buf.append("\n"); () }
           classesSeenBefore
         }
         (buf, true, allClassesSeenUpToNow)
@@ -151,11 +151,11 @@ object Pretty:
         buf.append(tabs(tabLevel + 1))
         buf.append("key: ")
         val (_, lastWasMultiLine_1, classesSeen_1) = _pretty(t.elementType, buf, tabLevel + 1, seenBefore)
-        if !lastWasMultiLine_1 then buf.append("\n")
+        if !lastWasMultiLine_1 then { buf.append("\n"); () }
         buf.append(tabs(tabLevel + 1))
         buf.append("value: ")
         val (_, lastWasMultiLine_2, classesSeen_2) = _pretty(t.elementType2, buf, tabLevel + 1, classesSeen_1)
-        if !lastWasMultiLine_2 then buf.append("\n")
+        if !lastWasMultiLine_2 then { buf.append("\n"); () }
         (buf, true, classesSeen_2)
 
       case t: LeftRightRType[?] =>
@@ -163,11 +163,11 @@ object Pretty:
         buf.append(tabs(tabLevel + 1))
         buf.append("left--")
         val (_, lastWasMultiLine, classesSeenBefore1) = _pretty(t.leftType, buf, tabLevel + 2, seenBefore)
-        if !lastWasMultiLine then buf.append("\n")
+        if !lastWasMultiLine then { buf.append("\n"); () }
         buf.append(tabs(tabLevel + 1))
         buf.append("right--")
         val (_, lastWasMultiLine2, classesSeenBefore2) = _pretty(t.rightType, buf, tabLevel + 2, classesSeenBefore1)
-        if !lastWasMultiLine2 then buf.append("\n")
+        if !lastWasMultiLine2 then { buf.append("\n"); () }
         (buf, true, classesSeenBefore2)
 
       case t: SelfRefRType[?] =>
@@ -179,21 +179,22 @@ object Pretty:
           (buf, true, seenBefore)
         else
           buf.append(t.name)
-          if t.typeParamValues.nonEmpty then buf.append(typeString(t.typeParamValues))
-          else if t.typeParamSymbols.nonEmpty then buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]"))
-          if t.isValueClass then buf.append(" (value class)")
+          if t.typeParamValues.nonEmpty then { buf.append(typeString(t.typeParamValues)); () }
+          else if t.typeParamSymbols.nonEmpty then { buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]")); () }
+          if t.isValueClass then { buf.append(" (value class)"); () }
           if t.isAbstractClass || t.sealedChildren.nonEmpty then
             buf.append(" (")
-            if t.sealedChildren.nonEmpty then buf.append("sealed ")
-            if t.isAbstractClass then buf.append("abstract ")
+            if t.sealedChildren.nonEmpty then { buf.append("sealed "); () }
+            if t.isAbstractClass then { buf.append("abstract "); () }
             buf.append("class)")
+            ()
           buf.append(":\n")
           buf.append(tabs(tabLevel + 1))
           buf.append("fields ->\n")
           val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
             buf.append(tabs(tabLevel + 2))
             buf.append(f.name)
-            if f.asInstanceOf[ScalaFieldInfo].isNonValConstructorField then buf.append(" (set-only)")
+            if f.asInstanceOf[ScalaFieldInfo].isNonValConstructorField then { buf.append(" (set-only)"); () }
             buf.append(": ")
             f.originalSymbol.map(os => buf.append("[" + os + "] "))
             val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f.fieldType, buf, tabLevel + 2, classesSeen)
@@ -201,12 +202,13 @@ object Pretty:
               if lastWasMultiLine then buf.append(tabs(tabLevel + 3))
               else buf.append(" ")
               buf.append("(default value: " + clipDefault(default) + ")")
-              if lastWasMultiLine then buf.append("\n")
+              if lastWasMultiLine then { buf.append("\n"); () }
             }
-            if !lastWasMultiLine then buf.append("\n")
+            if !lastWasMultiLine then { buf.append("\n"); () }
             if f.annotations.nonEmpty then
               buf.append(tabs(tabLevel + 3))
               buf.append("annotations -> " + f.annotations.toString + "\n")
+              ()
             classesSeenBefore
           }
           val allClassesSeenUpToNow2 = if t.nonConstructorFields.nonEmpty then
@@ -216,10 +218,11 @@ object Pretty:
               buf.append(tabs(tabLevel + 2))
               buf.append(f.getterLabel + ": ")
               val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f.fieldType, buf, tabLevel + 2, classesSeen)
-              if !lastWasMultiLine then buf.append("\n")
+              if !lastWasMultiLine then { buf.append("\n"); () }
               if f.annotations.nonEmpty then
                 buf.append(tabs(tabLevel + 3))
                 buf.append("annotations -> " + f.annotations.toString + "\n")
+                ()
               classesSeenBefore
             }
           else allClassesSeenUpToNow
@@ -232,7 +235,7 @@ object Pretty:
               buf.append(f.name + ": ")
               f.typeSymbol.map(s => buf.append("[" + s + "] "))
               val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f.memberType, buf, tabLevel + 2, classesSeen)
-              if !lastWasMultiLine then buf.append("\n")
+              if !lastWasMultiLine then { buf.append("\n"); () }
               classesSeenBefore
             }
           else allClassesSeenUpToNow2
@@ -242,6 +245,7 @@ object Pretty:
             buf.append("annotations ->\n")
             buf.append(tabs(tabLevel + 2))
             buf.append(t.annotations.toString + "\n")
+            ()
 
           val allClassesSeenUpToNow4 = if t.isAbstractClass && t.sealedChildren.nonEmpty then
             buf.append(tabs(tabLevel + 1))
@@ -249,7 +253,7 @@ object Pretty:
             t.sealedChildren.foldLeft(allClassesSeenUpToNow3) { (classesSeen, f) =>
               buf.append(tabs(tabLevel + 2))
               val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f, buf, tabLevel + 2, classesSeen)
-              if !lastWasMultiLine then buf.append("\n")
+              if !lastWasMultiLine then { buf.append("\n"); () }
               classesSeenBefore
             }
           else allClassesSeenUpToNow3
@@ -262,8 +266,8 @@ object Pretty:
           (buf, true, seenBefore)
         else
           buf.append(showSimpleName(t))
-          if t.typeParamValues.nonEmpty then buf.append(typeString(t.typeParamValues))
-          else if t.typeParamSymbols.nonEmpty then buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]"))
+          if t.typeParamValues.nonEmpty then { buf.append(typeString(t.typeParamValues)); () }
+          else if t.typeParamSymbols.nonEmpty then { buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]")); () }
           buf.append(s" (${if t.isSealed then "sealed " else ""}trait):\n")
           buf.append(tabs(tabLevel + 1))
           buf.append("fields ->\n")
@@ -272,7 +276,7 @@ object Pretty:
             buf.append(f.name + ": ")
             f.originalSymbol.map(os => buf.append("[" + os + "] "))
             val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f.fieldType, buf, tabLevel + 2, seenBefore)
-            if !lastWasMultiLine then buf.append("\n")
+            if !lastWasMultiLine then { buf.append("\n"); () }
             classesSeenBefore
           }
           val allClassesSeenUpToNow2 = if t.sealedChildren.nonEmpty then
@@ -281,7 +285,7 @@ object Pretty:
             t.sealedChildren.foldLeft(t.typedName.toString :: allClassesSeenUpToNow) { (classesSeen, f) =>
               buf.append(tabs(tabLevel + 2))
               val (_, lastWasMultiLine, allClassesSeenUpToNow) = _pretty(f, buf, tabLevel + 2, classesSeen)
-              if !lastWasMultiLine then buf.append("\n")
+              if !lastWasMultiLine then { buf.append("\n"); () }
               allClassesSeenUpToNow
             }
           else allClassesSeenUpToNow
@@ -304,9 +308,11 @@ object Pretty:
         if t.lowBoundsType.isDefined then
           buf.append(" >: ")
           _typeString(t.lowBoundsType.get, buf)
+          ()
         if t.highBoundsType.isDefined then
           buf.append(" <: ")
           _typeString(t.highBoundsType.get, buf)
+          ()
         buf.append("\n")
         (buf, true, seenBefore)
 
@@ -328,8 +334,8 @@ object Pretty:
           (buf, true, seenBefore)
         else
           buf.append(t.name)
-          if t.typeParamValues.nonEmpty then buf.append(typeString(t.typeParamValues))
-          else if t.typeParamSymbols.nonEmpty then buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]"))
+          if t.typeParamValues.nonEmpty then { buf.append(typeString(t.typeParamValues)); () }
+          else if t.typeParamSymbols.nonEmpty then { buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]")); () }
           buf.append(" (Java)")
           buf.append(":\n")
           buf.append(tabs(tabLevel + 1))
@@ -340,10 +346,11 @@ object Pretty:
             buf.append(": ")
             f.originalSymbol.map(os => buf.append("[" + os + "] "))
             val (_, lastWasMultiLine, classesSeenBefore) = _pretty(f.fieldType, buf, tabLevel + 2, classesSeen)
-            if !lastWasMultiLine then buf.append("\n")
+            if !lastWasMultiLine then { buf.append("\n"); () }
             if f.annotations.nonEmpty then
               buf.append(tabs(tabLevel + 3))
               buf.append("annotations -> " + f.annotations.toString + "\n")
+              ()
             classesSeenBefore
           }
 
@@ -352,6 +359,7 @@ object Pretty:
             buf.append("annotations ->\n")
             buf.append(tabs(tabLevel + 2))
             buf.append(t.annotations.toString + "\n")
+            ()
 
           (buf, true, allClassesSeenUpToNow)
 
@@ -367,10 +375,10 @@ object Pretty:
         buf.append(tabs(tabLevel + 1))
         buf.append("key: ")
         val (_, lastWasMultiLine_1, classesSeen_1) = _pretty(t.elementType, buf, tabLevel + 1, seenBefore)
-        if !lastWasMultiLine_1 then buf.append("\n")
+        if !lastWasMultiLine_1 then { buf.append("\n"); () }
         buf.append(tabs(tabLevel + 1))
         buf.append("value: ")
         val (_, lastWasMultiLine_2, classesSeen_2) = _pretty(t.elementType2, buf, tabLevel + 1, classesSeen_1)
-        if !lastWasMultiLine_2 then buf.append("\n")
+        if !lastWasMultiLine_2 then { buf.append("\n"); () }
         (buf, true, classesSeen_2)
     }

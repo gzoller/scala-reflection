@@ -45,10 +45,48 @@ def foldLeftBreak[A, B](as: List[A])(init: B)(op: (A, B) => Either[B, B]): B =
   }
 
 def ofOption[T](xs: Option[Expr[T]])(using Type[T])(using q: Quotes): Expr[Option[T]] =
-  import q.reflect.*
   if xs.isEmpty then '{ None }
   else '{ Some(${ xs.get }) }
 
 enum Language {
   case Scala, Java
 }
+
+// Extract Annotations from symbol
+def getAnnotationParamNames(quotes: Quotes)(annotationType: quotes.reflect.TypeRepr): List[String] =
+  val ctorParams =
+    annotationType.typeSymbol.primaryConstructor.paramSymss.flatten
+  ctorParams.map(_.name)
+
+def extractAnnotationInfo(quotes: Quotes)(annos: List[quotes.reflect.Term]): Map[String, Map[String, String]] =
+  import quotes.reflect.*
+
+  def getAnnotationParamNames(annotType: TypeRepr): List[String] =
+    annotType.typeSymbol.primaryConstructor.paramSymss.flatten.map(_.name)
+
+  annos.map {
+    case Apply(Select(New(annotTypeTree), _), args) =>
+      val annotType = annotTypeTree.tpe
+      val paramNames = getAnnotationParamNames(annotType)
+
+      val paramMap: Map[String, String] = args.zipWithIndex.map {
+        case (NamedArg(argName, Literal(StringConstant(value))), _) =>
+          argName -> value
+        case (NamedArg(argName, Literal(IntConstant(value))), _) =>
+          argName -> value.toString
+        case (Literal(StringConstant(value)), idx) =>
+          val name = paramNames.lift(idx).getOrElse(s"param$idx")
+          name -> value
+        case (Literal(IntConstant(value)), idx) =>
+          val name = paramNames.lift(idx).getOrElse(s"param$idx")
+          name -> value.toString
+        case (otherArg, idx) =>
+          val name = paramNames.lift(idx).getOrElse(s"param$idx")
+          name -> otherArg.show
+      }.toMap
+
+      annotType.typeSymbol.fullName -> paramMap
+
+    case other =>
+      "unknown" -> Map("raw" -> other.show)
+  }.toMap

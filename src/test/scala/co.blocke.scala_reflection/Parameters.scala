@@ -344,7 +344,6 @@ class Parameters extends munit.FunSuite:
 
   test("Nested trait substitutions (inTermsOf)") {
     val inst: T10[T11[Int, T5[Double, Char]], String] = TFoo6(TBlah1(5, TBar7(1.2, 'Z')), "wow")
-    val rt = RType.of[T10[T11[Int, T5[Double, Char]], String]].asInstanceOf[TraitRType[?]]
     val result = RType.inTermsOf[T10[T11[Int, T5[Double, Char]], String]](inst.getClass)
     assertEquals(
       result.pretty,
@@ -363,7 +362,6 @@ class Parameters extends munit.FunSuite:
   }
 
   test("With nested Option and List (inTermsOf)") {
-    val inst: Base[Level1[String, Boolean], Int] = BaseClass(L1Class("foo", Some(List(true))), 3)
     val result = RType.inTermsOf[Base[Level1[String, Boolean], Int]](
       Class.forName("co.blocke.scala_reflection.models.BaseClass")
     )

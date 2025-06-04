@@ -11,6 +11,17 @@ object Main {
     // println(RType.of[PP[Vehicle[VehicleClass]]].pretty)
     // println("done")
 
-    println(RType.of[XMIT].pretty)
+    val rt = RType.of[GregsTest]
+    println(rt.pretty)
 
 }
+
+/*
+co.blocke.scala_reflection.model.GregsTest:
+   fields ->
+      foo: String
+      bar: Int
+         annotations -> Map(co.blocke.scala_reflection.model.xmlLabel -> Map(name -> blather))
+   annotations ->
+      Map(co.blocke.scala_reflection.Foom -> Map(x$1 -> wow))
+ */
