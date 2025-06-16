@@ -7,6 +7,7 @@ package rtypeRefs
 trait Sealable:
   val name: String
   val typedName: TypedName
+  val annotations: Map[String, Map[String, String]]
   val sealedChildren: List[RTypeRef[?]]
   val childrenAreObject: Boolean
   def isSealed: Boolean
