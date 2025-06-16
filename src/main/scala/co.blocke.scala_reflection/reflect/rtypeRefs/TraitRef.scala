@@ -12,6 +12,7 @@ case class TraitRef[R](
     fields: List[FieldInfoRef],
     typeParamSymbols: List[TypeSymbol] = Nil, // Like T,U
     typeParamValues: List[RTypeRef[?]] = Nil, // Like Int, Boolean
+    annotations: Map[String, Map[String, String]],
     sealedChildren: List[RTypeRef[?]] = Nil, // Populated only if this is a sealed trait
     childrenAreObject: Boolean = false
 )(using quotes: Quotes)(using tt: Type[R])
@@ -44,6 +45,7 @@ case class TraitRef[R](
         Expr.ofList(fields.map(_.expr)).asTerm,
         Expr(typeParamSymbols).asTerm,
         Expr.ofList(typeParamValues.map(_.expr)).asTerm,
+        Expr(annotations).asTerm,
         Expr.ofList(sealedChildren.map(_.expr)).asTerm,
         Expr(childrenAreObject).asTerm
       )
@@ -58,6 +60,7 @@ case class TraitRef[R](
         JsonField("typedName", this.typedName),
         JsonField("typeParamSymbols", this.typeParamSymbols),
         JsonField("typeParamValues", this.typeParamValues),
+        JsonField("annotations", this.annotations),
         JsonField("sealedChildren", this.sealedChildren),
         JsonField("childrenAreObject", this.childrenAreObject)
       )

@@ -209,6 +209,7 @@ object ReflectOnClass:
                 traitFields,
                 typeSymbols,
                 typeSymbolValues,
+                classAnnos,
                 sealedChildrenRTypes,
                 kidsAreObject
               )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])
@@ -234,6 +235,9 @@ object ReflectOnClass:
                 className,
                 util.TypedName(quotes)(typeRef),
                 traitFields,
+                Nil,
+                Nil,
+                classAnnos,
                 sealedChildren = sealedChildrenRTypes,
                 childrenAreObject = kidsAreObject
               )(using quotes)(using typeRef.asType.asInstanceOf[Type[T]])

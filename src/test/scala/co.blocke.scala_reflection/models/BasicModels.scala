@@ -69,6 +69,7 @@ case class Definitely(id: Elem[List[Int]], stuff: Elem[String])
 case class SelfReferencing(a: String, b: SelfReferencing, c: Int, d: Option[SelfReferencing])
 
 // Sealed trait w/case classes and objects
+@ClassAnno(name = "Zoom")
 sealed trait Vehicle
 case class Truck(numberOfWheels: Int) extends Vehicle
 case class Car(numberOfWheels: Int, color: String) extends Vehicle
