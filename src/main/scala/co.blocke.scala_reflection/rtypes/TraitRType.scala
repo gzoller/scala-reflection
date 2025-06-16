@@ -9,6 +9,7 @@ case class TraitRType[R](
     fields: List[FieldInfo],
     typeParamSymbols: List[TypeSymbol], // Like T,U
     typeParamValues: List[RType[?]], // Like Int, Boolean
+    annotations: Map[String, Map[String, String]],
     sealedChildren: List[RType[?]], // Populated only if this is a sealed class or abstract class
     childrenAreObject: Boolean
 ) extends RType[R]

@@ -163,6 +163,7 @@ Thanks also goes to pjfanning for multiple contributions to this project.
 
 ## Release Notes:
 
+* 2.0.15 - Add annotations support to traits
 * 2.0.14 - Clean up many warnings and add abbreviated annotation support: @foo("bar")
 * 2.0.13 - Add data in LeftRight and Try refs indicating if any child contains Option
 * 2.0.12 - Support Java/Scala Map flavors that preserve insertion order

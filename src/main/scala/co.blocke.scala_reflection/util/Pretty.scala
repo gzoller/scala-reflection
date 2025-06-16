@@ -269,6 +269,10 @@ object Pretty:
           if t.typeParamValues.nonEmpty then { buf.append(typeString(t.typeParamValues)); () }
           else if t.typeParamSymbols.nonEmpty then { buf.append(t.typeParamSymbols.map(_.toString).mkString("[", ",", "]")); () }
           buf.append(s" (${if t.isSealed then "sealed " else ""}trait):\n")
+          if t.annotations.nonEmpty then
+            buf.append(tabs(tabLevel + 1))
+            buf.append("annotations -> " + t.annotations.toString + "\n")
+            ()
           buf.append(tabs(tabLevel + 1))
           buf.append("fields ->\n")
           val allClassesSeenUpToNow = t.fields.foldLeft(t.typedName.toString :: seenBefore) { (classesSeen, f) =>
